@@ -1,0 +1,35 @@
+{
+  "scenario_name": "test scenario",
+  "flights": [
+    {
+      "path": "flight1.txt",
+      "start": 10,
+      "flight_id": "AZ12345"
+    },
+    {
+      "path": "flight2.txt",
+      "start": 10,
+      "flight_id": "GIUSE345"
+    },
+  {
+      "path": "flight3.txt",
+      "start": 0,
+      "flight_id": "DAMIANO345"
+    },
+  {
+      "path": "flight4.txt",
+      "start": 0,
+      "flight_id": "CARLO3215"
+    },
+  {
+      "path": "flight5.txt",
+      "start": 10,
+      "flight_id": "FILIPPONE9483"
+    },
+    {
+      "path": "flight6.txt",
+      "start": 20,
+      "flight_id": "RYR4539"
+    }
+  ]
+}

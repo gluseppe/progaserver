@@ -1,0 +1,16 @@
+s = requests.Session()
+r = s.post('http://127.0.0.1:8080/traffic', params={'command':'loadscenario','scenario_name':'test_scenario'})
+r = s.post('http://127.0.0.1:8080/traffic', params={'command':'start'})
+r = s.post('http://127.0.0.1:8080/traffic', params={'command':'stop'})
+r = s.get('http://127.0.0.1:8080/traffic', params={'item':'myState'})
+r = s.get('http://127.0.0.1:8080/traffic', params={'item':'traffic'})
+r.status_code, r.text
+
+
+data = {'lat':'42.1', 'lon':'12.2'}
+dataj = simplejson.dumps(data)
+payload = {'json_payload': dataj}
+url = "http://127.0.0.1:8080/listener"
+headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+r = s.put(url, data=dataj, headers=headers)
