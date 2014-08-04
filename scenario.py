@@ -39,3 +39,6 @@ class Scenario(object):
 
 
 		return toStart
+
+	def getDeclaredIntent(track_id):
+		pass

@@ -10,6 +10,7 @@ import simplejson as json
 import progaconstants
 from scenario import Scenario
 from track import Track
+import referencetrack
 
 
 
@@ -20,6 +21,7 @@ class ScenarioLoader(object):
 		self.scenariosfolder = scenariosfolder
 		self.tracks = []
 		self.flight_ids = []
+		self.flight_intents = {}
 		self.scenarioLoaded = False
 		self.scenario = None
 
@@ -75,8 +77,16 @@ class ScenarioLoader(object):
 			flight_file_name = flights['path']
 			flight_id = flights['flight_id']
 			flight_start = flights['start']
+			raw_flight_intent = flights['flight_intent']
+			flight_intent_point_list = None
+			flight_intent = None
+			if raw_flight_intent != None:
+				for item in raw_flight_intent:
+					flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
+				flight_intent = ReferenceTrack(flight_intent_point_list)
+
 			cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
-			self.addTrack(flight_file_name,flight_id,flight_start)
+			self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
 
 		self.scenarioLoaded = True
 		scenario = Scenario(self.tracks)
@@ -84,11 +94,12 @@ class ScenarioLoader(object):
 		return scenario
 
 
-	def addTrack(self, trackfilename, flight_id,flight_start):
+	def addTrack(self, trackfilename, flight_id,flight_start, flight_intent):
 		if flight_id not in self.flight_ids:
 			#print "adding track"
 			cherrypy.log("flight_start:" + str(flight_start))
 			track = self.loadTrack(trackfilename,flight_id,flight_start)
+			track.setDeclaredFlightIntent(flight_intent)
 			self.tracks.append(track)
 			self.flight_ids.append(flight_id)
 			return True

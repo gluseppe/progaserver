@@ -15,7 +15,11 @@ import simplejson as json
 
 import progaconstants
 
-
+"""
+The Traffic object is istanciated by proga and it handles the dynamic evolution of the aircraft
+during the simulation. It is constructed as a cherrypy Monitor, this means one of its function is 
+called periodically to update the traffic situation
+"""
 class Traffic(plugins.Monitor):
 	exposed = True
 
@@ -94,7 +98,7 @@ class Traffic(plugins.Monitor):
 
 		if item == None or item == progaconstants.ITEM_TRAFFIC:
 			cherrypy.log("returning traffic")
-			return self.getTraffic()
+			return self.getJSONTraffic()
 
 	
 	#questo rende sempre una versione stringa della posizione
@@ -102,13 +106,41 @@ class Traffic(plugins.Monitor):
 		return str(self.myState['lat']) + ' ' + str(self.myState['lon'])
 
 
-
 	def getTraffic(self):
 		traffic = []
 		for track in self.startedTracks:
 			traffic.append(track.getCurrentState())
 
-		return json.dumps(traffic)
+		return traffic
+
+	def getIntent(self, track_id):
+		return ''
+
+
+	#probabilmente sto usando una logica troppo intricata.
+	#l obiettivo e' portare fuori un dictionary fatto cosi'
+	# 'track_id' : (reference_track1, w1), (reference_track2, w2) eccetera
+	# credo che anche la struttura dati sia sbagliata perche' non mi sembra che contenga bene
+	# le informazioni che ci servono. bisogna ripensare ad una logica per identificare le referencetrack
+	def computeInitialWeightsForReferenceTracks(self):
+		weights = {}
+		n_tracks_in_universe = 10
+		storedReferenceTracks = []
+		for track in self.tracks:
+			ref_track = track.getDeclaredFlightIntent()
+			if ref_track != None:
+				all_reference_tracks = self.mergeReferenceTrackSets(storedReferenceTracks, ref_track)
+				delta = 1 - progaconstants.DECLARED_INTENT_PROBABILITY
+				uniform = delta / (n_tracks_in_universe-1)
+				for reference_track in all_reference_tracks:
+					weights[track.track_id] = ref_track_list
+
+
+
+
+
+	def getJSONTraffic(self):
+		return json.dumps(self.getTraffic())
 
 
 	def POST(self,command=None,scenario_name=None):

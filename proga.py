@@ -61,11 +61,14 @@ if __name__ == '__main__':
 		}
 	}
 
+	traffic = Traffic(cherrypy.engine,progaconstants.PLAYER_SLEEP_SECONDS)
+	predictionEngine = PredictionEngine(cherrypy.engine,progaconstants.PREDICTION_SLEEP_SECONDS, traffic)
+
 
 	cherrypy.tree.mount(ProGA(), '/', proga_conf)
 	cherrypy.tree.mount(FSListener(), '/listener', listener_conf)
-	cherrypy.tree.mount(Traffic(cherrypy.engine,progaconstants.PLAYER_SLEEP_SECONDS), '/traffic', traffic_conf)
-	cherrypy.tree.mount(PredictionEngine(cherrypy.engine,progaconstants.PREDICTION_SLEEP_SECONDS), '/prediction', traffic_conf)
+	cherrypy.tree.mount(traffic, '/traffic', traffic_conf)
+	cherrypy.tree.mount(predictionEngine, '/prediction', traffic_conf)
 
 	cherrypy.config.update({'server.socket_host': '0.0.0.0',
 		'server.socket_port': progaconstants.LISTEN_PORT})

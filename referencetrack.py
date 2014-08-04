@@ -48,6 +48,9 @@ class Point3D(object):
         def getNumpyVector(self):
                 return np.array([self.x, self.y, self.z], dtype=np.float64)
 
+        def __eq__(self,other):
+            return self.lat == other.lat and self.lon == other.lon and self.z == other.z
+
 
 class ReferenceTrack(object):
 
@@ -62,6 +65,18 @@ class ReferenceTrack(object):
 
         def __repr__(self):
                 return "Line of %d points form %s to %s" % (len(self.line), self.line[0], self.line[-1])
+
+        def __eq__(self,other):
+            otherline = other.getLine()
+            if len(self.line) != len(otherline):
+                return False
+
+            for thispoint, otherpoint in zip(self.line, otherline):
+                if thispoint != otherpoint:
+                    return False
+
+            return True
+
 
 
 

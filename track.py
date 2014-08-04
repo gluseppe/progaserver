@@ -17,12 +17,13 @@ class Track(object):
 		self.pointer = None
 		self.startAt = 0;
 		self.started = False
+		self.declaredIntent = None
 
 
 	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading):
 		if len(self.path) == 0:
 			self.pointer = 0
-		self.path.append({'timstamp':timestamp, 'lat':lat, 'lon':lon, 'altitude':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
+		self.path.append({'timstamp':timestamp, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
 
 	def getPath(self):
 		return self.path
@@ -33,8 +34,6 @@ class Track(object):
 	def setStart(self, startTime):
 		self.pointer = startTime
 		self.startAt = startTime
-
-
 
 	def hasStarted(self):
 		return self.started
@@ -63,4 +62,16 @@ class Track(object):
 
 	def getStartTime(self):
 		return self.startAt
+
+
+	#intent must be a ReferenceTrack object
+	def setDeclaredIntent(self, intent):
+		self.declaredIntent = intent
+
+	def getDeclaredIntent(self):
+		return self.declaredIntent
+
+
+
+
 
