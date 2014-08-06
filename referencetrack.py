@@ -11,6 +11,7 @@ class Point3D(object):
                 self.lat = lat
                 self.z = z
                 self.setXY(*self.xyFromLonLat(self.lon,self.lat))
+                self.w = 0.0
 
         def __repr__(self):
                 return "3Dpoint %s" % (self.getNumpyVector())
@@ -52,11 +53,19 @@ class Point3D(object):
             return self.lat == other.lat and self.lon == other.lon and self.z == other.z
 
 
+
+#ReferenceTrack modella l'intent del pilota. Un oggetto di questo tipo viene istanziato ed poi
+#passato ad una track id. IMPORTANTE: due track che seguono lo stesso intent (a livello di punti), non condividono
+#lo stesso oggetto ReferenceTrack anche se quei punti sono uguali. Questo vuol dire che ogni volo conserva la sua copia personale della
+#reference track. questo vuol dire anche che l'oggetto che contiene i pesi, contiene tutte le track reference per ogni volo
 class ReferenceTrack(object):
 
         #pointList e' una list di Point3D       
-        def __init__(self, pointList):
+        def __init__(self, pointList, flight_id=None):
                 self.line = pointList
+                self.id = None
+                self.w = -1
+                self.flight_id = flight_id
 
 
         def getDirectionsList(self):
@@ -67,6 +76,9 @@ class ReferenceTrack(object):
                 return "Line of %d points form %s to %s" % (len(self.line), self.line[0], self.line[-1])
 
         def __eq__(self,other):
+            if other == None or other.__class__.__name__ != 'ReferenceTrack':
+                return False
+
             otherline = other.getLine()
             if len(self.line) != len(otherline):
                 return False

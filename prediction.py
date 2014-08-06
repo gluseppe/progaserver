@@ -11,20 +11,38 @@ from cherrypy.process.plugins import Monitor
 from cherrypy import log
 
 from traffic import Traffic
+import progaconstants
+from predictor import Predictor
 
 
-#this was just to test the second commit on git
+"""Questa classe fa gestisce le richieste verso il ramo di predizione
+
+"""
 class PredictionEngine(plugins.Monitor):
 	exposed = True
 
 	def __init__(self, bus, sleeping_time, traffic):
 		plugins.Monitor.__init__(self, bus, self.startPredictionEngine, sleeping_time)
+		self.bus.subscribe(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,self.trafficUpdated)
+		self.bus.subscribe(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeightsComputed)
 		self.sleeping_time = sleeping_time
 		self.traffic = traffic
+		self.predictor = None
 
 	def startPredictionEngine(self):
 		cherrypy.log("asking for traffic")
 		currentState = self.traffic.getTraffic()
+
+
+	def initialWeightsComputed(self, initialWeights):
+		#create Predictor Object
+		self.predictor = Predictor(self.traffic,initialWeights)
+
+
+	def trafficUpdated(self, elapsedSeconds):
+		self.predictor.trafficUpdated(elapsedSeconds)
+
+
 
 
 	@cherrypy.tools.accept(media='text/plain')

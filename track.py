@@ -44,7 +44,8 @@ class Track(object):
 	def getCurrentState(self):
 		if self.pointer != None:
 			ret = self.path[self.pointer]
-			ret['track_id'] = self.track_id
+			ret['flight_id'] = self.track_id
+			ret['started'] = self.started
 			return ret
 		return None
 
@@ -65,7 +66,7 @@ class Track(object):
 
 
 	#intent must be a ReferenceTrack object
-	def setDeclaredIntent(self, intent):
+	def setDeclaredFlightIntent(self, intent):
 		self.declaredIntent = intent
 
 	def getDeclaredIntent(self):

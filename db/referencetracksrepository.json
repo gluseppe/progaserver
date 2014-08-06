@@ -1,11 +1,7 @@
 {
-  "scenario_name": "test scenario",
-  "flights": [
+
+  "reference_tracks": [
     {
-      "path": "flight1.txt",
-      "start": 10,
-      "flight_id": "AZ12345",
-      "flight_intent": {
         "reference_track_id" : "00001",
         "turning_points": [
           {
@@ -29,13 +25,9 @@
             "h": 300
           }
         ]
-      }
     },
-    {
-      "path": "flight2.txt",
-      "start": 10,
-      "flight_id": "GIUSE345",
-      "flight_intent": {
+
+   {
         "reference_track_id" : "00002",
         "turning_points": [
           {
@@ -59,26 +51,10 @@
             "h": 300
           }
         ]
-      }
     },
-  {
-      "path": "flight3.txt",
-      "start": 0,
-      "flight_id": "DAMIANO345",
-      "flight_intent": null
-    },
-  {
-      "path": "flight4.txt",
-      "start": 0,
-      "flight_id": "CARLO3215",
-      "flight_intent": null
-    },
-  {
-      "path": "flight5.txt",
-      "start": 10,
-      "flight_id": "FILIPPONE9483",
-      "flight_intent": {
-        "reference_track_id" : "00001",
+
+   {
+        "reference_track_id" : "00003",
         "turning_points": [
           {
             "lat": 40.2,
@@ -101,13 +77,6 @@
             "h": 300
           }
         ]
-      }
-    },
-    {
-      "path": "flight6.txt",
-      "start": 20,
-      "flight_id": "RYR4539",
-      "flight_intent": null
     }
   ]
 }

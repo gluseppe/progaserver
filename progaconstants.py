@@ -13,6 +13,7 @@ PREDICTION_SLEEP_SECONDS = 2
 
 MYSTATE_CHANNEL_NAME = 'my-state-updated'
 UPDATED_TRAFFIC_CHANNEL_NAME = 'traffic-updated'
+INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME = 'initial-weights-computed'
 ITEM_MY_STATE = 'myState'
 ITEM_TRAFFIC = 'traffic'
 

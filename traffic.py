@@ -10,8 +10,10 @@ from cherrypy.process import wspbus, plugins
 from cherrypy.process.plugins import Monitor
 from cherrypy import log
 from scenarioloader import ScenarioLoader
+from referencetrackshandler import ReferenceTracksHandler
 from scenario import Scenario
 import simplejson as json
+from predictor import Predictor
 
 import progaconstants
 
@@ -36,6 +38,7 @@ class Traffic(plugins.Monitor):
 		self.justStarted = True
 		self.startedTracks = None
 		self.finishedTracks = None
+		self.referenceTracksHandler = ReferenceTracksHandler()
 
 
 
@@ -54,9 +57,9 @@ class Traffic(plugins.Monitor):
 			if self.justStarted:
 				#se abbiamo appena iniziato, passati 0 secondi, faccio partire tutte le tracce senza delay
 				for track in self.tracks:
-					cherrypy.log("i'm track " + track.getTrackId() + " and my start is " + str(track.getStartTime()))
+					#cherrypy.log("i'm track " + track.getTrackId() + " and my start is " + str(track.getStartTime()))
 					if track.getStartTime() == 0 and track.hasStarted()==False:
-						cherrypy.log("starting track " + track.getTrackId())
+						#cherrypy.log("starting track " + track.getTrackId())
 						track.startTrack()
 						self.startedTracks.append(track)
 	
@@ -65,16 +68,18 @@ class Traffic(plugins.Monitor):
 			else:
 				for track in self.tracks:
 					if track.getStartTime() == int_elapsed_seconds and track.hasStarted()==False:
-						cherrypy.log("starting track " + track.getTrackId())
+						#cherrypy.log("starting track " + track.getTrackId())
 						track.startTrack()
 						self.startedTracks.append(track)
 
-		cherrypy.log('\nsono passati ' + str(elapsed_seconds) + 'secondi')
+		#cherrypy.log('\nsono passati ' + str(elapsed_seconds) + 'secondi')
 
 
 		for startedTrack in self.startedTracks[:]:
 			if self.makeStep(startedTrack) == True:
 				self.startedTracks.remove(startedTrack)
+
+		cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
 
 
 	def makeStep(self, track):
@@ -117,26 +122,60 @@ class Traffic(plugins.Monitor):
 		return ''
 
 
-	#probabilmente sto usando una logica troppo intricata.
-	#l obiettivo e' portare fuori un dictionary fatto cosi'
-	# 'track_id' : (reference_track1, w1), (reference_track2, w2) eccetera
-	# credo che anche la struttura dati sia sbagliata perche' non mi sembra che contenga bene
-	# le informazioni che ci servono. bisogna ripensare ad una logica per identificare le referencetrack
+	
+
+
+	"""
+	Computes the initial weights of the reference tracks for each flight in the scenario.
+	Returns a dictionary made like the followinf
+	['AZA1234' : (ReferenceTrack1, ReferenceTrack2, ReferenceTrack3 ... ReferenceTrackN) ]
+	Each ReferenceTrack item in the value list is a ReferenceTrack object. You can access the computer weight by
+	the ReferenceTrack.w field. 
+	"""
 	def computeInitialWeightsForReferenceTracks(self):
 		weights = {}
-		n_tracks_in_universe = 10
-		storedReferenceTracks = []
 		for track in self.tracks:
-			ref_track = track.getDeclaredFlightIntent()
-			if ref_track != None:
-				all_reference_tracks = self.mergeReferenceTrackSets(storedReferenceTracks, ref_track)
-				delta = 1 - progaconstants.DECLARED_INTENT_PROBABILITY
-				uniform = delta / (n_tracks_in_universe-1)
-				for reference_track in all_reference_tracks:
-					weights[track.track_id] = ref_track_list
 
+			if track.declaredIntent == None:
 
+				#cherrypy.log("computing weights for track:" + track.track_id)
+				#returns a list of referencetrack objects without any weight but already associated with the given id
+				all_intents = self.referenceTracksHandler.getAllIntents(track.track_id)
+				wt = []
+				for intent in all_intents:
+					intent.w = 1.0/len(all_intents)
+					wt.append(intent)
+				weights[track.track_id] = wt
+			else:
 
+				declared_intent = track.declaredIntent
+				declared_intent.w = progaconstants.DECLARED_INTENT_PROBABILITY
+				#cherrypy.log("computing weights for track:" + track.track_id)
+				if declared_intent.id == None:
+					#cherrypy.log("computing weights for track:" + track.track_id)
+					all_intents = self.referenceTracksHandler.getAllIntents(track.track_id)
+					wt = []
+					wt.append(declared_intent)
+					residual = 1.0 - progaconstants.DECLARED_INTENT_PROBABILITY
+					for intent in all_intents:
+						intent.w = residual/len(all_intents)
+						wt.append(intent)
+				 	weights[track.track_id] = wt
+
+				else:
+					cherrypy.log("computing weights for track:" + track.track_id)
+					all_intents = self.referenceTracksHandler.getAllIntents(track.track_id)
+					wt = []
+					wt.append(declared_intent)
+					residual = 1.0 - progaconstants.DECLARED_INTENT_PROBABILITY
+					for intent in all_intents:
+						if intent.id != declared_intent.id:
+							intent.w = residual/(len(all_intents)-1)
+							wt.append(intent)
+
+					weights[track.track_id] = wt
+
+		return weights
 
 
 	def getJSONTraffic(self):
@@ -169,10 +208,24 @@ class Traffic(plugins.Monitor):
 		if command == 'loadscenario':
 			self.scenario = self.scenarioloader.loadScenario(scenario_name)
 			self.tracks = self.scenario.getTracks()
+			self.initialWeights = self.computeInitialWeightsForReferenceTracks()
+			cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
+			
+
+
+
+
+			for flight_id, r_tracks in self.initialWeights.items():
+				cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
+				for t in r_tracks:
+					cherrypy.log("ref_track:"+t.id+" w:"+str(t.w))
+
+
+
 			self.startedTracks = []
 			self.finishedTracks = []
-			for track in self.tracks:
-				cherrypy.log("I'm " + track.getTrackId() + " and i'll start at " + str(track.getStartTime()))
+			#for track in self.tracks:
+				#cherrypy.log("I'm " + track.getTrackId() + " and i'll start at " + str(track.getStartTime()))
 
 
 
