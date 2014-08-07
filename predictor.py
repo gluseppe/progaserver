@@ -33,12 +33,13 @@ class Predictor(object):
 		self.god = traffic
 		self.weights = initialWeights
 		self.lastSeenTraffic = None
+		self.t0 = -1.0
 
 
 
 
-	def simulationStarted(self):
-		pass
+	def simulationStarted(self, t0):
+		self.t0 = t0
 
 	def simulationFinished(self):
 		pass

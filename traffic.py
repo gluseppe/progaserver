@@ -31,7 +31,7 @@ class Traffic(plugins.Monitor):
 		plugins.Monitor.__init__(self, bus, self.startSimulation, sleeping_time)
 		self.sleeping_time = sleeping_time
 		self.myState = None
-		self.scenarioloader = ScenarioLoader(progaconstants.SCENARIOS_FOLDER)
+		self.scenarioloader = None
 		self.scenario = None
 		self.t0 = None
 		self.tracks = None
@@ -39,6 +39,7 @@ class Traffic(plugins.Monitor):
 		self.startedTracks = None
 		self.finishedTracks = None
 		self.referenceTracksHandler = ReferenceTracksHandler()
+		self.simulationStarted = False
 
 
 
@@ -49,6 +50,10 @@ class Traffic(plugins.Monitor):
 
 		if len(self.finishedTracks) == len(self.tracks):
 			cherrypy.log("simulation is over bitch")
+			cherrypy.engine.publish(progaconstants.SIMULATION_FINISHED_CHANNEL_NAME)
+			self.unsubscribe()
+			self.stop()
+
 
 		
 		if len(self.startedTracks) != len(self.tracks):
@@ -84,7 +89,7 @@ class Traffic(plugins.Monitor):
 
 	def makeStep(self, track):
 		cherrypy.log("making step of track: " + track.getTrackId())
-		arrived = not track.next(progaconstants.PLAYER_POINTER_INCREMENT*20)
+		arrived = not track.next(progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
 			self.finishedTracks.append(track)
 		return arrived
@@ -184,7 +189,7 @@ class Traffic(plugins.Monitor):
 
 	def POST(self,command=None,scenario_name=None):
 		if command == 'start':
-			if (self.scenarioloader.isAnythingLoaded()):
+			if self.scenarioloader is not None:
 				cherrypy.log("\nStarting simulation")
 				#si iscrive 
 				self.subscribe()
@@ -197,35 +202,40 @@ class Traffic(plugins.Monitor):
 				
 
 				self.start()
+				cherrypy.engine.publish(progaconstants.SIMULATION_STARTED_CHANNEL_NAME, self.t0)
+				self.simulationStarted = True
 			else:
 				cherrypy.log("\nNo scenario loaded. Can't start simulation")
 				raise cherrypy.HTTPError(400,"Can't start simulation: no scenario was loaded. Use loadscenario as command and provide a scenario folder")
 
 		if command == 'stop':
+			cherrypy.engine.publish(progaconstants.SIMULATION_STOPPED_CHANNEL_NAME)
 			self.unsubscribe()
 			self.stop()
+			self.simulationStarted = False
 
 		if command == 'loadscenario':
-			self.scenario = self.scenarioloader.loadScenario(scenario_name)
-			self.tracks = self.scenario.getTracks()
-			self.initialWeights = self.computeInitialWeightsForReferenceTracks()
-			cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
-			
+			if self.simulationStarted:
+				cherrypy.log("Can't load scenario while simulation is running. Stop simulation first and then load new scenario")
 
+			else:
 
-
-
-			for flight_id, r_tracks in self.initialWeights.items():
-				cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
-				for t in r_tracks:
-					cherrypy.log("ref_track:"+t.id+" w:"+str(t.w))
-
-
-
-			self.startedTracks = []
-			self.finishedTracks = []
-			#for track in self.tracks:
-				#cherrypy.log("I'm " + track.getTrackId() + " and i'll start at " + str(track.getStartTime()))
+				self.scenarioloader = ScenarioLoader(progaconstants.SCENARIOS_FOLDER)
+				self.scenario = self.scenarioloader.loadScenario(scenario_name)
+				self.tracks = self.scenario.getTracks()
+				self.initialWeights = self.computeInitialWeightsForReferenceTracks()
+				cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
+					
+				for flight_id, r_tracks in self.initialWeights.items():
+					cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
+					for t in r_tracks:
+						cherrypy.log("ref_track:"+t.id+" w:"+str(t.w))
+	
+	
+				self.startedTracks = []
+				self.finishedTracks = []
+				#for track in self.tracks:
+					#cherrypy.log("I'm " + track.getTrackId() + " and i'll start at " + str(track.getStartTime()))
 
 
 
