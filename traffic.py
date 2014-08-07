@@ -16,6 +16,7 @@ import simplejson as json
 from predictor import Predictor
 
 import progaconstants
+import requests
 
 """
 The Traffic object is istanciated by proga and it handles the dynamic evolution of the aircraft
@@ -42,6 +43,13 @@ class Traffic(plugins.Monitor):
 		self.simulationStarted = False
 
 
+	def sendFinishedCommand(self):
+		s = requests.Session()
+		r = s.post('http://127.0.0.1:8080/traffic', params={'command':'stop'})
+
+
+
+
 
 	def startSimulation(self):
 		elapsed_seconds = time.time() - self.t0
@@ -49,42 +57,40 @@ class Traffic(plugins.Monitor):
 		cherrypy.log("elapsed seconds:"+str(int_elapsed_seconds))
 
 		if len(self.finishedTracks) == len(self.tracks):
-			cherrypy.log("simulation is over bitch")
-			cherrypy.engine.publish(progaconstants.SIMULATION_FINISHED_CHANNEL_NAME)
-			self.unsubscribe()
-			self.stop()
-
+			#cherrypy.engine.publish(progaconstants.SIMULATION_FINISHED_CHANNEL_NAME)
+			self.sendFinishedCommand()
+		else:
 
 		
-		if len(self.startedTracks) != len(self.tracks):
+			if len(self.startedTracks) != len(self.tracks):
+		
+				#in questo punto ci andranno gli aerei che si muovono
+				if self.justStarted:
+					#se abbiamo appena iniziato, passati 0 secondi, faccio partire tutte le tracce senza delay
+					for track in self.tracks:
+						#cherrypy.log("i'm track " + track.getTrackId() + " and my start is " + str(track.getStartTime()))
+						if track.getStartTime() == 0 and track.hasStarted()==False:
+							#cherrypy.log("starting track " + track.getTrackId())
+							track.startTrack()
+							self.startedTracks.append(track)
+		
+					self.justStarted = False
+		
+				else:
+					for track in self.tracks:
+						if track.getStartTime() == int_elapsed_seconds and track.hasStarted()==False:
+							#cherrypy.log("starting track " + track.getTrackId())
+							track.startTrack()
+							self.startedTracks.append(track)
 	
-			#in questo punto ci andranno gli aerei che si muovono
-			if self.justStarted:
-				#se abbiamo appena iniziato, passati 0 secondi, faccio partire tutte le tracce senza delay
-				for track in self.tracks:
-					#cherrypy.log("i'm track " + track.getTrackId() + " and my start is " + str(track.getStartTime()))
-					if track.getStartTime() == 0 and track.hasStarted()==False:
-						#cherrypy.log("starting track " + track.getTrackId())
-						track.startTrack()
-						self.startedTracks.append(track)
+			#cherrypy.log('\nsono passati ' + str(elapsed_seconds) + 'secondi')
 	
-				self.justStarted = False
 	
-			else:
-				for track in self.tracks:
-					if track.getStartTime() == int_elapsed_seconds and track.hasStarted()==False:
-						#cherrypy.log("starting track " + track.getTrackId())
-						track.startTrack()
-						self.startedTracks.append(track)
-
-		#cherrypy.log('\nsono passati ' + str(elapsed_seconds) + 'secondi')
-
-
-		for startedTrack in self.startedTracks[:]:
-			if self.makeStep(startedTrack) == True:
-				self.startedTracks.remove(startedTrack)
-
-		cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
+			for startedTrack in self.startedTracks[:]:
+				if self.makeStep(startedTrack) == True:
+					self.startedTracks.remove(startedTrack)
+	
+			cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
 
 
 	def makeStep(self, track):
@@ -209,6 +215,7 @@ class Traffic(plugins.Monitor):
 				raise cherrypy.HTTPError(400,"Can't start simulation: no scenario was loaded. Use loadscenario as command and provide a scenario folder")
 
 		if command == 'stop':
+			cherrypy.log("simulation is finished")
 			cherrypy.engine.publish(progaconstants.SIMULATION_STOPPED_CHANNEL_NAME)
 			self.unsubscribe()
 			self.stop()
