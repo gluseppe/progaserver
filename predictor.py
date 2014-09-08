@@ -20,6 +20,8 @@ class Predictor(object):
 	Al momento il dizionario ha le seguenti chiavi
 	{'flight_id':'AZA12345', 'started':True/False 'lat':42.0, 'lon':12.2, 'h':300, 'vx':230.3, 'vy':12.4, 'vz':3.4, 'heading':45.0}
 
+
+
 	in teoria dovresti richiamare getTraffic() ogni volta che decidi di aggiornare i pesi. Il metodo rende sempre un'info
 	aggiornata all'ultimo passo di simulazione. Non puoi avere dati piu freschi. Rende solo le tracce che sono in volo in quel momento
 	Quelle arrivate o non ancora partite non compaiono qui, infatti del campo started non te ne fai nulla, perche' sara' sempre
@@ -28,12 +30,20 @@ class Predictor(object):
 
 	se chiami altri metodi potrebbe crashare e in seguito potresti subire un'invasione di locuste
 
+
+	initialWeights is a dictionary made like the followinf
+	['AZA1234' : (ReferenceTrack1, ReferenceTrack2, ReferenceTrack3 ... ReferenceTrackN) ]
+	Each ReferenceTrack item in the value list is a ReferenceTrack object. You can access the computed weight by
+	the ReferenceTrack.w field. 
+
 	"""
 	def __init__(self, traffic, initialWeights):
 		self.god = traffic
 		self.weights = initialWeights
 		self.lastSeenTraffic = None
 		self.t0 = -1.0
+
+		cherrypy.log("ciao sono carlo")
 
 
 

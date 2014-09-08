@@ -140,7 +140,7 @@ class Traffic(plugins.Monitor):
 	Computes the initial weights of the reference tracks for each flight in the scenario.
 	Returns a dictionary made like the followinf
 	['AZA1234' : (ReferenceTrack1, ReferenceTrack2, ReferenceTrack3 ... ReferenceTrackN) ]
-	Each ReferenceTrack item in the value list is a ReferenceTrack object. You can access the computer weight by
+	Each ReferenceTrack item in the value list is a ReferenceTrack object. You can access the computed weight by
 	the ReferenceTrack.w field. 
 	"""
 	def computeInitialWeightsForReferenceTracks(self):

@@ -48,6 +48,7 @@ class PredictionEngine(plugins.Monitor):
 
 	def initialWeightsComputed(self, initialWeights):
 		#create Predictor Object
+		cherrypy.log("initial weights computed")
 		self.predictor = Predictor(self.traffic,initialWeights)
 
 
