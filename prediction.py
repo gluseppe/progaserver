@@ -53,6 +53,7 @@ class PredictionEngine(plugins.Monitor):
 
 
 	def trafficUpdated(self, elapsedSeconds):
+		cherrypy.log("In Prediction.py *** TrafficUpdated")
 		self.predictor.trafficUpdated(elapsedSeconds)
 
 	def simulationFinished(self):
