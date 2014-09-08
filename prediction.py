@@ -14,8 +14,8 @@ from traffic import Traffic
 import progaconstants
 from predictor import Predictor
 
-
-"""Questa classe gestisce le richieste verso il ramo di predizione
+"""
+Questa classe gestisce le richieste verso il ramo di predizione
 
 """
 class PredictionEngine(plugins.Monitor):
@@ -49,11 +49,13 @@ class PredictionEngine(plugins.Monitor):
 	def initialWeightsComputed(self, initialWeights):
 		#create Predictor Object
 		cherrypy.log("initial weights computed")
+		#mylogger.debug("initial weights computed")
 		self.predictor = Predictor(self.traffic,initialWeights)
 
 
 	def trafficUpdated(self, elapsedSeconds):
 		cherrypy.log("In Prediction.py *** TrafficUpdated")
+		#mylogger.debug("In Prediction.py *** TrafficUpdated")
 		self.predictor.trafficUpdated(elapsedSeconds)
 
 	def simulationFinished(self):

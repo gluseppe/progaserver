@@ -1,0 +1,32 @@
+[08/Sep/2014:16:50:03]  Starting ProGA server
+[08/Sep/2014:16:50:03] DEBUG This is ProGA logger. 
+[08/Sep/2014:16:50:03] ENGINE Bus STARTING
+[08/Sep/2014:16:50:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[08/Sep/2014:16:50:03] ENGINE Started monitor thread 'Autoreloader'.
+[08/Sep/2014:16:50:03] ENGINE Serving on http://0.0.0.0:8080
+[08/Sep/2014:16:50:03] ENGINE Bus STARTED
+[08/Sep/2014:16:50:04] ENGINE Keyboard Interrupt: shutting down bus
+[08/Sep/2014:16:50:04] ENGINE Bus STOPPING
+[08/Sep/2014:16:50:04] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 8080)) shut down
+[08/Sep/2014:16:50:04] ENGINE Stopped thread '_TimeoutMonitor'.
+[08/Sep/2014:16:50:04] ENGINE Stopped thread 'Autoreloader'.
+[08/Sep/2014:16:50:04] ENGINE Bus STOPPED
+[08/Sep/2014:16:50:04] ENGINE Bus EXITING
+[08/Sep/2014:16:50:04] ENGINE Bus EXITED
+[08/Sep/2014:16:50:04] ENGINE Waiting for child threads to terminate...
+[08/Sep/2014:16:51:24]  Starting ProGA server
+[08/Sep/2014:16:51:24] DEBUG This is ProGA logger. 
+[08/Sep/2014:16:51:24] ENGINE Bus STARTING
+[08/Sep/2014:16:51:24] ENGINE Started monitor thread '_TimeoutMonitor'.
+[08/Sep/2014:16:51:24] ENGINE Started monitor thread 'Autoreloader'.
+[08/Sep/2014:16:51:24] ENGINE Serving on http://0.0.0.0:8080
+[08/Sep/2014:16:51:24] ENGINE Bus STARTED
+[08/Sep/2014:16:51:25] ENGINE Keyboard Interrupt: shutting down bus
+[08/Sep/2014:16:51:25] ENGINE Bus STOPPING
+[08/Sep/2014:16:51:25] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 8080)) shut down
+[08/Sep/2014:16:51:25] ENGINE Stopped thread '_TimeoutMonitor'.
+[08/Sep/2014:16:51:25] ENGINE Stopped thread 'Autoreloader'.
+[08/Sep/2014:16:51:25] ENGINE Bus STOPPED
+[08/Sep/2014:16:51:25] ENGINE Bus EXITING
+[08/Sep/2014:16:51:25] ENGINE Bus EXITED
+[08/Sep/2014:16:51:25] ENGINE Waiting for child threads to terminate...
