@@ -1,6 +1,7 @@
-from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK
+from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES
 import cherrypy
 import numpy as np
+import numpy.random as npr
 
 
 """
@@ -35,6 +36,7 @@ class Predictor(object):
                         self.weights[aircraft_id] = np.array([refTrck.w for refTrck in L])
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
+                npr.seed()
 
         def simulationStarted(self, t0):
                 self.t0 = t0
@@ -59,18 +61,17 @@ class Predictor(object):
         def updateWeights(self):
                 ## pass
                 for aircraftDict in self.lastSeenTraffic:
-                    a_id = aircraftDict['flight_id']
-                    ## p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
-                    p = np.array([aircraftDict['lat'], aircraftDict['lon'], aircraftDict['h']])
+                    aID = aircraftDict['flight_id']
+                    p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                    a, d = self.angleAndDist(a_id, p, v)
+                    a, d = self.angleAndDist(aID, p, v)
                     nw = self.newWeights(a, d) # Gibbsian weights
                     try:
-                        self.weights[a_id] *= nw # Bayes' rule
+                        self.weights[aID] *= nw # Bayes' rule
                     except KeyError:
                         cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
                         return False
-                    self.weights[a_id] = self.weights[a_id]/sum(self.weights[a_id]) # Normalization
+                    self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
                     chk_str = "Check weights "+ str(self.weights["DAMIANO345"])
                     cherrypy.log(chk_str, context='DEBUG')
                     return True
@@ -80,17 +81,17 @@ class Predictor(object):
                 nw = np.exp(-BETA_POS*dist -BETA_TRK*alpha)
                 return nw/sum(nw)
 
-        def angleAndDist(self, a_id, p, v):
+        def angleAndDist(self, aID, p, v):
                 """
                 To be adjusted
                 """
                 # Let L be the vector which contains (for each flight intent) a reference to the leg that the aircraft is following
                 # compute d, the vector of distances of p from each leg in L
                 # compute a, the vector of angles between v and the leg in L
-                return (np.ones(len(self.weights[a_id])), np.ones(len(self.weights[a_id])))
+                return (np.ones(len(self.weights[aID])), np.ones(len(self.weights[aID])))
                 
 
-        def predictionRequested(self, flight_IDs, timeHorizon, deltaT):
+        def predictionRequested(self, flight_IDs, deltaT, nsteps):
                 """
                 Questa e' la funzione che chiamo quando ho bisogno di una predizione. Mentre dalle altre funzioni non mi aspetto
                 nulla come valore di ritorno, da questa mi aspetto la famosa matrice. Ho messo tutti gli input che mi ritrovavo,
@@ -99,4 +100,32 @@ class Predictor(object):
                 #prendi l'ultimo stato del flight_id richiesto da self.lastSeenTraffic
                 #manda le palline secondo i tuoi ultimi pesi
                 #etc
-                pass
+                self.lastSeenTraffic = self.god.getTraffic()
+                self.updateWeights()
+                pred = {}
+                for aircraftDict in self.lastSeenTraffic:
+                    aID = aircraftDict['flight_id']
+                    if aID in flight_IDs:
+                        p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
+                        v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
+                        pred[aID] = binParticles(getParticles(p, v, deltaT, nsteps), deltaT, nbins=10)
+                return pred
+
+        def binParticles(self, particlesList, dt, nbins=100):
+            Hlist = {}
+            counter = 1
+            for L in particleList:
+                H, edges = npr.histogramdd(particleList, bins=nbins)
+                Hlist[counter*dt] = (H/np.sum(H), edges)
+                counter += 1
+            return Hlist
+
+        def getParticles(self, currP, currV, dt, nsteps):
+            L = []
+            for j in range(nsteps):
+                t = dt*j
+                pp = np.empty((NUMPARTICLES, 3))
+                for i in range(NUMPARTICLES):
+                    pp[i] = currP + currV*t + npr.multivariate_normal(npr.zeros(3), np.identity(3))
+                L.append(pp)
+            return L
