@@ -108,7 +108,7 @@ class Predictor(object):
                     if aID in flight_IDs:
                         p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                         v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                        pred[aID] = binParticles(getParticles(p, v, deltaT, nsteps), deltaT, nbins=10)
+                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT, nbins=10)
                 return pred
 
         def binParticles(self, particlesList, dt, nbins=100):

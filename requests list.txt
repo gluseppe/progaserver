@@ -4,6 +4,10 @@ r = s.post('http://127.0.0.1:8080/traffic', params={'command':'loadscenario','sc
 r = s.post('http://127.0.0.1:8080/traffic', params={'command':'start'})
 r = s.post('http://127.0.0.1:8080/traffic', params={'command':'stop'})
 r = s.get('http://127.0.0.1:8080/traffic', params={'item':'myState'})
+
+r = s.get('http://127.0.0.1:8080/prediction', params={‘flight_id’:’DAMIANO345’,’deltaT’:60,’nsteps’:2})
+
+
 r = s.get('http://127.0.0.1:8080/traffic', params={'item':'traffic'})
 r.status_code, r.text
 

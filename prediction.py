@@ -75,8 +75,11 @@ class PredictionEngine(plugins.Monitor):
 
 
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self):
-		pass
+	def GET(self, flight_id, deltaT, nsteps):
+		flight_IDs = [flight_id]
+		d = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps)
+		#scrivi qui codice di test
+		return "prediction"
 	
 	def POST(self,command=''):
 		if command == 'start':
