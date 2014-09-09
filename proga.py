@@ -22,9 +22,7 @@ from cherrypy import log
 class ProGA(object):
 
 	def __init__(self):
-		#mylogger = logging.getLogger('ProGA')
-		cherrypy.log("Starting ProGA server")
-		log.error(msg='This is ProGA logger. ', context='DEBUG')
+		cherrypy.log("Starting ProGA server", context='DEBUG')
 
 	@cherrypy.expose
 	def index(self):
@@ -74,7 +72,7 @@ if __name__ == '__main__':
                             'server.socket_port': progaconstants.LISTEN_PORT,
                             'log.screen': False,
                             'log.access_file': './access.log',
-                            'log.error_file': './error.log'})
+                            'log.error_file': './proga.log'})
         
 	traffic = Traffic(cherrypy.engine,progaconstants.PLAYER_SLEEP_SECONDS)
 	predictionEngine = PredictionEngine(cherrypy.engine,progaconstants.PREDICTION_SLEEP_SECONDS, traffic)

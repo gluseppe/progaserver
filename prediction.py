@@ -40,33 +40,31 @@ class PredictionEngine(plugins.Monitor):
 	In teoria tutte quelle diverse dall'aggiornamento pesi che viene fatto dal Predictor su stimolo della funzione trafficUpdated
 	"""
 	def predictionEngine(self):
-		cherrypy.log("prediction engine running")
+		cherrypy.log("prediction engine running", context='DEBUG')
 		#pass
-		#cherrypy.log("asking for traffic")
+		#cherrypy.log("asking for traffic", context='DEBUG')
 		#currentState = self.traffic.getTraffic()
 
 
 	def initialWeightsComputed(self, initialWeights):
 		#create Predictor Object
-		cherrypy.log("initial weights computed")
-		#mylogger.debug("initial weights computed")
+		cherrypy.log("initial weights computed", context='DEBUG')
 		self.predictor = Predictor(self.traffic,initialWeights)
 
 
 	def trafficUpdated(self, elapsedSeconds):
-		cherrypy.log("In Prediction.py *** TrafficUpdated")
-		#mylogger.debug("In Prediction.py *** TrafficUpdated")
+		cherrypy.log("Updating traffic", context='DEBUG')
 		self.predictor.trafficUpdated(elapsedSeconds)
 
 	def simulationFinished(self):
-		cherrypy.log("I AM PREDICTION ENGINE AND I KNOW SIMULATION IT'S FINISHED")
+		cherrypy.log("I AM PREDICTION ENGINE AND I KNOW SIMULATION IT'S FINISHED", context='DEBUG')
 		self.unsubscribe()
 		self.stop()
 
 	def simulationStarted(self, t0):
 		self.subscribe()
 		self.start()
-		cherrypy.log("SIMULATION ENGINE STARTING")
+		cherrypy.log("SIMULATION ENGINE STARTING", context='DEBUG')
 		self.predictor.simulationStarted(t0)
 
 
@@ -78,7 +76,7 @@ class PredictionEngine(plugins.Monitor):
 	
 	def POST(self,command=''):
 		if command == 'start':
-			cherrypy.log("starting prediction engine")
+			cherrypy.log("starting prediction engine", context='DEBUG')
 			self.subscribe()
 			self.start()
 

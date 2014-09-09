@@ -1,7 +1,6 @@
 from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK
 import cherrypy
 import numpy as np
-import logging
 
 
 """
@@ -36,9 +35,6 @@ class Predictor(object):
                         self.weights[aircraft_id] = np.array([refTrck.w for refTrck in L])
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
-                #mylogger.debug("Ciao, sono la classe Predictor.")
-                ## for aircraft_id, L in self.weights.items():
-                ##         cherrypy.log("%s :: %s" % (aircraft_id, [refTrck.w for refTrck in L]))
 
         def simulationStarted(self, t0):
                 self.t0 = t0
@@ -72,12 +68,11 @@ class Predictor(object):
                     try:
                         self.weights[a_id] *= nw # Bayes' rule
                     except KeyError:
-                        cherrypy.log("KeyError in accessing weights disctionary.")
+                        cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
                         return False
-                        #mylogger.error("KeyError in accessing weights disctionary.")
                     self.weights[a_id] = self.weights[a_id]/sum(self.weights[a_id]) # Normalization
                     chk_str = "Check weights "+ str(self.weights["DAMIANO345"])
-                    #mylogger.debug(chk_str)
+                    cherrypy.log(chk_str, context='DEBUG')
                     return True
                     
 
