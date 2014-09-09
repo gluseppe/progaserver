@@ -1,4 +1,4 @@
-from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES
+from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES, GRIDBINS
 import cherrypy
 import numpy as np
 import numpy.random as npr
@@ -108,14 +108,15 @@ class Predictor(object):
                     if aID in flight_IDs:
                         p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                         v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT, nbins=10)
+                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
+                        cherrypy.log("%s" % (pred.keys()), context="TEST")
                 return pred
 
-        def binParticles(self, particlesList, dt, nbins=100):
+        def binParticles(self, particlesList, dt, gridbins=GRIDBINS):
             Hlist = {}
             counter = 1
-            for L in particleList:
-                H, edges = npr.histogramdd(particleList, bins=nbins)
+            for L in particlesList:
+                H, edges = np.histogramdd(L, bins = gridbins)
                 Hlist[counter*dt] = (H/np.sum(H), edges)
                 counter += 1
             return Hlist
@@ -126,6 +127,6 @@ class Predictor(object):
                 t = dt*j
                 pp = np.empty((NUMPARTICLES, 3))
                 for i in range(NUMPARTICLES):
-                    pp[i] = currP + currV*t + npr.multivariate_normal(npr.zeros(3), np.identity(3))
+                    pp[i] = currP + currV*t + npr.multivariate_normal(np.zeros(3), np.identity(3))
                 L.append(pp)
             return L
