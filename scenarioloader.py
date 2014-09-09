@@ -38,13 +38,13 @@ class ScenarioLoader(object):
 				if cont >= 9 and len(line)>30:
 					parts = line.split()
 					timestamp = parts[0]
-					lat = parts[1]
-					lon = parts[2]
-					altitude = parts[3]
-					heading = parts[6]
-					v_x = parts[8]
-					v_y = parts[9]
-					v_z = parts[10]
+					lat = float(parts[1])
+					lon = float(parts[2])
+					altitude = float(parts[3])
+					heading = float(parts[6])
+					v_x = float(parts[8])
+					v_y = float(parts[9])
+					v_z = float(parts[10])
 					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading)
 
 				cont += 1

@@ -54,7 +54,11 @@ class PredictionEngine(plugins.Monitor):
 
 	def trafficUpdated(self, elapsedSeconds):
 		cherrypy.log("Updating traffic", context='DEBUG')
+		v = self.traffic.getTraffic()
+		for t in v:
+			cherrypy.log("id:"+str(t['flight_id']) + " x:" + str(t['x']) + " y:"+str(t['y']) + " z:"+str(t['z']), context='TRAFFIC')
 		self.predictor.trafficUpdated(elapsedSeconds)
+
 
 	def simulationFinished(self):
 		cherrypy.log("I AM PREDICTION ENGINE AND I KNOW SIMULATION IT'S FINISHED", context='DEBUG')

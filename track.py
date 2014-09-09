@@ -7,6 +7,7 @@ import datetime
 
 
 import progaconstants
+from referencetrack import Point3D
 
 class Track(object):
 
@@ -23,7 +24,10 @@ class Track(object):
 	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading):
 		if len(self.path) == 0:
 			self.pointer = 0
-		self.path.append({'timstamp':timestamp, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
+
+		p3d = Point3D(lon, lat, altitude)
+		xy = p3d.xyFromLonLat(lon, lat)
+		self.path.append({'timstamp':timestamp, 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
 
 	def getPath(self):
 		return self.path
