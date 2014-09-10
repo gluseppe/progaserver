@@ -1,0 +1,14 @@
+{
+  "scenario_name": "scenario_manzato",
+  "flights": [
+    {
+      "path": "flight4.txt",
+      "start": 20,
+      "flight_id": "AZA12345",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    }
+  ]
+}

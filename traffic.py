@@ -123,9 +123,9 @@ class Traffic(plugins.Monitor):
 
 
 	def getTraffic(self):
-		traffic = []
+		traffic = {}
 		for track in self.startedTracks:
-			traffic.append(track.getCurrentState())
+			traffic[track.track_id] = track.getCurrentState()
 
 		return traffic
 
@@ -227,7 +227,7 @@ class Traffic(plugins.Monitor):
 
 			else:
 
-				self.scenarioloader = ScenarioLoader(progaconstants.SCENARIOS_FOLDER)
+				self.scenarioloader = ScenarioLoader(progaconstants.SCENARIOS_FOLDER, self.referenceTracksHandler)
 				self.scenario = self.scenarioloader.loadScenario(scenario_name)
 				self.tracks = self.scenario.getTracks()
 				self.initialWeights = self.computeInitialWeightsForReferenceTracks()

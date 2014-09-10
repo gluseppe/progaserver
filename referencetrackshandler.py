@@ -13,24 +13,23 @@ class ReferenceTracksHandler(object):
 
 
 	def __init__(self):
-		pass
+		allfile = ""
+		complete_path = "./db/referencetrackrepository_manzato.json"
+		with open(complete_path) as referencetracksfile:
+			for line in referencetracksfile:
+				allfile += line
+
+		print allfile
+		
+		self.jsonobj = json.loads(allfile)
 
 
 	"""
 	Provides all the stored intents and assign them a flight_id which is the given one as parameter
 	"""
-	def getAllIntents(self, track_id):
-		allfile = ""
-		complete_path = "./db/referencetracksrepository.json"
-		with open(complete_path) as referencetracksfile:
-			for line in referencetracksfile:
-				allfile += line
-
-		
-		jsonobj = json.loads(allfile)
-		
+	def getAllIntents(self, track_id):		
 		ret = []
-		reference_tracks = jsonobj['reference_tracks']
+		reference_tracks = self.jsonobj['reference_tracks']
 		for rt in reference_tracks:
 			rt_id = rt['reference_track_id']
 			points =  rt['turning_points']
@@ -41,6 +40,20 @@ class ReferenceTracksHandler(object):
 			r = ReferenceTrack(p_list,track_id)
 			r.id = rt_id
 			ret.append(r)
+
+		return ret
+
+	def getReferenceTrack(self, referenceTrackID):
+
+		reference_tracks = self.jsonobj['reference_tracks']
+		ret = None
+		flight_intent_point_list = []
+		for rt in reference_tracks:
+			if rt['reference_track_id']==referenceTrackID:
+				turning_points = rt['turning_points']
+				for item in turning_points:
+					flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
+				ret = ReferenceTrack(flight_intent_point_list)
 
 		return ret
 		

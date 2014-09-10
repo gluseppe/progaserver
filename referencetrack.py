@@ -65,7 +65,14 @@ class ReferenceTrack(object):
                 self.line = pointList
                 self.id = None
                 self.w = -1
-                self.flight_id = flight_id
+                self._flight_id = flight_id
+
+        @property
+        def flight_id(self):
+            return self._flight_id
+        @flight_id.setter
+        def flight_id(self, flightID):
+            self._flight_id = flightID
 
 
         def getDirectionsList(self):

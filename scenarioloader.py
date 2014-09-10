@@ -11,19 +11,21 @@ import progaconstants
 from scenario import Scenario
 from track import Track
 from referencetrack import ReferenceTrack, Point3D
+import referencetrackshandler
 
 
 
 
 class ScenarioLoader(object):
 
-	def __init__(self, scenariosfolder):
+	def __init__(self, scenariosfolder, referenceTrackHandler):
 		self.scenariosfolder = scenariosfolder
 		self.tracks = []
 		self.flight_ids = []
 		self.flight_intents = {}
 		self.scenarioLoaded = False
 		self.scenario = None
+		self.referenceTrackHandler = referenceTrackHandler
 
 	#it requires a track file recorded from flight simulator
 	#see flight1.txt for example
@@ -43,8 +45,8 @@ class ScenarioLoader(object):
 					altitude = float(parts[3])
 					heading = float(parts[6])
 					v_x = float(parts[8])
-					v_y = float(parts[9])
-					v_z = float(parts[10])
+					v_y = float(parts[10])
+					v_z = float(parts[9])
 					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading)
 
 				cont += 1
@@ -78,21 +80,42 @@ class ScenarioLoader(object):
 			flight_id = flights['flight_id']
 			#cherrypy.log("loading flight id:"+flight_id)
 			flight_start = flights['start']
+
 			raw_flight_intent = flights['flight_intent']
 			flight_intent_point_list = None
 			flight_intent = None
+			
+			#se l intent e' stato specificato, allora abbiamo altri due casi
 			if raw_flight_intent != None:
-				flight_intent_point_list = []
 				reference_track_id = raw_flight_intent['reference_track_id']
-				#cherrypy.log("ref track id:"+reference_track_id)
-				turning_points = raw_flight_intent['turning_points']
-				for item in turning_points:
-					flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
-				flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
-				flight_intent.id = reference_track_id
+				
+				#caso in cui e' stato specificato un intent relativo ad una referencetrack che abbiamo gia' nel db
+				#allora recuper loe info della referencetrack tramite il referencetrackhandler
+				#e aggiungo la traccia
+				if reference_track_id != None:
+					cherrypy.log("reference_trackid: "+reference_track_id, context="DEBUG")
+					rt = self.referenceTrackHandler.getReferenceTrack(reference_track_id)
+					rt.id = reference_track_id
+					rt.flight_id = flight_id
+					self.addTrack(flight_file_name,flight_id,flight_start,rt)
 
-			#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
-			self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
+				#caso in cui e' stato specificato un intent ma questo non era nel nostro db, quindi lo troviamo sottoforma 
+				#di turning points. in realta' questo caso e' da migliorare
+				else:
+					flight_intent_point_list = []
+					#cherrypy.log("ref track id:"+reference_track_id)
+					turning_points = raw_flight_intent['turning_points']
+					for item in turning_points:
+						flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
+				
+
+					flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
+					flight_intent.id = reference_track_id
+					#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
+					self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
+
+			
+			
 
 		self.scenarioLoaded = True
 		scenario = Scenario(self.tracks)

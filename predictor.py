@@ -60,6 +60,7 @@ class Predictor(object):
 
         def updateWeights(self):
                 ## pass
+                return True
                 for aircraftDict in self.lastSeenTraffic:
                     aID = aircraftDict['flight_id']
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
@@ -72,7 +73,7 @@ class Predictor(object):
                         cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
                         return False
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
-                    chk_str = "Check weights "+ str(self.weights["DAMIANO345"])
+                    chk_str = "Check weights "+ str(self.weights["AZA12345"])
                     cherrypy.log(chk_str, context='DEBUG')
                     return True
                     
