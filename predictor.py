@@ -61,8 +61,7 @@ class Predictor(object):
         def updateWeights(self):
                 ## pass
                 return True
-                for aircraftDict in self.lastSeenTraffic:
-                    aID = aircraftDict['flight_id']
+                for aID, aircraftDict in self.lastSeenTraffic.values():
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     a, d = self.angleAndDist(aID, p, v)
@@ -104,13 +103,12 @@ class Predictor(object):
                 self.lastSeenTraffic = self.god.getTraffic()
                 self.updateWeights()
                 pred = {}
-                for aircraftDict in self.lastSeenTraffic:
-                    aID = aircraftDict['flight_id']
-                    if aID in flight_IDs:
-                        p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
-                        v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
-                        cherrypy.log("%s" % (pred.keys()), context="TEST")
+                for aID in flight_IDs:
+                    aircraftDict = self.lastSeenTraffic[aID]
+                    p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
+                    v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
+                    pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
+                    cherrypy.log("%s" % (pred.keys()), context="TEST")
                 return pred
 
         def binParticles(self, particlesList, dt, gridbins=GRIDBINS):
