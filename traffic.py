@@ -241,6 +241,7 @@ class Traffic(plugins.Monitor):
 	
 				self.startedTracks = []
 				self.finishedTracks = []
+				cherrypy.engine.publish(progaconstants.SCENARIO_LOADED_CHANNEL_NAME)
 				#for track in self.tracks:
 					#cherrypy.log("I'm " + track.getTrackId() + " and i'll start at " + str(track.getStartTime()))
 

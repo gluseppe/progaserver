@@ -20,6 +20,8 @@ INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME = 'initial-weights-computed'
 SIMULATION_FINISHED_CHANNEL_NAME = 'simulation-finished'
 SIMULATION_STOPPED_CHANNEL_NAME = 'simulation-stopped'
 SIMULATION_STARTED_CHANNEL_NAME = 'simulation-started'
+PROGA_IS_READY_CHANNEL_NAME = 'proga-ready'
+SCENARIO_LOADED_CHANNEL_NAME = 'scenario-loaded'
 
 ITEM_MY_STATE = 'myState'
 ITEM_TRAFFIC = 'traffic'

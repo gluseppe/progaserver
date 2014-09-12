@@ -11,13 +11,14 @@ from cherrypy.process.plugins import Monitor
 from cherrypy import log
 
 import progaconstants
+from automator import Automator
 
 from traffic import Traffic
 from prediction import PredictionEngine
 from listener import FSListener
 
 from cherrypy import log
-
+import sys
 
 class ProGA(object):
 
@@ -31,6 +32,12 @@ class ProGA(object):
 
 
 if __name__ == '__main__':
+
+	args = sys.argv
+
+
+
+
 	proga_conf = {
 		'/': {
 			'tools.sessions.on': True,
@@ -67,6 +74,15 @@ if __name__ == '__main__':
 			'tools.response_headers.headers' : [('Content-Type','text/plain')]
 		}
 	}
+
+	auto_conf = {
+		'/': {
+			'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+			'tools.response_headers.on': True,
+			'tools.response_headers.headers' : [('Content-Type','text/plain')]
+		}
+	}
+
     
 	cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': progaconstants.LISTEN_PORT,
@@ -82,9 +98,19 @@ if __name__ == '__main__':
 	cherrypy.tree.mount(FSListener(), '/listener', listener_conf)
 	cherrypy.tree.mount(traffic, '/traffic', traffic_conf)
 	cherrypy.tree.mount(predictionEngine, '/prediction', traffic_conf)
+
+	if len(args)==3:
+		auto = args[1]
+		scenario = args[2]
+		cherrypy.tree.mount(Automator(cherrypy.engine,scenario),'/automator',auto_conf)
 	
 	cherrypy.engine.start()
+	cherrypy.engine.publish(progaconstants.PROGA_IS_READY_CHANNEL_NAME)
 	cherrypy.engine.block()
+
+
+	
+
 
 
 
