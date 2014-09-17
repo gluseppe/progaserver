@@ -87,15 +87,15 @@ class Traffic(plugins.Monitor):
 	
 	
 			for startedTrack in self.startedTracks[:]:
-				if self.makeStep(startedTrack) == True:
+				if self.makeStep(startedTrack,elapsed_seconds) == True:
 					self.startedTracks.remove(startedTrack)
 	
 			cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
 
 
-	def makeStep(self, track):
-		cherrypy.log("making step of track: " + track.getTrackId())
-		arrived = not track.next(progaconstants.PLAYER_POINTER_INCREMENT)
+	def makeStep(self, track, elapsed_seconds):
+		#cherrypy.log("making step of track: " + track.getTrackId())
+		arrived = not track.next(elapsed_seconds, progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
 			self.finishedTracks.append(track)
 		return arrived

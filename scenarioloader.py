@@ -37,7 +37,7 @@ class ScenarioLoader(object):
 		with open(self.scenariosfolder + "/" + self.scenario + "/" + trackfilename, "r") as trackfile:
 			for line in trackfile:
 				
-				if cont >= 9 and len(line)>30:
+				if (not (line.startswith('#') or line.startswith('/'))) and len(line)>30:
 					parts = line.split()
 					timestamp = parts[0]
 					lat = float(parts[1])

@@ -30,6 +30,9 @@ class ProGA(object):
 		return 'Hello, this is the proga prototype'
 
 
+def str2bool(str):
+	return v.lower() in ("yes", "true", "t", "1")
+
 
 if __name__ == '__main__':
 
@@ -99,10 +102,19 @@ if __name__ == '__main__':
 	cherrypy.tree.mount(traffic, '/traffic', traffic_conf)
 	cherrypy.tree.mount(predictionEngine, '/prediction', traffic_conf)
 
-	if len(args)==3:
-		auto = args[1]
-		scenario = args[2]
-		cherrypy.tree.mount(Automator(cherrypy.engine,scenario),'/automator',auto_conf)
+
+	automator = None
+	if len(args)==2:
+		#auto = args[1]
+		scenario = args[1]
+		automator = Automator(cherrypy.engine, scenario,progaconstants.PLAYER_SLEEP_SECONDS)
+	elif len(args)==3:
+		scenario = args[1]
+		selfTrack = args[2]
+		automator = Automator(cherrypy.engine, scenario, selfTrack,progaconstants.PLAYER_SLEEP_SECONDS)
+
+
+	cherrypy.tree.mount(automator,'/automator',auto_conf)
 	
 	cherrypy.engine.start()
 	cherrypy.engine.publish(progaconstants.PROGA_IS_READY_CHANNEL_NAME)

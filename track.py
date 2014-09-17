@@ -8,6 +8,7 @@ import datetime
 
 import progaconstants
 from referencetrack import Point3D
+import cherrypy
 
 class Track(object):
 
@@ -27,7 +28,7 @@ class Track(object):
 
 		p3d = Point3D(lon, lat, altitude)
 		xy = p3d.xyFromLonLat(lon, lat)
-		self.path.append({'timstamp':timestamp, 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
+		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
 
 	def getPath(self):
 		return self.path
@@ -36,7 +37,7 @@ class Track(object):
 	#startTime = 0 means it starts with no delay when the whole simulation starts
 	#startTime = t (seconds), makes this flight start t seconds after the start of the simulation
 	def setStart(self, startTime):
-		self.pointer = startTime
+		#self.pointer = startTime
 		self.startAt = startTime
 
 	def hasStarted(self):
@@ -53,14 +54,39 @@ class Track(object):
 			return ret
 		return None
 
-	def next(self, increment=1):
+	def next(self, elapsedtime, increment=1):
+
+		elapsedtime = elapsedtime - self.startAt
+		found = False
+		if self.pointer == None:
+			self.pointer = 0
 		
-		if self.pointer != None:
-			self.pointer += increment
-			if self.pointer >= len(self.path):
+		while not found:
+			try:
+				p = self.path[self.pointer]['float_timestamp']
+				n =  self.path[self.pointer+1]['float_timestamp']
+				
+			except IndexError:
 				return False
+
+			if elapsedtime <= p:
+				found = True
+				continue
+
+			if (p <= elapsedtime and n > elapsedtime):
+				found = True
+			else:
+				self.pointer += 1
+
+
+		status = self.path[self.pointer]
+		cherrypy.log("%s,%s,%f"%(self.track_id,status['timestamp'],elapsedtime),context="TRACK,")
+		return status
+
 		
-			return self.path[self.pointer]
+
+		
+		
 
 	def getTrackId(self):
 		return self.track_id
