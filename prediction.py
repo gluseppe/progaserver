@@ -13,6 +13,7 @@ from cherrypy import log
 from traffic import Traffic
 import progaconstants
 from predictor import Predictor
+import pdb
 
 """
 Questa classe gestisce le richieste verso il ramo di predizione
@@ -79,9 +80,10 @@ class PredictionEngine(plugins.Monitor):
 		flight_IDs = [flight_id]
 		deltaT = int(deltaT)
 		nsteps = int(nsteps)
-		d = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps)
+		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps)
+		pdb.set_trace()
 		#scrivi qui codice di test
-		cherrypy.log("%s" % d[flight_IDs[0]][deltaT][0], context="TEST")
+		cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
 		return "prediction"
 	
 	def POST(self,command=''):

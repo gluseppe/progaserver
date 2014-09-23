@@ -21,6 +21,8 @@ class Automator(plugins.Monitor):
 		self.bus.subscribe(progaconstants.PROGA_IS_READY_CHANNEL_NAME,self.progaReady)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
 		self.bus.subscribe(progaconstants.SIMULATION_STARTED_CHANNEL_NAME,self.simulationStarted)
+		self.bus.subscribe(progaconstants.SIMULATION_STOPPED_CHANNEL_NAME,self.simulationFinished)
+		self.bus.subscribe(progaconstants.SIMULATION_FINISHED_CHANNEL_NAME,self.simulationFinished)
 		self.scenarioName = scenarioName
 		self.s = requests.Session()
 		self.selfTrackName = selfTrackName
@@ -76,6 +78,11 @@ class Automator(plugins.Monitor):
 			cherrypy.log("subscribing", context="AUTO")
 			self.subscribe()
 			self.start()
+
+	def simulationFinished(self):
+		self.unsubscribe()
+		self.stop()
+
 
 
 
