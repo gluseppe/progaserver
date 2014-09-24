@@ -14,6 +14,7 @@ from traffic import Traffic
 import progaconstants
 from predictor import Predictor
 import pdb
+import simplejson as json
 
 """
 Questa classe gestisce le richieste verso il ramo di predizione
@@ -73,18 +74,29 @@ class PredictionEngine(plugins.Monitor):
 		self.predictor.simulationStarted(t0)
 
 
-
-
 	@cherrypy.tools.accept(media='text/plain')
 	def GET(self, flight_id, deltaT, nsteps):
 		flight_IDs = [flight_id]
 		deltaT = int(deltaT)
 		nsteps = int(nsteps)
 		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps)
-		pdb.set_trace()
+		#pdb.set_trace()
+
+		for flight in prediction_matrix:
+			for dt in prediction_matrix[flight]:
+				prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
+				for i in range(0,len(prediction_matrix[flight][dt][1])):
+					prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
+
+		jmat = json.dumps(prediction_matrix)
+		#pdb.set_trace()
+		cherrypy.log("prediction ready", context="PREDICTION")
+
+
+		
 		#scrivi qui codice di test
-		cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
-		return "prediction"
+		#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
+		return jmat
 	
 	def POST(self,command=''):
 		if command == 'start':

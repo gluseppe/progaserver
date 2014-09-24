@@ -3,7 +3,7 @@
   "flights": [
     {
       "path": "flight4.txt",
-      "start": 10,
+      "start": 2,
       "flight_id": "AZA12345",
       "flight_intent": {
         "reference_track_id" : "00002",

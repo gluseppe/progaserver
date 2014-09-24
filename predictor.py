@@ -116,7 +116,7 @@ class Predictor(object):
             counter = 1
             for L in particlesList:
                 H, edges = np.histogramdd(L, bins = gridbins)
-                Hlist[counter*dt] = (H/np.sum(H), edges)
+                Hlist[counter*dt] = [H/np.sum(H), edges]
                 counter += 1
             return Hlist
 

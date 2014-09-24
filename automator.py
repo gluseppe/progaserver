@@ -106,7 +106,7 @@ class Automator(plugins.Monitor):
 					v_y = float(parts[10])
 					v_z = float(parts[9])
 					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading)
-					cherrypy.log("%s,%s,%s,%s,%s,%s,%s,%s"%(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading),context="EXPORT,")
+					#cherrypy.log("%s,%s,%s,%s,%s,%s,%s,%s"%(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading),context="EXPORT,")
 
 				cont += 1
 				
