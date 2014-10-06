@@ -17,6 +17,7 @@ from predictor import Predictor
 
 import progaconstants
 import requests
+import pdb
 
 """
 The Traffic object is istanciated by proga and it handles the dynamic evolution of the aircraft
@@ -119,7 +120,9 @@ class Traffic(plugins.Monitor):
 	
 	#questo rende sempre una versione stringa della posizione
 	def  getStrMyState(self):
-		return str(self.myState['lat']) + ' ' + str(self.myState['lon'])
+		return json.dumps(self.myState)
+
+		#return str(self.myState['lat']) + ' ' + str(self.myState['lon'])
 
 
 	def getTraffic(self):
@@ -252,6 +255,7 @@ class Traffic(plugins.Monitor):
 	def setMyState(self, myState):
 		cherrypy.log("state set")
 		self.myState = myState
+		#pdb.set_trace()
 
 	
 

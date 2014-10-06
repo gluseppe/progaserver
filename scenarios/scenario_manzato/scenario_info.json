@@ -3,12 +3,31 @@
   "flights": [
     {
       "path": "flight4.txt",
-      "start": 2,
-      "flight_id": "AZA12345",
+      "start": 20,
+      "flight_id": "GIUS",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight3.txt",
+      "start": 40,
+      "flight_id": "CLAUDIA BIONDA",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight2.txt",
+      "start": 50,
+      "flight_id": "BUUUU",
       "flight_intent": {
         "reference_track_id" : "00002",
         "turning_points": null
       }
     }
+
   ]
 }
