@@ -91,7 +91,7 @@ class Predictor(object):
                 return (np.ones(len(self.weights[aID])), np.ones(len(self.weights[aID])))
                 
 
-        def predictionRequested(self, flight_IDs, deltaT, nsteps):
+        def predictionRequested(self, flight_IDs, deltaT, nsteps, raw):
                 """
                 Questa e' la funzione che chiamo quando ho bisogno di una predizione. Mentre dalle altre funzioni non mi aspetto
                 nulla come valore di ritorno, da questa mi aspetto la famosa matrice. Ho messo tutti gli input che mi ritrovavo,
@@ -107,7 +107,11 @@ class Predictor(object):
                     aircraftDict = self.lastSeenTraffic[aID]
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                    pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
+                    if raw:
+                        pred[aID] = self.getParticles(p, v, deltaT, nsteps)
+                    else:
+                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
+                    
                     cherrypy.log("%s" % (pred.keys()), context="TEST")
                 return pred
 

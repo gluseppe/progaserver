@@ -15,6 +15,7 @@ import progaconstants
 from predictor import Predictor
 import pdb
 import simplejson as json
+from referencetrack import Point3D
 
 """
 Questa classe gestisce le richieste verso il ramo di predizione
@@ -75,28 +76,46 @@ class PredictionEngine(plugins.Monitor):
 
 
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self, flight_id, deltaT, nsteps):
+	def GET(self, flight_id, deltaT, nsteps, raw):
 		flight_IDs = [flight_id]
 		deltaT = int(deltaT)
 		nsteps = int(nsteps)
-		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps)
+		rawPrediction = bool(raw)
+		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
 		#pdb.set_trace()
 
-		for flight in prediction_matrix:
-			for dt in prediction_matrix[flight]:
-				prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
-				for i in range(0,len(prediction_matrix[flight][dt][1])):
-					prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
+		if raw:
+			for flight in prediction_matrix:
+				for i in range(0,len(prediction_matrix[flight])):
+					for tris in range(0,len(prediction_matrix[flight][i])):
+						#pdb.set_trace()
+						p3d = Point3D();
+						vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][i][tris][0], prediction_matrix[flight][i][tris][1], prediction_matrix[flight][i][tris][2])
+						prediction_matrix[flight][i][tris] = vect
 
-		jmat = json.dumps(prediction_matrix)
-		pdb.set_trace()
-		cherrypy.log("prediction ready", context="PREDICTION")
 
+					prediction_matrix[flight][i] = prediction_matrix[flight][i].tolist()
 
-		
-		#scrivi qui codice di test
-		#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
-		return jmat
+			#pdb.set_trace()
+			jmat = json.dumps(prediction_matrix)
+			return jmat
+
+		else:		
+			for flight in prediction_matrix:
+				for dt in prediction_matrix[flight]:
+					prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
+					for i in range(0,len(prediction_matrix[flight][dt][1])):
+						prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
+	
+			jmat = json.dumps(prediction_matrix)
+			pdb.set_trace()
+			cherrypy.log("prediction ready", context="PREDICTION")
+	
+	
+			
+			#scrivi qui codice di test
+			#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
+			return jmat
 	
 	def POST(self,command=''):
 		if command == 'start':

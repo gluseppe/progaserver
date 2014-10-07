@@ -6,7 +6,7 @@ import math
 
 class Point3D(object):
         
-        def __init__(self, lon, lat, z):
+        def __init__(self, lon=0, lat=0, z=0):
                 self.lon = lon
                 self.lat = lat
                 self.z = z
@@ -37,6 +37,15 @@ class Point3D(object):
                         c = math.asin(rho/pgc.EARTHRADIUS)
                         return (math.degrees(self.invlon(x,y,rho,c)),
                                 math.degrees(self.invlat(x,y,rho,c)))
+
+        def lonLatAltFromXYZ(self, x, y,z):
+                rho = math.sqrt(x**2+y**2)
+                if rho == 0.0:
+                    return (pgc.LON0, pgc.LAT0,0)
+                else:
+                    c = math.asin(rho/pgc.EARTHRADIUS)
+                    return (math.degrees(self.invlon(x,y,rho,c)),math.degrees(self.invlat(x,y,rho,c)),z)
+
 
         def setLonLat(self, lon, lat):
             self.lon = lon
