@@ -89,7 +89,7 @@ class PredictionEngine(plugins.Monitor):
 					prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
 
 		jmat = json.dumps(prediction_matrix)
-		#pdb.set_trace()
+		pdb.set_trace()
 		cherrypy.log("prediction ready", context="PREDICTION")
 
 
