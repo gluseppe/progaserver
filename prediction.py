@@ -74,32 +74,37 @@ class PredictionEngine(plugins.Monitor):
 		cherrypy.log("SIMULATION ENGINE STARTING", context='DEBUG')
 		self.predictor.simulationStarted(t0)
 
+	def toBool(self, s):
+		return s.lower() in ['true', '1', 't', 'y', 'yes', 'yeah', 'yup', 'certainly', 'uh-huh']
+
 
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self, flight_id, deltaT, nsteps, raw):
+	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO):
 		flight_IDs = [flight_id]
 		deltaT = int(deltaT)
 		nsteps = int(nsteps)
-		rawPrediction = bool(raw)
+		rawPrediction = self.toBool(raw)
 		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
-		#pdb.set_trace()
+		pdb.set_trace()
 
-		if raw:
+		#RAW PREDICTION WAS REQUESTED, WE PROVIDE PARTICLES POSITIONS
+		if rawPrediction:
 			for flight in prediction_matrix:
 				for i in range(0,len(prediction_matrix[flight])):
 					for tris in range(0,len(prediction_matrix[flight][i])):
 						#pdb.set_trace()
-						p3d = Point3D();
-						vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][i][tris][0], prediction_matrix[flight][i][tris][1], prediction_matrix[flight][i][tris][2])
-						prediction_matrix[flight][i][tris] = vect
-
+						if (coords_type == progaconstants.COORDS_TYPE_GEO):
+							p3d = Point3D();
+							vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][i][tris][0], prediction_matrix[flight][i][tris][1], prediction_matrix[flight][i][tris][2])
+							prediction_matrix[flight][i][tris] = vect
 
 					prediction_matrix[flight][i] = prediction_matrix[flight][i].tolist()
 
-			#pdb.set_trace()
+			pdb.set_trace()
 			jmat = json.dumps(prediction_matrix)
 			return jmat
 
+		#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
 		else:		
 			for flight in prediction_matrix:
 				for dt in prediction_matrix[flight]:
@@ -107,8 +112,8 @@ class PredictionEngine(plugins.Monitor):
 					for i in range(0,len(prediction_matrix[flight][dt][1])):
 						prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
 	
-			jmat = json.dumps(prediction_matrix)
 			pdb.set_trace()
+			jmat = json.dumps(prediction_matrix)
 			cherrypy.log("prediction ready", context="PREDICTION")
 	
 	
