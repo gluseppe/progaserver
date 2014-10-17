@@ -71,14 +71,19 @@ class ReferenceTrack(object):
 
         #pointList e' una list di Point3D       
         def __init__(self, pointList, flight_id=None):
-                self.line = pointList
+                self._line = pointList
                 self.id = None
                 self.w = -1
                 self._flight_id = flight_id
 
         @property
+        def line(self):
+            return self._line
+
+        @property
         def flight_id(self):
             return self._flight_id
+
         @flight_id.setter
         def flight_id(self, flightID):
             self._flight_id = flightID

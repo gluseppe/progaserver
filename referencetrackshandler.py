@@ -52,7 +52,7 @@ class ReferenceTracksHandler(object):
 			if rt['reference_track_id']==referenceTrackID:
 				turning_points = rt['turning_points']
 				for item in turning_points:
-					flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
+					flight_intent_point_list.append(Point3D(item['lon'],item['lat'],item['h']))
 				ret = ReferenceTrack(flight_intent_point_list)
 
 		return ret

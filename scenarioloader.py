@@ -106,7 +106,7 @@ class ScenarioLoader(object):
 					#cherrypy.log("ref track id:"+reference_track_id)
 					turning_points = raw_flight_intent['turning_points']
 					for item in turning_points:
-						flight_intent_point_list.append(Point3D(item['lat'],item['lon'],item['h']))
+						flight_intent_point_list.append(Point3D(item['lon'],item['lat'],item['h']))
 				
 
 					flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)

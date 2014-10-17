@@ -1,8 +1,90 @@
 from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES, GRIDBINS
+from progaconstants import ECC, LOCRADIUS, PENAL_GLOBAL, PENAL_ANGLE, PENAL_DIST, ANGLE_GAP, BETA_DIST, BETA_ANGLE
 import cherrypy
 import numpy as np
 import numpy.random as npr
+import pdb
 
+
+def projection(v, u):
+    """
+    Projector of v onto the line of u
+    """
+    return np.dot(u,v)/np.dot(u,u) * u
+
+def norm(v):
+    return np.sqrt(np.dot(v,v))
+
+def legger(track, p):
+    """
+    Return a list of legs of track that are candidate legs
+    according to the 'sausage' model
+    """
+    L = []
+    for i, leg in zip(range(len(track)), track):
+        c = .5 * (leg[1] + leg[0])
+        a = .5 * norm(leg[1] - leg[0])
+        b = np.sqrt(1-ECC**2)
+        pproj = projection(p-c, leg[1]-c)
+        px = norm(pproj)
+        py = norm(p-c-pproj)
+        if (px/a)**2 + (py/b)**2 <= 1:
+            L.append(i)
+    return L
+
+def findWeights(track, p, v):
+    """
+    Return index of leg that is most-likely flown and track weight
+    based on position and velocity of the aircraft
+    """
+    candidateLegs = legger(track, p)
+    if len(candidateLegs) == 1:
+        # aircraft lies in only one sausage
+        print 'in-leg',
+        leg = track[candidateLegs[0]]
+        legDirection = leg[1]-leg[0]
+        distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
+        legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
+        return (candidateLeg[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
+    else:
+        # aircraft lies in multiple or no sausages
+        # look around turning points
+        if norm(p - track[0][0]) < LOCRADIUS:
+            # aircraft lies around the departure airfield
+            print 'appena partito',
+            pdb.set_trace()
+            legDirection = track[0][1]-track[0][0]
+            legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
+            return (0, np.exp(- BETA_DIST * norm(p - track[0][0]) - BETA_ANGLE * legTrackAngle))
+        elif norm(p - track[-1][1]) < LOCRADIUS:
+            # aircraft lies around the arrival airfield
+            print 'in arrivo',
+            legDirection = track[-1][1]-track[-1][0]
+            legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
+            return (len(track)-1, np.exp(- BETA_DIST * norm(p - track[-1][1]) - BETA_ANGLE * legTrackAngle))
+        else:
+            # look around turning points
+            for i, j in zip(range(len(track)-1), range(1, len(track))):
+                # prevLeg is the leg that 'enters' in the turnpoint
+                # nextLeg is the leg that 'exits' from the turnpoint
+                prevLeg, nextLeg = track[i], track[j]
+                turnPoint = nextLeg[0]
+                if norm(p - turnPoint) < LOCRADIUS:
+                    # the vector nextLeg[1]-prevLeg[0] joins the origin of prevLef with the destination of nextLeg
+                    # it is the 'average' direction that should be followed around the turnpoint
+                    avgTrackAngle = np.arccos( np.dot(v, nextLeg[1]-prevLeg[0])/(norm(v) * norm(nextLeg[1]-prevLeg[0])) )
+                    if avgTrackAngle < 1.5*ANGLE_GAP:
+                        print 'virata',
+                        return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*prevTrackAngle))
+                    else:
+                        print 'close to turnpoint but not turning'
+                        return (i, min(np.exp(- BETA_DIST * norm(p - turnPoint)), PENAL_ANGLE))
+            else:
+                pdb.set_trace()
+                print 'no match found',
+                distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
+                turnPointIndex = distances.index( min(distances) )
+                return (turnPointIndex, min(PENAL_GLOBAL, np.exp(-BETA_DIST * min(distances))))
 
 """
 Questa e' la tua classe, qui tentro puoi fare quasi tutto quello che vuoi.
@@ -30,12 +112,16 @@ class Predictor(object):
         """
         def __init__(self, traffic, initialWeights):
                 self.god = traffic
-                self.tracks = initialWeights
+                self.tracks = {}
                 self.weights = {}
-                for aircraft_id, L in self.tracks.items():
-                        self.weights[aircraft_id] = np.array([refTrck.w for refTrck in L])
+                pdb.set_trace()
+                cherrypy.log('init', context='CARLO')
+                for aID, L in initialWeights.items():
+                        self.weights[aID] = np.array([refTrck.w for refTrck in L])
+                        self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
+                cherrypy.log('end init', context='CARLO')
                 npr.seed()
 
         def simulationStarted(self, t0):
@@ -59,21 +145,23 @@ class Predictor(object):
                         return False # weights have not been updated
 
         def updateWeights(self):
-                ## pass
-                return True
-                for aID, aircraftDict in self.lastSeenTraffic.values():
+                cherrypy.log('update', context='CARLO')
+                for aID, aircraftDict in self.lastSeenTraffic.items():
+                    cherrypy.log('update 2', context='CARLO')
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
-                    a, d = self.angleAndDist(aID, p, v)
-                    nw = self.newWeights(a, d) # Gibbsian weights
+                    bar = [[a.getNumpyVector()[:2] for a in tt] for tt in self.tracks[aID]]
+                    pdb.set_trace()
+                    foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
+                    nw = np.array([f[1] for f in foo])                    
                     try:
                         self.weights[aID] *= nw # Bayes' rule
                     except KeyError:
                         cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
                         return False
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
-                    chk_str = "Check weights "+ str(self.weights["AZA12345"])
-                    cherrypy.log(chk_str, context='DEBUG')
+                    chk_str = "Check weights "+ str(self.weights["GIUS"])
+                    cherrypy.log(chk_str, context='CARLO')
                     return True
                     
 
