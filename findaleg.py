@@ -4,13 +4,13 @@ import numpy as np
 from numpy.linalg import norm
 
 ECC = 0.75
-LOCRADIUS = 200. # meters
-PENAL_GLOBAL = 0.1**7
-PENAL_ANGLE = 0.1**3
-PENAL_DIST = 0.1**3
+LOCRADIUS = .25 # meters
+PENAL_GLOBAL = 0.1**6
+PENAL_ANGLE = 0.1**2
+PENAL_DIST = 0.1**2
 ANGLE_GAP = np.pi/12 # 15. degrees
-BETA_DIST = 0.1**3 # meters^{-1}
-BETA_ANGLE = 5 
+BETA_DIST = 0.01 # meters^{-1}
+BETA_ANGLE = 0.5 
 
 
 def projection(v, u):
@@ -116,18 +116,54 @@ def findWeights(track, p, v):
                 if norm(p - turnPoint) < LOCRADIUS:
                     # the vector nextLeg[1]-prevLeg[0] joins the origin of prevLef with the destination of nextLeg
                     # it is the 'average' direction that should be followed around the turnpoint
-                    avgTrackAngle = np.arccos( np.dot(v, nextLeg[1]-prevLeg[0])/(norm(v) * norm(nextLeg[1]-prevLeg[0])) )
-                    if avgTrackAngle < 1.5*ANGLE_GAP:
-                        print 'virata',
-                        return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*prevTrackAngle))
+                    u = prevLeg[1] - prevLeg[0]
+                    w = nextLeg[1] - nextLeg[0]
+                    vcrossu = v[0]*u[1] - v[1]*u[0]
+                    vcrossw = v[0]*w[1] - v[1]*w[0]
+                    ucrossw = u[0]*w[1] - u[1]*w[0]
+                    if ucrossw < 0:
+                        print 'virata clockwise'
+                        if vcrossu > 0 and vcrossw < 0:
+                            print 'virata'
+                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                                 np.dot(v,w)/(norm(w) * norm(v))])
+                            if vangles[0] < vangles[1]:
+                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
+                            else:
+                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
+                        elif vcrossu > 0 and vcrossw > 0:
+                            print 'interno'
+                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) *  PENAL_ANGLE )
+                        elif vcrossu < 0 and vcrossw < 0:
+                            print 'esterno'
+                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE )
+                        else:
+                            print 'opposto'
+                            return (i, PENAL_DIST * PENAL_ANGLE)
                     else:
-                        print 'close to turnpoint but not turning'
-                        return (i, min(np.exp(- BETA_DIST * norm(p - turnPoint)), PENAL_ANGLE))
+                        print 'virata couterclockwise'
+                        if vcrossu < 0 and vcrossw > 0:
+                            print 'virata'
+                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                                 np.dot(v,w)/(norm(w) * norm(v))])
+                            if vangles[0] < vangles[1]:
+                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
+                            else:
+                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
+                        elif vcrossu < 0 and vcrossw < 0:
+                            print 'interno'
+                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
+                        elif vcrossu > 0 and vcrossw > 0:
+                            print 'esterno'
+                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
+                        else:
+                            print 'opposto'
+                            return (i, PENAL_DIST * PENAL_ANGLE)
             else:
                 print 'no match found',
                 distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
                 turnPointIndex = distances.index( min(distances) )
-                return (turnPointIndex, min(PENAL_GLOBAL, np.exp(-BETA_DIST * min(distances))))
+                return (turnPointIndex, PENAL_GLOBAL)
 
 if __name__ == '__main__':
     print  '-'*24 + '\nTHIS IS A TEST PROCEDURE\n' + '-'*24 

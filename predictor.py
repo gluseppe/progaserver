@@ -52,7 +52,6 @@ def findWeights(track, p, v):
         if norm(p - track[0][0]) < LOCRADIUS:
             # aircraft lies around the departure airfield
             print 'appena partito',
-            pdb.set_trace()
             legDirection = track[0][1]-track[0][0]
             legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
             return (0, np.exp(- BETA_DIST * norm(p - track[0][0]) - BETA_ANGLE * legTrackAngle))
@@ -72,19 +71,43 @@ def findWeights(track, p, v):
                 if norm(p - turnPoint) < LOCRADIUS:
                     # the vector nextLeg[1]-prevLeg[0] joins the origin of prevLef with the destination of nextLeg
                     # it is the 'average' direction that should be followed around the turnpoint
-                    avgTrackAngle = np.arccos( np.dot(v, nextLeg[1]-prevLeg[0])/(norm(v) * norm(nextLeg[1]-prevLeg[0])) )
-                    if avgTrackAngle < 1.5*ANGLE_GAP:
-                        print 'virata',
-                        return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*prevTrackAngle))
+                    u = prevLeg[1] - prevLeg[0]
+                    w = nextLeg[1] - nextLeg[0]
+                    vcrossu = v[0]*u[1] - v[1]*u[0]
+                    vcrossw = v[0]*w[1] - v[1]*w[0]
+                    ucrossw = u[0]*w[1] - u[1]*w[0]
+                    if ucrossw < 0:
+                        if vcrossu > 0 and vcrossw < 0:
+                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                                 np.dot(v,w)/(norm(w) * norm(v))])
+                            if vangles[0] < vangles[1]:
+                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
+                            else:
+                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
+                        elif vcrossu > 0 and vcrossw > 0:
+                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) *  PENAL_ANGLE )
+                        elif vcrossu < 0 and vcrossw < 0:
+                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE )
+                        else:
+                            return (i, PENAL_DIST * PENAL_ANGLE)
                     else:
-                        print 'close to turnpoint but not turning'
-                        return (i, min(np.exp(- BETA_DIST * norm(p - turnPoint)), PENAL_ANGLE))
+                        if vcrossu < 0 and vcrossw > 0:
+                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                                 np.dot(v,w)/(norm(w) * norm(v))])
+                            if vangles[0] < vangles[1]:
+                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
+                            else:
+                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
+                        elif vcrossu < 0 and vcrossw < 0:
+                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
+                        elif vcrossu > 0 and vcrossw > 0:
+                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
+                        else:
+                            return (i, PENAL_DIST * PENAL_ANGLE)
             else:
-                pdb.set_trace()
-                print 'no match found',
                 distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
                 turnPointIndex = distances.index( min(distances) )
-                return (turnPointIndex, min(PENAL_GLOBAL, np.exp(-BETA_DIST * min(distances))))
+                return (turnPointIndex, PENAL_GLOBAL)
 
 """
 Questa e' la tua classe, qui tentro puoi fare quasi tutto quello che vuoi.
