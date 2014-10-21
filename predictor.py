@@ -6,6 +6,14 @@ import numpy.random as npr
 import pdb
 
 
+def weightedValues(values, probabilities, size):
+    # First using accumulate we create bins.
+    # Then we create a bunch of random numbers (between 0, and 1) using random_sample
+    # We use digitize to see which bins these numbers fall into.
+    # And return the corresponding values.
+    bins = np.add.accumulate(probabilities)
+    return values[np.digitize(npr.random_sample(size), bins)]
+
 def projection(v, u):
     """
     Projector of v onto the line of u
