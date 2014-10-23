@@ -165,6 +165,87 @@ def findWeights(track, p, v):
                 turnPointIndex = distances.index( min(distances) )
                 return (turnPointIndex, PENAL_GLOBAL)
 
+def weightedValues(values, probabilities, size):
+    # First using accumulate we create bins.
+    # Then we create a bunch of random numbers (between 0, and 1) using random_sample
+    # We use digitize to see which bins these numbers fall into.
+    # And return the corresponding values.
+    bins = np.add.accumulate(probabilities)
+    return values[np.digitize(npr.random_sample(size), bins)]
+
+def rotation(alpha):                              
+    def rot(v):
+        return np.array([v[0]*np.cos(alpha)-v[1]*np.sin(alpha), v[1]*np.cos(alpha)+v[0]*np.sin(alpha),v[2]])
+    return rot
+
+class bunchOfParticles(object):
+    def __init__(p, v, size, dt, referenceTracks):
+        """
+        referenceTracks deve essere passato come predictor.tracks[aircraft_ID]
+        """
+        self.dt = dt
+        self.numPart = size
+        self.positions = np.matrix( np.tile(p, size).reshape( (size,3) ) )
+        self.velocities = np.matrix( np.tile(v, size).reshape( (size,3) ) )
+        bar = [[a.getNumpyVector()[:2] for a in tt] for tt in referenceTracks]
+        foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
+        self.tracks = [zip(tt[:-1], tt[1:]) for tt in bar] # self.tracks[i] contiene la traccia i-esima 
+        tLegs = np.array([f[0] for f in foo]) # tLegs[i] contiene il leg di riferimento della traccia i-esima
+        tWeights = np.array([f[1] for f in foo]) # tWeights[i] contiene il leg di riferimento della traccia i-esima
+        sampledTracks = weightedValues(np.arange(len(bar)), tWeights, self.numPart)
+        self.partReference = np.vstack( (sampledTracks, [tlegs[i] for i in sampledTracks]) )
+        # self.partReference[0,j] = indice della traccia di riferimento della particella j-esima
+        # self.partReference[1,j] = indice del leg di riferimento della particella j-esima
+        
+    def takeAmove(self):
+        simulTimes = self.simulationTime(self.dt)
+        # randomly rotate velocities
+        self.positions = self.positions + np.diag(simulTimes[0]) * self.velocities 
+        indices = simulTimes[1].nonzero()
+        curLegs = self.getLeg(indices)
+        self.setNextLeg(indices)
+        nextLeg = self.getLeg(indices)
+        uu = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in curLegs]
+        vv = [(nleg[1] - cleg[0])/norm(nleg[1][:2] - cleg[0][:2]) for nleg, cleg in zip(nextLeg, curLegs)]
+        alphas = np.arcsin( [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)] ) 
+        for i in range(len(indices)):
+            f = rotation(alphas[i])
+            self.velocities[i, :] = f(np.array(self.velocities[i, :]))
+        # rotate velocity for particle-index in simulTimes[1].nonzero()
+        self.positions = self.positions + np.diag(simulTimes[1]) * self.velocities 
+
+    def getLeg(indices):
+        # leggo j in indices, 
+        # vado a prendere in self.referenceTracks[0,j] l'indice della traccia che sta seguendo la particella j
+        # self.tracks[ self.referenceTracks[0,j] ] e' la traccia che sta seguendo la particella j
+        # vado a prendere in self.referenceTracks[1,j] l'indice del leg che sta seguendo la particella j
+        return [ self.tracks[ self.referenceTracks[0,j] ][self.referenceTracks[1,j]] for j in indices ]
+
+    def setNextLeg(indices):
+        for i in indices:
+            self.partReference[1, i] = min(len(self.tracks[i]) - 1, self.partReference[1,i] + 1)
+
+    def getPositionsAsList(self):
+        return np.squeeze( np.asarray( self.positions ) )
+
+    def getVelocitiesAsList(self):
+        return np.squeeze( np.asarray( self.velocities ) )
+
+    def timeToNextTurnPoint(self):
+        nextTP = np.array([leg[1] for leg in self.partReference[1]])
+        return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
+
+    def alphaToNextTurnPoint(self):
+        nextTP = np.array([leg[1] for leg in self.partReference[1]])
+        return nextTP - self.getPositionsAsList()
+
+    def simulationTime(self, dt):
+        timesToNextTP = self.timeToNextTurnPoint()
+        dtVec = dt * np.ones( self.numPart )
+        tau = np.minimum(timesToNextTP,  dtVec) )
+        return (tau, dtVec-tau)
+
+
 if __name__ == '__main__':
     print  '-'*24 + '\nTHIS IS A TEST PROCEDURE\n' + '-'*24 
     ref1 = [np.array([0., 0.]), np.array([5000., 5000.]), np.array([4000., 12000.]), np.array([-5000., 7500.]), np.array([0., 3500.])]
