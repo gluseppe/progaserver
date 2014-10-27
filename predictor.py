@@ -1,5 +1,6 @@
 from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES, GRIDBINS
-from progaconstants import ECC, LOCRADIUS, PENAL_GLOBAL, PENAL_ANGLE, PENAL_DIST, ANGLE_GAP, BETA_DIST, BETA_ANGLE
+from progaconstants import ECC, LOCRADIUS, PENAL_GLOBAL, PENAL_ANGLE, PENAL_DIST, BETA_DIST, BETA_ANGLE
+from progaconstants import ROTSCALE, ALTSCALE, XYSCALE
 import cherrypy
 import numpy as np
 import numpy.random as npr
@@ -22,6 +23,9 @@ def projection(v, u):
 
 def norm(v):
     return np.sqrt(np.dot(v,v))
+
+def normL2(x):
+    return np.sum(np.abs(x)**2,axis=-1)**(.5)
 
 def legger(track, p):
     """
@@ -48,7 +52,7 @@ def findWeights(track, p, v):
     candidateLegs = legger(track, p)
     if len(candidateLegs) == 1:
         # aircraft lies in only one sausage
-        print 'in-leg',
+        cherrypy.log('in-leg', context='CARLO')
         leg = track[candidateLegs[0]]
         legDirection = leg[1]-leg[0]
         distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
@@ -59,13 +63,13 @@ def findWeights(track, p, v):
         # look around turning points
         if norm(p - track[0][0]) < LOCRADIUS:
             # aircraft lies around the departure airfield
-            print 'appena partito',
+            cherrypy.log('appena partito', context='CARLO')
             legDirection = track[0][1]-track[0][0]
             legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
             return (0, np.exp(- BETA_DIST * norm(p - track[0][0]) - BETA_ANGLE * legTrackAngle))
         elif norm(p - track[-1][1]) < LOCRADIUS:
             # aircraft lies around the arrival airfield
-            print 'in arrivo',
+            cherrypy('in arrivo', context='CARLO')
             legDirection = track[-1][1]-track[-1][0]
             legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
             return (len(track)-1, np.exp(- BETA_DIST * norm(p - track[-1][1]) - BETA_ANGLE * legTrackAngle))
@@ -85,7 +89,9 @@ def findWeights(track, p, v):
                     vcrossw = v[0]*w[1] - v[1]*w[0]
                     ucrossw = u[0]*w[1] - u[1]*w[0]
                     if ucrossw < 0:
+                        cherrypy.log('virata clockwise', context='CARLO')
                         if vcrossu > 0 and vcrossw < 0:
+                            cherrypy.log( 'virata', context='CARLO')
                             vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                                  np.dot(v,w)/(norm(w) * norm(v))])
                             if vangles[0] < vangles[1]:
@@ -93,13 +99,18 @@ def findWeights(track, p, v):
                             else:
                                 return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
                         elif vcrossu > 0 and vcrossw > 0:
+                            cherrypy.log('interno', context='CARLO')
                             return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) *  PENAL_ANGLE )
                         elif vcrossu < 0 and vcrossw < 0:
+                            cherrypy.log('esterno', context='CARLO')
                             return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE )
                         else:
+                            cherrypy.log( 'opposto', context='CARLO')
                             return (i, PENAL_DIST * PENAL_ANGLE)
                     else:
+                        cherrypy.log('virata couterclockwise', context='CARLO')
                         if vcrossu < 0 and vcrossw > 0:
+                            cherrypy.log( 'virata', context='CARLO')
                             vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                                  np.dot(v,w)/(norm(w) * norm(v))])
                             if vangles[0] < vangles[1]:
@@ -107,15 +118,32 @@ def findWeights(track, p, v):
                             else:
                                 return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
                         elif vcrossu < 0 and vcrossw < 0:
+                            cherrypy.log('interno', context='CARLO')
                             return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
                         elif vcrossu > 0 and vcrossw > 0:
+                            cherrypy.log('esterno', context='CARLO')
                             return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
                         else:
+                            cherrypy.log('opposto', context='CARLO')
                             return (i, PENAL_DIST * PENAL_ANGLE)
             else:
+                cherrypy.log('no match found', context='CARLO')
                 distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
                 turnPointIndex = distances.index( min(distances) )
                 return (turnPointIndex, PENAL_GLOBAL)
+
+def weightedValues(values, probabilities, size):
+    # First using accumulate we create bins.
+    # Then we create a bunch of random numbers (between 0, and 1) using random_sample
+    # We use digitize to see which bins these numbers fall into.
+    # And return the corresponding values.
+    bins = np.add.accumulate(probabilities)
+    return values[np.digitize(npr.random_sample(size), bins)]
+
+def rotation(alpha):                              
+    def rot(v):
+        return np.array([v[0]*np.cos(alpha)-v[1]*np.sin(alpha), v[1]*np.cos(alpha)+v[0]*np.sin(alpha),v[2]])
+    return rot
 
 """
 Questa e' la tua classe, qui tentro puoi fare quasi tutto quello che vuoi.
@@ -145,11 +173,12 @@ class Predictor(object):
                 self.god = traffic
                 self.tracks = {}
                 self.weights = {}
-                pdb.set_trace()
+                self.legs = {}
                 cherrypy.log('init', context='CARLO')
                 for aID, L in initialWeights.items():
                         self.weights[aID] = np.array([refTrck.w for refTrck in L])
                         self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
+                        self.legs[aID] = None
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
                 cherrypy.log('end init', context='CARLO')
@@ -182,7 +211,6 @@ class Predictor(object):
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     bar = [[a.getNumpyVector()[:2] for a in tt] for tt in self.tracks[aID]]
-                    pdb.set_trace()
                     foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
                     nw = np.array([f[1] for f in foo])                    
                     try:
@@ -193,7 +221,8 @@ class Predictor(object):
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
                     chk_str = "Check weights "+ str(self.weights["GIUS"])
                     cherrypy.log(chk_str, context='CARLO')
-                    return True
+                    self.legs[aID] = np.array([f[0] for f in foo]) 
+                return True
                     
 
         def newWeights(self, alpha, dist):
@@ -227,9 +256,9 @@ class Predictor(object):
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     if raw:
-                        pred[aID] = self.getParticles(p, v, deltaT, nsteps)
+                        pred[aID] = self.getParticles(p, v, NUMPARTICLES, deltaT, nsteps, aID)
                     else:
-                        pred[aID] = self.binParticles(self.getParticles(p, v, deltaT, nsteps), deltaT)
+                        pred[aID] = self.binParticles(self.getParticles(p, v, NUMPARTICLES, deltaT, nsteps, aID), deltaT)
                     
                     cherrypy.log("%s" % (pred.keys()), context="TEST")
                 return pred
@@ -243,12 +272,85 @@ class Predictor(object):
                 counter += 1
             return Hlist
 
-        def getParticles(self, currP, currV, dt, nsteps):
+        def getParticles(self, currP, currV, numParticles, dt, nsteps, aircraft_ID):
             L = []
+            pparticles = bunchOfParticles(currP, currV, numParticles, dt, self.tracks[aircraft_ID], self.weights[aircraft_ID], self.legs[aircraft_ID])
             for j in range(nsteps):
-                t = dt*j
-                pp = np.empty((NUMPARTICLES, 3))
-                for i in range(NUMPARTICLES):
-                    pp[i] = currP + currV*t + npr.multivariate_normal(np.zeros(3), np.identity(3)*(50+t*t))
-                L.append(pp)
+                pparticles.takeAmove()
+                L.append(pparticles.positions)
             return L
+
+#############################################################################################################
+
+class bunchOfParticles(object):
+    def __init__(self, p, v, size, dt, referenceTracks, weights, legs):
+        """
+        referenceTracks deve essere passato come predictor.tracks[aircraft_ID]
+        """
+        self.dt = dt
+        self.numPart = size
+        self.positions = np.tile(p, size).reshape( (size,3) )
+        self.velocities = np.tile(v, size).reshape( (size,3) )
+        bar = [[a.getNumpyVector()[:2] for a in tt] for tt in referenceTracks]
+        # foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
+        self.tracks = [zip(tt[:-1], tt[1:]) for tt in bar] # self.tracks[i] contiene la traccia i-esima 
+        # tLegs = np.array([f[0] for f in foo]) # tLegs[i] contiene il leg di riferimento della traccia i-esima
+        # tWeights = np.array([f[1] for f in foo]) # tWeights[i] contiene il leg di riferimento della traccia i-esima
+        # tWeights /= sum(tWeights)
+        sampledTracks = weightedValues(np.arange(len(referenceTracks)), weights, self.numPart)
+        self.partReference = np.vstack( (sampledTracks, [legs[i] for i in sampledTracks]) )
+        # self.partReference[0,j] = indice della traccia di riferimento della particella j-esima
+        # self.partReference[1,j] = indice del leg di riferimento della particella j-esima
+        
+    def takeAmove(self):
+        simulTimes = self.simulationTime(self.dt)
+        # randomly rotate velocities
+        for i, alpha in zip(range(self.numPart), self.alphaToNextTurnPoint()):
+            angle = np.random.normal(loc=alpha, scale=ROTSCALE)
+            rrot = rotation(angle)
+            self.velocities[i] = rrot(self.velocities[i])
+        #
+        self.velocities[:, :2] *= 1. + np.random.normal(scale=XYSCALE, size=self.numPart).reshape((self.numPart,1))
+        self.velocities[:, 2] += np.random.normal(scale=ALTSCALE, size=self.numPart)
+        self.positions = self.positions + np.dot(np.diag(simulTimes[0]), self.velocities)
+        indices = simulTimes[1].nonzero()[0]
+        curLeg = self.getLeg(indices)
+        self.setNextLeg(indices)
+        nextLeg = self.getLeg(indices)
+        uu = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in curLeg]
+        vv = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in nextLeg]
+        alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
+        alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
+        alphasign = np.sign(alphasin)
+        for i in range(len(alphasign)):
+            rrot = rotation( alphasign[i] * np.arctan2(abs(alphasin[i]), alphacos[i]) )
+            self.velocities[i, :] = rrot(self.velocities[i, :])
+        # rotate velocity for particle-index in simulTimes[1].nonzero()
+        self.positions = self.positions + np.dot(np.diag(simulTimes[1]), self.velocities)
+
+    def getLeg(self, indices):
+        # leggo j in indices, 
+        # vado a prendere in self.partReference[0,j] l'indice della traccia che sta seguendo la particella j
+        # self.tracks[ self.partReference[0,j] ] e' la traccia che sta seguendo la particella j
+        # vado a prendere in self.partReference[1,j] l'indice del leg che sta seguendo la particella j
+        return [ self.tracks[ self.partReference[0,j] ][self.partReference[1,j]] for j in indices ]
+
+    def setNextLeg(self, indices):
+        for i in indices:
+            self.partReference[1, i] = min(len(self.tracks[ self.partReference[0,i] ]) - 1, self.partReference[1,i] + 1)
+
+    def timeToNextTurnPoint(self):
+        nextTP = np.array([ leg[1] for leg in self.getLeg(np.arange(self.numPart)) ] )
+        return normL2(self.positions[:,:2] -  nextTP)/normL2(self.velocities[:,:2])
+        #return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
+
+    def alphaToNextTurnPoint(self):
+        nextTP = np.array([ leg[1] for leg in self.getLeg(np.arange(self.numPart)) ] )
+        foo = (nextTP - self.positions[:,:2]).T
+        return np.arctan2(foo[1], foo[0])
+
+    def simulationTime(self, dt):
+        timesToNextTP = self.timeToNextTurnPoint()
+        dtVec = dt * np.ones( self.numPart )
+        tau = np.minimum(timesToNextTP,  dtVec)
+        return (tau, dtVec-tau)
