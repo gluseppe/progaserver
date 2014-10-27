@@ -2,15 +2,19 @@
 
 import numpy as np
 from numpy.linalg import norm
+import numpy.random as npr
+import pdb
 
 ECC = 0.75
-LOCRADIUS = .25 # meters
+LOCRADIUS = .25 # meters #ADJUST
 PENAL_GLOBAL = 0.1**6
 PENAL_ANGLE = 0.1**2
 PENAL_DIST = 0.1**2
-ANGLE_GAP = np.pi/12 # 15. degrees
 BETA_DIST = 0.01 # meters^{-1}
 BETA_ANGLE = 0.5 
+ROTSCALE = 0.0175 # around 1 degrees
+ALTSCALE = .005 # 5 centimeters
+XYSCALE = .001 # meters #ADJUST
 
 
 def projection(v, u):
@@ -36,6 +40,9 @@ def legger(track, p):
         if (px/a)**2 + (py/b)**2 <= 1:
             L.append(i)
     return L
+
+def normL2(x):
+    return np.sum(np.abs(x)**2,axis=-1)**(.5)
 
 ## def findMyLeg(track, p, v):
 ##     candidateLegs = legger(track, p)
@@ -90,7 +97,7 @@ def findWeights(track, p, v):
         legDirection = leg[1]-leg[0]
         distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
-        return (candidateLeg[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
+        return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
     else:
         # aircraft lies in multiple or no sausages
         # look around turning points
@@ -179,88 +186,93 @@ def rotation(alpha):
     return rot
 
 class bunchOfParticles(object):
-    def __init__(p, v, size, dt, referenceTracks):
+    def __init__(self, p, v, size, dt, referenceTracks):
         """
         referenceTracks deve essere passato come predictor.tracks[aircraft_ID]
         """
         self.dt = dt
         self.numPart = size
-        self.positions = np.matrix( np.tile(p, size).reshape( (size,3) ) )
-        self.velocities = np.matrix( np.tile(v, size).reshape( (size,3) ) )
-        bar = [[a.getNumpyVector()[:2] for a in tt] for tt in referenceTracks]
+        self.positions = np.tile(p, size).reshape( (size,3) )
+        self.velocities = np.tile(v, size).reshape( (size,3) )
+        # Questa e' la riga buona
+        # bar = [[a.getNumpyVector()[:2] for a in tt] for tt in referenceTracks]
+        # Questa e' solo per debug
+        bar = [[a[:2] for a in tt] for tt in referenceTracks.values()]
+        #
         foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
         self.tracks = [zip(tt[:-1], tt[1:]) for tt in bar] # self.tracks[i] contiene la traccia i-esima 
         tLegs = np.array([f[0] for f in foo]) # tLegs[i] contiene il leg di riferimento della traccia i-esima
         tWeights = np.array([f[1] for f in foo]) # tWeights[i] contiene il leg di riferimento della traccia i-esima
+        tWeights /= sum(tWeights)
         sampledTracks = weightedValues(np.arange(len(bar)), tWeights, self.numPart)
-        self.partReference = np.vstack( (sampledTracks, [tlegs[i] for i in sampledTracks]) )
+        # next line is just for testing
+        sampledTracks = np.array([0, 0, 1])
+        self.partReference = np.vstack( (sampledTracks, [tLegs[i] for i in sampledTracks]) )
         # self.partReference[0,j] = indice della traccia di riferimento della particella j-esima
         # self.partReference[1,j] = indice del leg di riferimento della particella j-esima
         
     def takeAmove(self):
         simulTimes = self.simulationTime(self.dt)
         # randomly rotate velocities
-        self.positions = self.positions + np.diag(simulTimes[0]) * self.velocities 
-        indices = simulTimes[1].nonzero()
-        curLegs = self.getLeg(indices)
+        for i, alpha in zip(range(self.numPart), alphaToNextTurnPoint):
+            angle = np.random.normal(loc=alpha, scale=ROTSCALE, self.numPart)
+            rrot = rotation(angle)
+            self.velocities[i] = rrot(self.velocities[i])
+        #
+        self.velocities[:, :2] *= (1. + np.random.normal(scale=XYSCALE, self.numPart))
+        self.velocities[:, 2] += np.random.normal(scale=ALTSCALE, self.numPart)
+        self.positions = self.positions + np.dot(np.diag(simulTimes[0]), self.velocities)
+        indices = simulTimes[1].nonzero()[0]
+        curLeg = self.getLeg(indices)
         self.setNextLeg(indices)
         nextLeg = self.getLeg(indices)
-        uu = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in curLegs]
-        vv = [(nleg[1] - cleg[0])/norm(nleg[1][:2] - cleg[0][:2]) for nleg, cleg in zip(nextLeg, curLegs)]
-        alphas = np.arcsin( [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)] ) 
-        for i in range(len(indices)):
-            f = rotation(alphas[i])
-            self.velocities[i, :] = f(np.array(self.velocities[i, :]))
+        uu = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in curLeg]
+        vv = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in nextLeg]
+        alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
+        alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
+        alphasign = np.sign(alphasin)
+        for i in range(len(alphasign)):
+            rrot = rotation( alphasign[i] * np.arctan2(abs(alphasin[i]), alphacos[i]) )
+            self.velocities[i, :] = rrot(self.velocities[i, :])
         # rotate velocity for particle-index in simulTimes[1].nonzero()
-        self.positions = self.positions + np.diag(simulTimes[1]) * self.velocities 
+        pdb.set_trace()
+        self.positions = self.positions + np.dot(np.diag(simulTimes[1]), self.velocities)
 
-    def getLeg(indices):
+    def getLeg(self, indices):
         # leggo j in indices, 
-        # vado a prendere in self.referenceTracks[0,j] l'indice della traccia che sta seguendo la particella j
-        # self.tracks[ self.referenceTracks[0,j] ] e' la traccia che sta seguendo la particella j
-        # vado a prendere in self.referenceTracks[1,j] l'indice del leg che sta seguendo la particella j
-        return [ self.tracks[ self.referenceTracks[0,j] ][self.referenceTracks[1,j]] for j in indices ]
+        # vado a prendere in self.partReference[0,j] l'indice della traccia che sta seguendo la particella j
+        # self.tracks[ self.partReference[0,j] ] e' la traccia che sta seguendo la particella j
+        # vado a prendere in self.partReference[1,j] l'indice del leg che sta seguendo la particella j
+        return [ self.tracks[ self.partReference[0,j] ][self.partReference[1,j]] for j in indices ]
 
-    def setNextLeg(indices):
+    def setNextLeg(self, indices):
         for i in indices:
-            self.partReference[1, i] = min(len(self.tracks[i]) - 1, self.partReference[1,i] + 1)
-
-    def getPositionsAsList(self):
-        return np.squeeze( np.asarray( self.positions ) )
-
-    def getVelocitiesAsList(self):
-        return np.squeeze( np.asarray( self.velocities ) )
+            self.partReference[1, i] = min(len(self.tracks[ self.partReference[0,i] ]) - 1, self.partReference[1,i] + 1)
 
     def timeToNextTurnPoint(self):
-        nextTP = np.array([leg[1] for leg in self.partReference[1]])
-        return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
+        nextTP = np.array([ leg[1] for leg in self.getLeg(np.arange(self.numPart)) ] )
+        return normL2(self.positions[:,:2] -  nextTP)/normL2(self.velocities[:,:2])
+        #return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
 
     def alphaToNextTurnPoint(self):
-        nextTP = np.array([leg[1] for leg in self.partReference[1]])
-        return nextTP - self.getPositionsAsList()
+        nextTP = np.array([ leg[1] for leg in self.getLeg(np.arange(self.numPart)) ] )
+        foo = (nextTP - self.positions[:,:2]).T
+        pdb.set_trace()
+        return np.arctan2(foo[1], foo[0])
 
     def simulationTime(self, dt):
         timesToNextTP = self.timeToNextTurnPoint()
         dtVec = dt * np.ones( self.numPart )
-        tau = np.minimum(timesToNextTP,  dtVec) )
+        tau = np.minimum(timesToNextTP,  dtVec)
         return (tau, dtVec-tau)
 
 
 if __name__ == '__main__':
     print  '-'*24 + '\nTHIS IS A TEST PROCEDURE\n' + '-'*24 
-    ref1 = [np.array([0., 0.]), np.array([5000., 5000.]), np.array([4000., 12000.]), np.array([-5000., 7500.]), np.array([0., 3500.])]
-    track = zip(ref1[:-1], ref1[1:])
-    print 'Test Track:'
-    for i in track:
-        print i[0], '-->', i[1]
-    print '-'*24
-    point = np.array([5100., 4900.])
-    velocity = np.array([56., 60.])
-    print 'point:', point, '** velocity:', velocity
-    print 'response:', findWeights(track, point, velocity)
-    print  '-'*24
-    point = np.array([3950., 12150.])
-    velocity = np.array([11., 72.])
-    print 'point:', point, '** velocity:', velocity
-    print 'response:', findWeights(track, point, velocity)
-    print  '-'*24
+    ref1 = [np.array([0., 0., 0.]), np.array([5., 5., 10.]), np.array([4., 12., 10.]), np.array([-5., 7.5, 10.]), np.array([0., 3.5, 0.])]
+    ref2 = [np.array([0., 0., 0.]), np.array([6., 6., 10.]), np.array([-4., 7., 10.]), np.array([-5., 10., 10.]), np.array([0., 7, 0.])]
+    trkDict = {0: ref1, 1: ref2}
+    point = np.array([5.1, 4.9, 10])
+    velocity = np.array([.56, .51, .1])
+    bop = bunchOfParticles(point, velocity, 3, 1, trkDict)
+    pdb.set_trace()

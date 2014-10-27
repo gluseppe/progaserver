@@ -61,8 +61,12 @@ PENAL_GLOBAL = 0.1**8
 PENAL_ANGLE = 0.1**3
 PENAL_DIST = 0.1**3
 PI = 3.141592653589793
-ANGLE_GAP = PI/12 # 15. degrees
+# ANGLE_GAP = PI/12 # 15. degrees
 BETA_DIST = 0.1**3 # meters^{-1}
 BETA_ANGLE = 5 
+
+ROTSCALE = 0.0175 # around 1 degrees
+ALTSCALE = .005 # 5 centimeters
+XYSCALE = .001 # meters #ADJUST
 
 
