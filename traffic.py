@@ -117,6 +117,10 @@ class Traffic(plugins.Monitor):
 			cherrypy.log("returning traffic")
 			return self.getJSONTraffic()
 
+		if item == progaconstants.ITEM_TRAFFIC4MFS:
+			cherrypy.log("returning traffic for microsoft fsx", context="MFS")
+			return self.getJSONTraffic(progaconstants.ITEM_TRAFFIC4MFS)
+
 	
 	#questo rende sempre una versione stringa della posizione
 	def  getStrMyState(self):
@@ -125,13 +129,22 @@ class Traffic(plugins.Monitor):
 		#return str(self.myState['lat']) + ' ' + str(self.myState['lon'])
 
 
-	def getTraffic(self):
+	def getJSONTraffic(self,requestFrom=None):
+		return json.dumps(self.getTraffic(requestFrom=None))
+
+	def getTraffic(self, requestFrom=None):
+		
+
 		traffic = {}
 		for track in self.startedTracks:
-			traffic[track.track_id] = track.getCurrentState()
-
+			if requestFrom == None:
+				traffic[track.track_id] = track.getCurrentState()
+			else:
+				traffic[track.track_id] = track.getFutureState(4)
+			
 		return traffic
 
+	
 	def getIntent(self, track_id):
 		return ''
 
@@ -192,8 +205,8 @@ class Traffic(plugins.Monitor):
 		return weights
 
 
-	def getJSONTraffic(self):
-		return json.dumps(self.getTraffic())
+
+	
 
 
 	def POST(self,command=None,scenario_name=None):

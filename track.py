@@ -55,6 +55,32 @@ class Track(object):
 			return ret
 		return None
 
+	def getFutureState(self, lookahead=4):
+		if self.pointer == None:
+			return False
+
+		futurePointer = self.pointer+1
+		found = False
+		difference = 0
+
+		while not found:
+			try:
+				p = self.path[self.pointer]['float_timestamp']
+				n =  self.path[futurePointer]['float_timestamp']
+	
+			except IndexError:
+				return False
+
+			if n-p >=lookahead:
+				found = True
+			else:
+				futurePointer += 1
+
+		futureStatus = self.path[futurePointer]
+		pdb.set_trace()
+		return futureStatus
+
+
 	def next(self, elapsedtime, increment=1):
 
 		elapsedtime = elapsedtime - self.startAt

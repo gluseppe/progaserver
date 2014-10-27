@@ -249,6 +249,6 @@ class Predictor(object):
                 t = dt*j
                 pp = np.empty((NUMPARTICLES, 3))
                 for i in range(NUMPARTICLES):
-                    pp[i] = currP + currV*t + npr.multivariate_normal(np.zeros(3), np.identity(3)*(50+t*t))
+                    pp[i] = currP + currV*t + npr.multivariate_normal(np.zeros(3), np.identity(3)*(1000000))
                 L.append(pp)
             return L

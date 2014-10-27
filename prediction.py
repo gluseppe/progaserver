@@ -85,7 +85,7 @@ class PredictionEngine(plugins.Monitor):
 		nsteps = int(nsteps)
 		rawPrediction = self.toBool(raw)
 		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
-		pdb.set_trace()
+		#pdb.set_trace()
 
 		#RAW PREDICTION WAS REQUESTED, WE PROVIDE PARTICLES POSITIONS
 		if rawPrediction:
@@ -100,7 +100,7 @@ class PredictionEngine(plugins.Monitor):
 
 					prediction_matrix[flight][i] = prediction_matrix[flight][i].tolist()
 
-			pdb.set_trace()
+			#pdb.set_trace()
 			jmat = json.dumps(prediction_matrix)
 			return jmat
 
@@ -112,7 +112,7 @@ class PredictionEngine(plugins.Monitor):
 					for i in range(0,len(prediction_matrix[flight][dt][1])):
 						prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
 	
-			pdb.set_trace()
+			#pdb.set_trace()
 			jmat = json.dumps(prediction_matrix)
 			cherrypy.log("prediction ready", context="PREDICTION")
 	
