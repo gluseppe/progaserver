@@ -179,6 +179,8 @@ class Predictor(object):
                         self.weights[aID] = np.array([refTrck.w for refTrck in L])
                         self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
                         self.legs[aID] = None
+                        
+
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
                 cherrypy.log('end init', context='CARLO')
@@ -221,7 +223,8 @@ class Predictor(object):
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
                     #chk_str = "Check weights "+ str(self.weights["GIUS"])
                     #cherrypy.log(chk_str, context='CARLO')
-                    self.legs[aID] = np.array([f[0] for f in foo]) 
+                    self.legs[aID] = np.array([f[0] for f in foo])
+                    cherrypy.log("%s"%(self.weights[aID]),context="PREDTEST")
                 return True
                     
 
@@ -283,7 +286,7 @@ class Predictor(object):
             for j in range(nsteps):
                 #cherrypy.log("DENTRO IL FOR",context="PREDTEST");
                 pparticles.takeAmove()
-                cherrypy.log("pparticles length: %d "%(len(pparticles.positions)),context="PREDTEST")
+                cherrypy.log("%s"%(self.weights[aircraft_ID]),context="PREDTEST")
                 L.append(pparticles.positions)
 
             return L
@@ -329,7 +332,7 @@ class bunchOfParticles(object):
         vv = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in nextLeg]
         alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
-        for i in range(len(range(indices))):
+        for i in range(len(indices)):
             rrot = rotation( np.arctan2(alphasin[i], alphacos[i]) )
             self.velocities[i, :] = rrot(self.velocities[i, :])
         # rotate velocity for particle-index in simulTimes[1].nonzero()
@@ -353,8 +356,10 @@ class bunchOfParticles(object):
 
     def alphaToNextTurnPoint(self):
         uu = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in self.getLeg(np.arange(self.numPart)) ]
+        #pdb.set_trace()
         vv = [self.velocities[i,:2]/norm(self.velocities[i,:2]) for i in range(self.numPart)]
-        alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
+        cherrypy.log("uu0:%s vv0:%s"%(uu[0],vv[0]),context="PREDTEST")
+        alphasin = [v[0]*u[1] - v[1]*u[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
         return np.arctan2(alphasin, alphacos)
 

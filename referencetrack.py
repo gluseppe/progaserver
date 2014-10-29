@@ -94,7 +94,8 @@ class ReferenceTrack(object):
                         return [t[1].getNumpyVector() - t[0].getNumpyVector() for t in zip(self.line[:-1], self.line[1:])]
 
         def __repr__(self):
-                return "Line of %d points form %s to %s" % (len(self.line), self.line[0], self.line[-1])
+                #return "Line of %d points form %s to %s" % (len(self.line), self.line[0], self.line[-1])
+                return "%s"%([p for p in self.line])
 
         def __eq__(self,other):
             if other == None or other.__class__.__name__ != 'ReferenceTrack':
