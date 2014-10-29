@@ -3,7 +3,7 @@
   "flights": [
     {
       "path": "flight4.txt",
-      "start": 40,
+      "start": 5,
       "flight_id": "GIUS",
       "flight_intent": {
         "reference_track_id" : "00002",
@@ -12,7 +12,7 @@
     },
     {
       "path": "flight3.txt",
-      "start": 60,
+      "start": 10,
       "flight_id": "CLAUDIABIONDA",
       "flight_intent": {
         "reference_track_id" : "00002",
@@ -21,7 +21,7 @@
     },
     {
       "path": "flight2.txt",
-      "start": 80,
+      "start": 15,
       "flight_id": "BUUUU",
       "flight_intent": {
         "reference_track_id" : "00002",

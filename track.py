@@ -21,15 +21,16 @@ class Track(object):
 		self.startAt = 0;
 		self.started = False
 		self.declaredIntent = None
+		self.firstTime = True;
 
 
-	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading):
+	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading, pitch, bank):
 		if len(self.path) == 0:
 			self.pointer = 0
 
 		p3d = Point3D(lon, lat, altitude)
 		xy = p3d.xyFromLonLat(lon, lat)
-		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading})
+		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading, 'pitch':pitch, 'bank':bank})
 
 	def getPath(self):
 		return self.path
@@ -58,6 +59,10 @@ class Track(object):
 	def getFutureState(self, lookahead=4):
 		if self.pointer == None:
 			return False
+
+		#se per la prima volta inviamo la futureposition, in realta inviamo quella attuale perche
+		#il flight simulator la utilizzera solo per inizializzare l aereo
+		if self.firstTime: return self.path[self.pointer]
 
 		futurePointer = self.pointer+1
 		found = False

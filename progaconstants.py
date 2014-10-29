@@ -65,8 +65,12 @@ PI = 3.141592653589793
 BETA_DIST = 0.1**3 # meters^{-1}
 BETA_ANGLE = 5 
 
-ROTSCALE = 0.0175 # around 1 degrees
-ALTSCALE = .005 # 5 centimeters
-XYSCALE = .001 # meters #ADJUST
+#ROTSCALE = 0.0175 # around 1 degrees
+#ALTSCALE = .005 # 5 centimeters
+#XYSCALE = .001 # meters #ADJUST
+
+ROTSCALE = 0.1**12 # around 1 degrees
+ALTSCALE = 0.1**12 # 5 centimeters
+XYSCALE =  0.1**12 # meters #ADJUST
 
 

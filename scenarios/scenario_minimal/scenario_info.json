@@ -2,11 +2,11 @@
   "scenario_name": "scenario_minimal",
   "flights": [
     {
-      "path": "flight4.txt",
+      "path": "flight5.txt",
       "start": 5,
-      "flight_id": "GIUS",
+      "flight_id": "FLIGHT5",
       "flight_intent": {
-        "reference_track_id" : "00002",
+        "reference_track_id" : "00001",
         "turning_points": null
       }
     }

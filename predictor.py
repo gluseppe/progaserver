@@ -57,7 +57,7 @@ def findWeights(track, p, v):
         legDirection = leg[1]-leg[0]
         distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
-        return (candidateLeg[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
+        return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
     else:
         # aircraft lies in multiple or no sausages
         # look around turning points
@@ -197,7 +197,7 @@ class Predictor(object):
                 basta che ti fai un contatore interno. Se la cosa ti viene molto scomoda possiamo sempre cambiare la dinamica
                 e tornare alla chiamata esplicita: decidiamo un tempo, tipo 5 secondi, e ogni 5 secondi ti dico dall'esterno di aggiornare i pesi
                 """
-                cherrypy.log("asking for traffic at time " + str(elapsedSeconds))
+                #cherrypy.log("asking for traffic at time " + str(elapsedSeconds))
                 self.lastSeenTraffic = self.god.getTraffic()
                 if int(elapsedSeconds) % WUPDATE_SECONDS == 0:
                         return self.updateWeights() # weights have been updated
@@ -205,7 +205,7 @@ class Predictor(object):
                         return False # weights have not been updated
 
         def updateWeights(self):
-                cherrypy.log('update', context='CARLO')
+                #cherrypy.log('update', context='CARLO')
                 for aID, aircraftDict in self.lastSeenTraffic.items():
                     cherrypy.log('update 2', context='CARLO')
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
@@ -219,8 +219,8 @@ class Predictor(object):
                         cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
                         return False
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
-                    chk_str = "Check weights "+ str(self.weights["GIUS"])
-                    cherrypy.log(chk_str, context='CARLO')
+                    #chk_str = "Check weights "+ str(self.weights["GIUS"])
+                    #cherrypy.log(chk_str, context='CARLO')
                     self.legs[aID] = np.array([f[0] for f in foo]) 
                 return True
                     
@@ -253,6 +253,9 @@ class Predictor(object):
                 pred = {}
                 for aID in flight_IDs:
                     aircraftDict = self.lastSeenTraffic[aID]
+                    cherrypy.log("lat:%.4f lon:%.4f"%(aircraftDict['lat'],aircraftDict['lon']),context="PREDTEST")
+                    cherrypy.log("x:%.4f y:%.4f"%(aircraftDict['x'],aircraftDict['y']),context="PREDTEST")
+                    cherrypy.log("vx:%.4f vy:%.4f"%(aircraftDict['vx'],aircraftDict['vy']),context="PREDTEST")
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     if raw:
@@ -260,7 +263,8 @@ class Predictor(object):
                     else:
                         pred[aID] = self.binParticles(self.getParticles(p, v, NUMPARTICLES, deltaT, nsteps, aID), deltaT)
                     
-                    cherrypy.log("%s" % (pred.keys()), context="TEST")
+
+                    cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
                 return pred
 
         def binParticles(self, particlesList, dt, gridbins=GRIDBINS):
@@ -275,8 +279,11 @@ class Predictor(object):
         def getParticles(self, currP, currV, numParticles, dt, nsteps, aircraft_ID):
             L = []
             pparticles = bunchOfParticles(currP, currV, numParticles, dt, self.tracks[aircraft_ID], self.weights[aircraft_ID], self.legs[aircraft_ID])
+            
             for j in range(nsteps):
+                #cherrypy.log("DENTRO IL FOR",context="PREDTEST");
                 pparticles.takeAmove()
+                cherrypy.log("pparticles length: %d "%(len(pparticles.positions)),context="PREDTEST")
                 L.append(pparticles.positions)
 
             return L
@@ -306,6 +313,7 @@ class bunchOfParticles(object):
     def takeAmove(self):
         simulTimes = self.simulationTime(self.dt)
         # randomly rotate velocities
+        """
         for i, alpha in zip(range(self.numPart), self.alphaToNextTurnPoint()):
             angle = np.random.normal(loc=alpha, scale=ROTSCALE)
             rrot = rotation(angle)
@@ -313,6 +321,7 @@ class bunchOfParticles(object):
         #
         self.velocities[:, :2] *= 1. + np.random.normal(scale=XYSCALE, size=self.numPart).reshape((self.numPart,1))
         self.velocities[:, 2] += np.random.normal(scale=ALTSCALE, size=self.numPart)
+        """
         self.positions = self.positions + np.dot(np.diag(simulTimes[0]), self.velocities)
         indices = simulTimes[1].nonzero()[0]
         curLeg = self.getLeg(indices)

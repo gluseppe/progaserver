@@ -90,6 +90,8 @@ class Traffic(plugins.Monitor):
 			for startedTrack in self.startedTracks[:]:
 				if self.makeStep(startedTrack,elapsed_seconds) == True:
 					self.startedTracks.remove(startedTrack)
+
+			#pdb.set_trace()
 	
 			cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
 
@@ -130,7 +132,7 @@ class Traffic(plugins.Monitor):
 
 
 	def getJSONTraffic(self,requestFrom=None):
-		return json.dumps(self.getTraffic(requestFrom=None))
+		return json.dumps(self.getTraffic(requestFrom))
 
 	def getTraffic(self, requestFrom=None):
 		
@@ -140,6 +142,7 @@ class Traffic(plugins.Monitor):
 			if requestFrom == None:
 				traffic[track.track_id] = track.getCurrentState()
 			else:
+				pdb.set_trace()
 				traffic[track.track_id] = track.getFutureState(4)
 			
 		return traffic
