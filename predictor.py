@@ -313,7 +313,6 @@ class bunchOfParticles(object):
     def takeAmove(self):
         simulTimes = self.simulationTime(self.dt)
         # randomly rotate velocities
-        """
         for i, alpha in zip(range(self.numPart), self.alphaToNextTurnPoint()):
             angle = np.random.normal(loc=alpha, scale=ROTSCALE)
             rrot = rotation(angle)
@@ -321,7 +320,6 @@ class bunchOfParticles(object):
         #
         self.velocities[:, :2] *= 1. + np.random.normal(scale=XYSCALE, size=self.numPart).reshape((self.numPart,1))
         self.velocities[:, 2] += np.random.normal(scale=ALTSCALE, size=self.numPart)
-        """
         self.positions = self.positions + np.dot(np.diag(simulTimes[0]), self.velocities)
         indices = simulTimes[1].nonzero()[0]
         curLeg = self.getLeg(indices)
@@ -355,9 +353,12 @@ class bunchOfParticles(object):
         #return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
 
     def alphaToNextTurnPoint(self):
-        nextTP = np.array([ leg[1] for leg in self.getLeg(np.arange(self.numPart)) ] )
-        foo = (nextTP - self.positions[:,:2]).T
-        return np.arctan2(foo[1], foo[0])
+        uu = np.array([(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in self.getLeg(np.arange(self.numPart)) ] )
+        vv = self.velocities[:,:2]
+        alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
+        alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
+        alphasign = np.sign(alphasin)
+        return alphasign * np.arctan2(np.abs(alphasin), alphacos)
 
     def simulationTime(self, dt):
         timesToNextTP = self.timeToNextTurnPoint()
