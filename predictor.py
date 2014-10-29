@@ -325,13 +325,12 @@ class bunchOfParticles(object):
         curLeg = self.getLeg(indices)
         self.setNextLeg(indices)
         nextLeg = self.getLeg(indices)
-        uu = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in curLeg]
-        vv = [(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in nextLeg]
+        uu = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in curLeg]
+        vv = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in nextLeg]
         alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
-        alphasign = np.sign(alphasin)
-        for i in range(len(alphasign)):
-            rrot = rotation( alphasign[i] * np.arctan2(abs(alphasin[i]), alphacos[i]) )
+        for i in range(len(range(indices))):
+            rrot = rotation( np.arctan2(alphasin[i], alphacos[i]) )
             self.velocities[i, :] = rrot(self.velocities[i, :])
         # rotate velocity for particle-index in simulTimes[1].nonzero()
         self.positions = self.positions + np.dot(np.diag(simulTimes[1]), self.velocities)
@@ -353,12 +352,11 @@ class bunchOfParticles(object):
         #return norm(self.getPositionsAsList() -  nextTP)/self.getVelocitiesAsList()
 
     def alphaToNextTurnPoint(self):
-        uu = np.array([(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in self.getLeg(np.arange(self.numPart)) ] )
-        vv = np.array([self.velocities[i,:2]/norm(self.velocities[i,:2]) for i in range(self.numPart)])
+        uu = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in self.getLeg(np.arange(self.numPart)) ]
+        vv = [self.velocities[i,:2]/norm(self.velocities[i,:2]) for i in range(self.numPart)]
         alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
-        alphasign = np.sign(alphasin)
-        return alphasign * np.arctan2(np.abs(alphasin), alphacos)
+        return np.arctan2(alphasin, alphacos)
 
     def simulationTime(self, dt):
         timesToNextTP = self.timeToNextTurnPoint()
