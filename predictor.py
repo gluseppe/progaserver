@@ -354,7 +354,7 @@ class bunchOfParticles(object):
 
     def alphaToNextTurnPoint(self):
         uu = np.array([(leg[1] - leg[0])/norm(leg[1][:2] - leg[0][:2]) for leg in self.getLeg(np.arange(self.numPart)) ] )
-        vv = self.velocities[:,:2]
+        vv = np.array([self.velocities[i,:2]/norm(self.velocities[i,:2]) for i in range(self.numPart)])
         alphasin = [u[0]*v[1] - u[1]*v[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
         alphasign = np.sign(alphasin)
