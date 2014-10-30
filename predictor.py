@@ -36,7 +36,7 @@ def legger(track, p):
     for i, leg in zip(range(len(track)), track):
         c = .5 * (leg[1] + leg[0])
         a = .5 * norm(leg[1] - leg[0])
-        b = np.sqrt(1-ECC**2)
+        b = a*np.sqrt(1-ECC**2)
         pproj = projection(p-c, leg[1]-c)
         px = norm(pproj)
         py = norm(p-c-pproj)
@@ -50,87 +50,86 @@ def findWeights(track, p, v):
     based on position and velocity of the aircraft
     """
     candidateLegs = legger(track, p)
-    if len(candidateLegs) == 1:
-        # aircraft lies in only one sausage
-        cherrypy.log('in-leg', context='CARLO')
-        leg = track[candidateLegs[0]]
-        legDirection = leg[1]-leg[0]
-        distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
+    if norm(p - track[0][0]) < LOCRADIUS:
+        # aircraft lies around the departure airfield
+        cherrypy.log('appena partito', context='FINDWEIGHTS')
+        legDirection = track[0][1]-track[0][0]
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
-        return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
+        return (0, 1. )
+    elif norm(p - track[-1][1]) < LOCRADIUS:
+        # aircraft lies around the arrival airfield
+        cherrypy('in arrivo', context='FINDWEIGHTS')
+        legDirection = track[-1][1]-track[-1][0]
+        legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
+        return (len(track)-1, 1. )
     else:
         # aircraft lies in multiple or no sausages
         # look around turning points
-        if norm(p - track[0][0]) < LOCRADIUS:
-            # aircraft lies around the departure airfield
-            cherrypy.log('appena partito', context='CARLO')
-            legDirection = track[0][1]-track[0][0]
-            legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
-            return (0, np.exp(- BETA_DIST * norm(p - track[0][0]) - BETA_ANGLE * legTrackAngle))
-        elif norm(p - track[-1][1]) < LOCRADIUS:
-            # aircraft lies around the arrival airfield
-            cherrypy('in arrivo', context='CARLO')
-            legDirection = track[-1][1]-track[-1][0]
-            legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
-            return (len(track)-1, np.exp(- BETA_DIST * norm(p - track[-1][1]) - BETA_ANGLE * legTrackAngle))
-        else:
-            # look around turning points
-            for i, j in zip(range(len(track)-1), range(1, len(track))):
-                # prevLeg is the leg that 'enters' in the turnpoint
-                # nextLeg is the leg that 'exits' from the turnpoint
-                prevLeg, nextLeg = track[i], track[j]
-                turnPoint = nextLeg[0]
-                if norm(p - turnPoint) < LOCRADIUS:
-                    # the vector nextLeg[1]-prevLeg[0] joins the origin of prevLef with the destination of nextLeg
-                    # it is the 'average' direction that should be followed around the turnpoint
-                    u = prevLeg[1] - prevLeg[0]
-                    w = nextLeg[1] - nextLeg[0]
-                    vcrossu = v[0]*u[1] - v[1]*u[0]
-                    vcrossw = v[0]*w[1] - v[1]*w[0]
-                    ucrossw = u[0]*w[1] - u[1]*w[0]
-                    if ucrossw < 0:
-                        cherrypy.log('virata clockwise', context='CARLO')
-                        if vcrossu > 0 and vcrossw < 0:
-                            cherrypy.log( 'virata', context='CARLO')
-                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
-                                                 np.dot(v,w)/(norm(w) * norm(v))])
-                            if vangles[0] < vangles[1]:
-                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
-                            else:
-                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
-                        elif vcrossu > 0 and vcrossw > 0:
-                            cherrypy.log('interno', context='CARLO')
-                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) *  PENAL_ANGLE )
-                        elif vcrossu < 0 and vcrossw < 0:
-                            cherrypy.log('esterno', context='CARLO')
-                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE )
+        for i, j in zip(range(len(track)-1), range(1, len(track))):
+            # prevLeg is the leg that 'enters' in the turnpoint
+            # nextLeg is the leg that 'exits' from the turnpoint
+            prevLeg, nextLeg = track[i], track[j]
+            turnPoint = nextLeg[0]
+            if norm(p - turnPoint) < LOCRADIUS:
+                # the vector nextLeg[1]-prevLeg[0] joins the origin of prevLef with the destination of nextLeg
+                # it is the 'average' direction that should be followed around the turnpoint
+                u = prevLeg[1] - prevLeg[0]
+                w = nextLeg[1] - nextLeg[0]
+                vcrossu = v[0]*u[1] - v[1]*u[0]
+                vcrossw = v[0]*w[1] - v[1]*w[0]
+                ucrossw = u[0]*w[1] - u[1]*w[0]
+                if ucrossw < 0:
+                    cherrypy.log('virata clockwise', context='FINDWEIGHTS')
+                    if vcrossu > 0 and vcrossw < 0:
+                        cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                             np.dot(v,w)/(norm(w) * norm(v))])
+                        if vangles[0] < vangles[1]:
+                            return (i, np.exp(- BETA_ANGLE*vangles[0]))
                         else:
-                            cherrypy.log( 'opposto', context='CARLO')
-                            return (i, PENAL_DIST * PENAL_ANGLE)
+                            return (j, np.exp(- BETA_ANGLE*vangles[1]))
+                    elif vcrossu > 0 and vcrossw > 0:
+                        cherrypy.log('interno', context='FINDWEIGHTS')
+                        return ( j, PENAL_ANGLE )
+                    elif vcrossu < 0 and vcrossw < 0:
+                    	cherrypy.log('esterno', context='FINDWEIGHTS')
+                        return ( i, PENAL_ANGLE )
                     else:
-                        cherrypy.log('virata couterclockwise', context='CARLO')
-                        if vcrossu < 0 and vcrossw > 0:
-                            cherrypy.log( 'virata', context='CARLO')
-                            vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
-                                                 np.dot(v,w)/(norm(w) * norm(v))])
-                            if vangles[0] < vangles[1]:
-                                return (i, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[0]))
-                            else:
-                                return (j, np.exp(- BETA_DIST * norm(p - turnPoint) - BETA_ANGLE*vangles[1]))
-                        elif vcrossu < 0 and vcrossw < 0:
-                            cherrypy.log('interno', context='CARLO')
-                            return ( j, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
-                        elif vcrossu > 0 and vcrossw > 0:
-                            cherrypy.log('esterno', context='CARLO')
-                            return ( i, np.exp(- BETA_DIST * norm(p - turnPoint)) * PENAL_ANGLE) 
+                        cherrypy.log( 'opposto', context='FINDWEIGHTS')
+                        return (i, PENAL_DIST * PENAL_ANGLE)
+                else:
+                    cherrypy.log('virata couterclockwise', context='FINDWEIGHTS')
+                    if vcrossu < 0 and vcrossw > 0:
+                        cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
+                                             np.dot(v,w)/(norm(w) * norm(v))])
+                        if vangles[0] < vangles[1]:
+                            return (i, np.exp(- BETA_ANGLE*vangles[0]))
                         else:
-                            cherrypy.log('opposto', context='CARLO')
-                            return (i, PENAL_DIST * PENAL_ANGLE)
-            else:
-                cherrypy.log('no match found', context='CARLO')
-                distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
-                turnPointIndex = distances.index( min(distances) )
-                return (turnPointIndex, PENAL_GLOBAL)
+                            return (j, np.exp(- BETA_ANGLE*vangles[1]))
+                    elif vcrossu < 0 and vcrossw < 0:
+                        cherrypy.log('interno', context='FINDWEIGHTS')
+                        return ( j, PENAL_ANGLE) 
+                    elif vcrossu > 0 and vcrossw > 0:
+                        cherrypy.log('esterno', context='FINDWEIGHTS')
+                        return ( i, PENAL_ANGLE) 
+                    else:
+                        cherrypy.log('opposto', context='FINDWEIGHTS')
+                        return (i, PENAL_DIST * PENAL_ANGLE)
+        else:
+        	if len(candidateLegs) == 1:
+                # aircraft lies in only one sausage
+        		cherrypy.log('in-leg %d' % (candidateLegs[0]), context='FINDWEIGHTS')
+        		leg = track[candidateLegs[0]]
+        		legDirection = leg[1]-leg[0]
+        		distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
+        		legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
+        		return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
+        	else:
+        		cherrypy.log('no match found', context='FINDWEIGHTS')
+        		distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
+        		turnPointIndex = distances.index( min(distances) )
+        		return (turnPointIndex, PENAL_GLOBAL)
 
 def weightedValues(values, probabilities, size):
     # First using accumulate we create bins.
@@ -209,7 +208,6 @@ class Predictor(object):
         def updateWeights(self):
                 #cherrypy.log('update', context='CARLO')
                 for aID, aircraftDict in self.lastSeenTraffic.items():
-                    cherrypy.log('update 2', context='CARLO')
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     bar = [[a.getNumpyVector()[:2] for a in tt] for tt in self.tracks[aID]]
@@ -224,7 +222,7 @@ class Predictor(object):
                     #chk_str = "Check weights "+ str(self.weights["GIUS"])
                     #cherrypy.log(chk_str, context='CARLO')
                     self.legs[aID] = np.array([f[0] for f in foo])
-                    cherrypy.log("%s"%(self.weights[aID]),context="PREDTEST")
+                    cherrypy.log("updated weights: %s"%(self.weights[aID]),context="PREDTEST")
                 return True
                     
 

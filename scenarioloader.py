@@ -42,11 +42,11 @@ class ScenarioLoader(object):
 					timestamp = parts[0]
 					lat = float(parts[1])
 					lon = float(parts[2])
-					altitude = float(parts[3])
+					altitude = float(parts[3])*progaconstants.FOOT2MT
 					heading = float(parts[6])
-					v_x = float(parts[8])
-					v_y = float(parts[10])
-					v_z = float(parts[9])
+					v_x = float(parts[8])*progaconstants.FOOT2MT
+					v_y = float(parts[10])*progaconstants.FOOT2MT
+					v_z = float(parts[9])*progaconstants.FOOT2MT
 					pitch = float(parts[4])
 					bank = float(parts[5])
 
