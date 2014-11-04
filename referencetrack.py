@@ -111,20 +111,60 @@ class ReferenceTrack(object):
 
             return True
 
+        def lineAsListOfLegs(self):
+        	return [(t[0].getNumpyVector(), t[1].getNumpyVector()) for t in zip(self.line[:-1], self.line[1:])]
 
+        def distanceFromGivenPoint(self, p):
+        	distfromLeg = np.inf
+        	minDistLeg = -1
+        	line = self.lineAsListOfLegs()
+        	point = p.getNumpyVector()
+        	for leg, index in zip(line, range(len(line))):
+        		t = np.dot(leg[1]-leg[0], point-leg[0])/np.dot(leg[1]-leg[0], leg[1]-leg[0])
+        		print "check:", t
+        		if t >= 0 and t <= 1:
+        			candidateDist = np.sqrt( np.dot(leg[0] + t*(leg[1]-leg[0]) - point, leg[0] + t*(leg[1]-leg[0]) - point ) )
+        			if candidateDist <= distfromLeg:
+        				distfromLeg = candidateDist
+        				minDistLeg = index
+        	return (distfromLeg, minDistLeg)
+
+
+def trackSetAnalyzer(trackSet, objReferenceTrack):
+	"""
+	trackSet must be a dictionry of the form
+	{
+	'id_1': [point3D_1, point3D_2, ...],
+	'id_2': [point3D_1, point3D_2, ...],
+	.
+	.
+	.
+	'id_n': [point3D_1, point3D_2, ...]
+	}
+	"""
+	data = dict( zip( range( len(objReferenceTrack) ), [[] for i in range( len(objReferenceTrack) )] ) )
+
+	for track in trackSet.values():
+		for point in track:
+			d, l = objReferenceTrack.distanceFromGivenPoint(point)
+			data[l].append(d)
+	# Process the list in data[i] to compute the relevant statistic
 
 
 
 if __name__ == '__main__':
-        p1 = Point3D(pgc.LON0, pgc.LAT0, 0)
-        p2 = Point3D(pgc.LON0, pgc.LAT0, 100)
-        p3 = Point3D(pgc.LON0, pgc.LAT0 + 0.01, 100)
-        p4 = Point3D(pgc.LON0 + 0.01, pgc.LAT0 + 0.01, 100)
-        p5 = Point3D(pgc.LON0 + 0.01, pgc.LAT0, 100)
-        L = [p1, p2, p3 , p4, p5]
+        p1 = Point3D(2.0664806,48.8136806,  113.0808)
+        p2 = Point3D(1.9450000,48.9983333,  113.0808)
+        p3 = Point3D(1.1761917,49.3852111,  156.0576)
+        p4 = Point3D(0.5666667,49.1027778,  168.8592)
+        q = Point3D(2.017732, 48.984049,  113.0808)
+        qproj = Point3D(1.964787, 48.968452, 113.0808)
+        L = [p1, p2, p3 , p4]
         track = ReferenceTrack(L)
 
-        print track.getDirectionsList()
+        print track.distanceFromGivenPoint(q)
+        print '*'*30
+        print track.distanceFromGivenPoint(qproj)
 
 
 
