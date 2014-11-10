@@ -69,9 +69,11 @@ BETA_ANGLE = 5
 #ALTSCALE = .005 # 5 centimeters
 #XYSCALE = .001 # meters #ADJUST
 
-ROTSCALE = 0.015 # around 1 degrees
+#ROTSCALE = 0.015 # around 1 degrees
+ROTSCALE = 0.030 # around 1 degrees
 ALTSCALE = 0.1**4 # 5 centimeters
-XYSCALE =  0.075 # meters #ADJUST
+#XYSCALE =  0.075 # meters #ADJUST
+XYSCALE =  0.080 # meters #ADJUST
 
 FOOT2MT = 0.3048
 

@@ -82,23 +82,29 @@ class Track(object):
 				futurePointer += 1
 
 		futureStatus = self.path[futurePointer]
-		pdb.set_trace()
 		return futureStatus
 
 
 	def next(self, elapsedtime, increment=1):
 
+		#pdb.set_trace()
 		elapsedtime = elapsedtime - self.startAt
 		found = False
 		if self.pointer == None:
 			self.pointer = 0
 		
 		while not found:
+
+			if len(self.path)-self.pointer <=1:
+				#pdb.set_trace()
+				cherrypy.log("almost finished", context="DEBUG_FINISH")
+
 			try:
 				p = self.path[self.pointer]['float_timestamp']
 				n =  self.path[self.pointer+1]['float_timestamp']
 				
 			except IndexError:
+				cherrypy.log("IndexError", context="DEBUG_FINISH")
 				return False
 
 			if elapsedtime <= p:
@@ -108,11 +114,14 @@ class Track(object):
 			if (p <= elapsedtime and n > elapsedtime):
 				found = True
 			else:
+				#pdb.set_trace()
 				self.pointer += 1
+				cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
 
 
 		status = self.path[self.pointer]
-		cherrypy.log("%s,%s,%f"%(self.track_id,status['timestamp'],elapsedtime),context="TRACK,")
+		cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
+		cherrypy.log("%s,%s,%f"%(self.track_id,status['timestamp'],elapsedtime),context="DEBUG_FINISH")
 		return status
 
 		

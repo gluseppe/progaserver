@@ -57,9 +57,11 @@ class Traffic(plugins.Monitor):
 		int_elapsed_seconds = int(elapsed_seconds)
 		cherrypy.log("elapsed seconds:"+str(int_elapsed_seconds))
 
+		
 		if len(self.finishedTracks) == len(self.tracks):
 			#cherrypy.engine.publish(progaconstants.SIMULATION_FINISHED_CHANNEL_NAME)
-			self.sendFinishedCommand()
+			pass
+			#self.sendFinishedCommand()
 		else:
 
 		
@@ -100,6 +102,7 @@ class Traffic(plugins.Monitor):
 		#cherrypy.log("making step of track: " + track.getTrackId())
 		arrived = not track.next(elapsed_seconds, progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
+			#pdb.set_trace()
 			self.finishedTracks.append(track)
 		return arrived
 
@@ -235,6 +238,7 @@ class Traffic(plugins.Monitor):
 
 		if command == 'stop':
 			cherrypy.log("simulation is finished")
+			#pdb.set_trace();
 			cherrypy.engine.publish(progaconstants.SIMULATION_STOPPED_CHANNEL_NAME)
 			self.unsubscribe()
 			self.stop()

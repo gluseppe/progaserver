@@ -75,7 +75,7 @@ class ScenarioLoader(object):
 		scenario_name = jsonobj['scenario_name']
 		#cherrypy.log("\nLoading scenario: " + scenario_name)
 		flights = jsonobj['flights']
-		path1 = flights[0]['path']
+		#path1 = flights[0]['path']
 		#print("paths: "+path1)
 
 		for flights in jsonobj['flights']:

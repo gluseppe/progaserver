@@ -43,7 +43,8 @@ class PredictionEngine(plugins.Monitor):
 	In teoria tutte quelle diverse dall'aggiornamento pesi che viene fatto dal Predictor su stimolo della funzione trafficUpdated
 	"""
 	def predictionEngine(self):
-		cherrypy.log("prediction engine running", context='DEBUG')
+		pass
+		#cherrypy.log("prediction engine running", context='DEBUG')
 		#pass
 		#cherrypy.log("asking for traffic", context='DEBUG')
 		#currentState = self.traffic.getTraffic()

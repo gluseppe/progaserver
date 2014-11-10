@@ -8,6 +8,7 @@ from cherrypy import log
 from track import Track
 import simplejson as json
 import time
+import pdb
 
 
 class Automator(plugins.Monitor):
@@ -38,10 +39,13 @@ class Automator(plugins.Monitor):
 		elapsed_time = time.time() - self.t0
 		int_elapsed_seconds = int(elapsed_time)
 		cherrypy.log("selftrack updating", context="AUTO")
+		#pdb.set_trace()
 		arrived = not self.selfTrack.next(elapsed_time,progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
+			#probabilmente  qui che crasha
+			pdb.set_trace()
 			return False
-		else:
+		else:			
 			state = self.selfTrack.getCurrentState()
 			selfstate = {}
 			selfstate['lat'] = state['lat']
