@@ -172,11 +172,13 @@ class Predictor(object):
                 self.god = traffic
                 self.tracks = {}
                 self.weights = {}
+                self.tracksID = {}
                 self.legs = {}
                 cherrypy.log('init', context='CARLO')
                 for aID, L in initialWeights.items():
                         self.weights[aID] = np.array([refTrck.w for refTrck in L])
                         self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
+                        self.tracksID[aID] = [refTrck.refTrackID for refTrck in L]
                         self.legs[aID] = None
                         
 
@@ -268,26 +270,30 @@ class Predictor(object):
                     cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
                 return pred
 
-        def binParticles(self, particlesList, dt, gridbins=GRIDBINS):
+        def binParticles(self, particleTuple, dt, gridbins=GRIDBINS):
             Hlist = {}
             counter = 1
-            for L in particlesList:
+            for L in particleTuple[0].values():
                 H, edges = np.histogramdd(L, bins = gridbins)
                 Hlist[counter*dt] = [H/np.sum(H), edges]
                 counter += 1
-            return Hlist
+            return (Hlist, particleTuple[1])
+            # ritorna una tupla:
+            # Hlist è un dizionario le cui chiavi sono i tempi di preidizione e i valori sono coppie (matrice di frequenze e edges)
+            # il secondo elemento, ovvero particleTuple[1], e' una lista dei reference track IDs usati nella predizione
 
         def getParticles(self, currP, currV, numParticles, dt, nsteps, aircraft_ID):
-            L = []
+            L = {}
             pparticles = bunchOfParticles(currP, currV, numParticles, dt, self.tracks[aircraft_ID], self.weights[aircraft_ID], self.legs[aircraft_ID])
-            
-            for j in range(nsteps):
-                #cherrypy.log("DENTRO IL FOR",context="PREDTEST");
-                pparticles.takeAmove()
-                cherrypy.log("%s"%(self.weights[aircraft_ID]),context="PREDTEST")
-                L.append(pparticles.positions)
+            usedIDs = [self.tracksID[i] for i in pparticles.tracksUsed]
 
-            return L
+            for j in range(nsteps):
+                pparticles.takeAmove()
+                L[j*dt] = pparticles.positions
+            return (L, usedIDs)
+            # ritorna una tupla:
+            # L è un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
+            # il secondo elemento, ovvero usedIDs, e' una lista dei reference track IDs usati nella predizione
 
 #############################################################################################################
 
@@ -310,6 +316,7 @@ class bunchOfParticles(object):
         self.partReference = np.vstack( (sampledTracks, [legs[i] for i in sampledTracks]) )
         # self.partReference[0,j] = indice della traccia di riferimento della particella j-esima
         # self.partReference[1,j] = indice del leg di riferimento della particella j-esima
+        self.tracksUsed = np.unique(sampledTracks)
         
     def takeAmove(self):
         simulTimes = self.simulationTime(self.dt)

@@ -72,7 +72,7 @@ class ReferenceTrack(object):
         #pointList e' una list di Point3D       
         def __init__(self, pointList, flight_id=None):
                 self._line = pointList
-                self.id = None
+                self._refTrackID = None
                 self.w = -1
                 self._flight_id = flight_id
 
@@ -87,6 +87,14 @@ class ReferenceTrack(object):
         @flight_id.setter
         def flight_id(self, flightID):
             self._flight_id = flightID
+
+        @property
+        def refTrackID(self):
+            return self._refTrackID
+
+        @refTrackID.setter
+        def refTrackID(self, refTrackID):
+            self._refTrackID = refTrackID
 
 
         def getDirectionsList(self):
@@ -153,18 +161,12 @@ def trackSetAnalyzer(trackSet, objReferenceTrack):
 
 
 if __name__ == '__main__':
-        p1 = Point3D(2.0664806,48.8136806,  113.0808)
-        p2 = Point3D(1.9450000,48.9983333,  113.0808)
-        p3 = Point3D(1.1761917,49.3852111,  156.0576)
-        p4 = Point3D(0.5666667,49.1027778,  168.8592)
-        q = Point3D(2.017732, 48.984049,  113.0808)
-        qproj = Point3D(1.964787, 48.968452, 113.0808)
+        p1 = Point3D(2.0664806, 48.8136806, 113.0808)
+        p2 = Point3D(1.9450000, 48.9983333,  113.0808)
+        p3 = Point3D(1.1761917, 49.3852111,  156.0576)
+        p4 = Point3D(0.5666667, 49.1027778,  168.8592)
         L = [p1, p2, p3 , p4]
         track = ReferenceTrack(L)
-
-        print track.distanceFromGivenPoint(q)
-        print '*'*30
-        print track.distanceFromGivenPoint(qproj)
 
 
 
