@@ -43,7 +43,7 @@ class Automator(plugins.Monitor):
 		arrived = not self.selfTrack.next(elapsed_time,progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
 			#probabilmente  qui che crasha
-			pdb.set_trace()
+			#pdb.set_trace()
 			return False
 		else:			
 			state = self.selfTrack.getCurrentState()

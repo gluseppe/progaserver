@@ -279,7 +279,7 @@ class Predictor(object):
                 counter += 1
             return (Hlist, particleTuple[1])
             # ritorna una tupla:
-            # Hlist è un dizionario le cui chiavi sono i tempi di preidizione e i valori sono coppie (matrice di frequenze e edges)
+            # Hlist e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono coppie (matrice di frequenze e edges)
             # il secondo elemento, ovvero particleTuple[1], e' una lista dei reference track IDs usati nella predizione
 
         def getParticles(self, currP, currV, numParticles, dt, nsteps, aircraft_ID):
@@ -292,7 +292,7 @@ class Predictor(object):
                 L[j*dt] = pparticles.positions
             return (L, usedIDs)
             # ritorna una tupla:
-            # L è un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
+            # L e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
             # il secondo elemento, ovvero usedIDs, e' una lista dei reference track IDs usati nella predizione
 
 #############################################################################################################
