@@ -262,10 +262,12 @@ class Predictor(object):
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     if raw:
+                        #pdb.set_trace()
                         pred[aID] = self.getParticles(p, v, NUMPARTICLES, deltaT, nsteps, aID)
                     else:
                         pred[aID] = self.binParticles(self.getParticles(p, v, NUMPARTICLES, deltaT, nsteps, aID), deltaT)
                     
+                    #pdb.set_trace()
 
                     cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
                 return pred
@@ -283,9 +285,12 @@ class Predictor(object):
             # il secondo elemento, ovvero particleTuple[1], e' una lista dei reference track IDs usati nella predizione
 
         def getParticles(self, currP, currV, numParticles, dt, nsteps, aircraft_ID):
+            #pdb.set_trace()
             L = {}
             pparticles = bunchOfParticles(currP, currV, numParticles, dt, self.tracks[aircraft_ID], self.weights[aircraft_ID], self.legs[aircraft_ID])
-            usedIDs = [self.tracksID[i] for i in pparticles.tracksUsed]
+            #usedIDs = [self.tracksID[i] for i in pparticles.tracksUsed]
+            usedIDs = [self.tracksID[aircraft_ID][i] for i in pparticles.tracksUsed]
+            #pdb.set_trace()
 
             for j in range(nsteps):
                 pparticles.takeAmove()

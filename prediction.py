@@ -87,19 +87,22 @@ class PredictionEngine(plugins.Monitor):
 		rawPrediction = self.toBool(raw)
 		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
 		#pdb.set_trace()
-
 		#RAW PREDICTION WAS REQUESTED, WE PROVIDE PARTICLES POSITIONS
 		if rawPrediction:
 			for flight in prediction_matrix:
-				for i in range(0,len(prediction_matrix[flight])):
-					for tris in range(0,len(prediction_matrix[flight][i])):
-						#pdb.set_trace()
+				for times in prediction_matrix[flight][0]:
+					#prediction_matrix[flight][0] e' l'elemento che contiene i valori di predizione
+					#mentre [1] contiene le leg utilizzate per predire quel volo
+					for i in range(0,len(prediction_matrix[flight][0][times])):
+						#for tris in range(0,len(prediction_matrix[flight][0][times][i])):
+							#pdb.set_trace()
 						if (coords_type == progaconstants.COORDS_TYPE_GEO):
-							p3d = Point3D();
-							vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][i][tris][0], prediction_matrix[flight][i][tris][1], prediction_matrix[flight][i][tris][2])
-							prediction_matrix[flight][i][tris] = vect
+							p3d = Point3D()
+							#pdb.set_trace()
+							vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][0][times][i][0], prediction_matrix[flight][0][times][i][1], prediction_matrix[flight][0][times][i][2])
+							prediction_matrix[flight][0][times][i] = vect
 
-					prediction_matrix[flight][i] = prediction_matrix[flight][i].tolist()
+					prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
 
 			#pdb.set_trace()
 			jmat = json.dumps(prediction_matrix)
