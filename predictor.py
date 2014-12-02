@@ -174,17 +174,17 @@ class Predictor(object):
                 self.weights = {}
                 self.tracksID = {}
                 self.legs = {}
-                cherrypy.log('init', context='CARLO')
                 for aID, L in initialWeights.items():
                         self.weights[aID] = np.array([refTrck.w for refTrck in L])
                         self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
                         self.tracksID[aID] = [refTrck.refTrackID for refTrck in L]
+                        cherrypy.log('%s' % (self.tracksID[aID]), context='CARLO') 
+                        # questo messaggio di log mostra if flight_intent_IDs noti al sistema per ogni aircraft_ID
                         self.legs[aID] = None
                         
 
                 self.lastSeenTraffic = None
                 self.t0 = -1.0
-                cherrypy.log('end init', context='CARLO')
                 npr.seed()
 
         def simulationStarted(self, t0):
@@ -272,14 +272,14 @@ class Predictor(object):
                     cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
                 return pred
 
-        def binParticles(self, particleTuple, dt, gridbins=GRIDBINS):
+        def binParticles(self, particleList, dt, gridbins=GRIDBINS):
             Hlist = {}
             counter = 1
-            for L in particleTuple[0].values():
+            for L in particleList[0].values():
                 H, edges = np.histogramdd(L, bins = gridbins)
                 Hlist[counter*dt] = [H/np.sum(H), edges]
                 counter += 1
-            return (Hlist, particleTuple[1])
+            return [Hlist, particleList[1]]
             # ritorna una tupla:
             # Hlist e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono coppie (matrice di frequenze e edges)
             # il secondo elemento, ovvero particleTuple[1], e' una lista dei reference track IDs usati nella predizione
@@ -292,10 +292,10 @@ class Predictor(object):
             usedIDs = [self.tracksID[aircraft_ID][i] for i in pparticles.tracksUsed]
             #pdb.set_trace()
 
-            for j in range(nsteps):
+            for j in range(1,nsteps+1):
                 pparticles.takeAmove()
                 L[j*dt] = pparticles.positions
-            return (L, usedIDs)
+            return [L, usedIDs]
             # ritorna una tupla:
             # L e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
             # il secondo elemento, ovvero usedIDs, e' una lista dei reference track IDs usati nella predizione
