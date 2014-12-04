@@ -169,6 +169,7 @@ class Predictor(object):
         se chiami altri metodi potrebbe crashare e in seguito potresti subire un'invasione di locuste
         """
         def __init__(self, traffic, initialWeights):
+                #pdb.set_trace()
                 self.god = traffic
                 self.tracks = {}
                 self.weights = {}

@@ -1,6 +1,7 @@
 import progaconstants
 import simplejson as json
 from referencetrack import Point3D, ReferenceTrack
+import pdb
 
 
 
@@ -37,9 +38,10 @@ class ReferenceTracksHandler(object):
 			for p in points:
 				p_list.append(Point3D(p['lon'],p['lat'],p['h']))
 
-			r = ReferenceTrack(p_list,track_id)
-			r.id = rt_id
-			ret.append(r)
+			refTrack = ReferenceTrack(p_list,track_id)
+			#pdb.set_trace()
+			refTrack.refTrackID = rt_id
+			ret.append(refTrack)
 
 		return ret
 

@@ -12,6 +12,7 @@ from scenario import Scenario
 from track import Track
 from referencetrack import ReferenceTrack, Point3D
 import referencetrackshandler
+import pdb
 
 
 
@@ -87,6 +88,10 @@ class ScenarioLoader(object):
 			raw_flight_intent = flights['flight_intent']
 			flight_intent_point_list = None
 			flight_intent = None
+
+			#pdb.set_trace()
+
+
 			
 			#se l intent e' stato specificato, allora abbiamo altri due casi
 			if raw_flight_intent != None:
@@ -98,7 +103,7 @@ class ScenarioLoader(object):
 				if reference_track_id != None:
 					cherrypy.log("reference_trackid: "+reference_track_id, context="DEBUG")
 					rt = self.referenceTrackHandler.getReferenceTrack(reference_track_id)
-					rt.id = reference_track_id
+					rt.refTrackID = reference_track_id
 					rt.flight_id = flight_id
 					self.addTrack(flight_file_name,flight_id,flight_start,rt)
 
@@ -113,7 +118,7 @@ class ScenarioLoader(object):
 				
 
 					flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
-					flight_intent.id = reference_track_id
+					flight_intent.refTrackID = reference_track_id
 					#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
 					self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
 

@@ -145,7 +145,7 @@ class Traffic(plugins.Monitor):
 			if requestFrom == None:
 				traffic[track.track_id] = track.getCurrentState()
 			else:
-				pdb.set_trace()
+				#pdb.set_trace()
 				traffic[track.track_id] = track.getFutureState(4)
 			
 		return traffic
@@ -184,7 +184,7 @@ class Traffic(plugins.Monitor):
 				declared_intent = track.declaredIntent
 				declared_intent.w = progaconstants.DECLARED_INTENT_PROBABILITY
 				#cherrypy.log("computing weights for track:" + track.track_id)
-				if declared_intent.id == None:
+				if declared_intent.refTrackID == None:
 					#cherrypy.log("computing weights for track:" + track.track_id)
 					all_intents = self.referenceTracksHandler.getAllIntents(track.track_id)
 					wt = []
@@ -202,12 +202,15 @@ class Traffic(plugins.Monitor):
 					wt.append(declared_intent)
 					residual = 1.0 - progaconstants.DECLARED_INTENT_PROBABILITY
 					for intent in all_intents:
-						if intent.id != declared_intent.id:
+						pdb.set_trace
+						if intent.refTrackID != declared_intent.refTrackID:
 							intent.w = residual/(len(all_intents)-1)
 							wt.append(intent)
 
 					weights[track.track_id] = wt
 
+		
+		#pdb.set_trace()
 		return weights
 
 
@@ -259,7 +262,7 @@ class Traffic(plugins.Monitor):
 				for flight_id, r_tracks in self.initialWeights.items():
 					cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
 					for t in r_tracks:
-						cherrypy.log("ref_track:"+t.id+" w:"+str(t.w))
+						cherrypy.log("ref_track:"+t.refTrackID+" w:"+str(t.w))
 	
 	
 				self.startedTracks = []
