@@ -104,7 +104,7 @@ class Track(object):
 				n =  self.path[self.pointer+1]['float_timestamp']
 				
 			except IndexError:
-				cherrypy.log("IndexError", context="DEBUG_FINISH")
+				cherrypy.log("Flight %s Finished"%(self.track_id), context="DEBUG_FINISH")
 				return False
 
 			if elapsedtime <= p:

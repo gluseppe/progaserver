@@ -69,10 +69,10 @@ class Traffic(plugins.Monitor):
 		
 				#in questo punto ci andranno gli aerei che si muovono
 				if self.justStarted:
-					#se abbiamo appena iniziato, passati 0 secondi, faccio partire tutte le tracce senza delay
+					#se abbiamo appena iniziato, passati 0 secondi, faccio partire tutte le tracce senza delay o con anticipo
 					for track in self.tracks:
 						#cherrypy.log("i'm track " + track.getTrackId() + " and my start is " + str(track.getStartTime()))
-						if track.getStartTime() == 0 and track.hasStarted()==False:
+						if track.getStartTime() <= 0 and track.hasStarted()==False:
 							#cherrypy.log("starting track " + track.getTrackId())
 							track.startTrack()
 							self.startedTracks.append(track)

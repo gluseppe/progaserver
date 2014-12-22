@@ -30,6 +30,7 @@ class ScenarioLoader(object):
 
 	#it requires a track file recorded from flight simulator
 	#see flight1.txt for example
+	#if you
 	def loadTrack(self, trackfilename, track_id, flight_start):
 		#trackflilename does not include the path, it's only name and extesion
 		#track = open("./Flight1.txt", "r")
@@ -40,22 +41,36 @@ class ScenarioLoader(object):
 				
 				if (not (line.startswith('#') or line.startswith('/'))) and len(line)>30:
 					parts = line.split()
-					timestamp = parts[0]
-					lat = float(parts[1])
-					lon = float(parts[2])
-					altitude = float(parts[3])*progaconstants.FOOT2MT
-					heading = float(parts[6])
-					v_x = float(parts[8])*progaconstants.FOOT2MT
-					v_y = float(parts[10])*progaconstants.FOOT2MT
-					v_z = float(parts[9])*progaconstants.FOOT2MT
-					pitch = float(parts[4])
-					bank = float(parts[5])
 
-					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank)
+					timestamp = float(parts[0])
+
+					cherrypy.log("timestamp:%s"%(timestamp),context="ANTICIPATE")
+					#pdb.set_trace()
+					simulation_timestamp = -1;
+					if (flight_start < 0):
+						simulation_timestamp = timestamp-abs(flight_start)
+					else:
+						simulation_timestamp = timestamp
+						
+					
+					if (flight_start >= 0 or timestamp >= abs(flight_start)):
+						cherrypy.log("importing line with timestamp:%s and simulation_timestamp %f"%(timestamp,simulation_timestamp),context="ANTICIPATE");
+						lat = float(parts[1])
+						lon = float(parts[2])
+						altitude = float(parts[3])*progaconstants.FOOT2MT
+						heading = float(parts[6])
+						v_x = float(parts[8])*progaconstants.FOOT2MT
+						v_y = float(parts[10])*progaconstants.FOOT2MT
+						v_z = float(parts[9])*progaconstants.FOOT2MT
+						pitch = float(parts[4])
+						bank = float(parts[5])
+	
+						track.addStep(simulation_timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank)
 
 				cont += 1
 				
 		track.setStart(flight_start)
+		#pdb.set_trace()
 		return track
 
 
