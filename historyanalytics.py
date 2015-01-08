@@ -4,6 +4,7 @@ from track import Track
 import glob
 import progaconstants
 import numpy as np
+from scipy import stats
 
 
 
@@ -44,14 +45,60 @@ class HistoryAnalitics(object):
 					track.append(np.array([lon, lat, altitude], dtype=np.float64))
 		return track
 
+	def summary(self):
+		"""
+		Display a summary of loaded data
+		"""
+		message = []
+		message.append('Summary of loaded dataset:\n' + '-'*20)
+		llen = len(self.track_list)
+		message.append('%d flown traces' % (llen))
+		ppoints = sum([len(i) for i in self.track_list])
+		message.append(('%d 3D recorded points' % (ppoints)))
+		message.append('%.3f points per track on average' % (float(ppoints)/float(llen)))
+
+		return '\n'.join(message)
+
+	def computeKDE(self):
+		"""
+		Compute Kernel Density Estimation of lat-lon data in track_list
+		"""
+		lon = np.array([track[i][1] for track in self.track_list for i in range(len(track))])
+		lat = np.array([track[i][0] for track in self.track_list for i in range(len(track))])
+		minlon = lon.min()
+		minlat = lat.min()
+		maxlon = lon.max()
+		maxlat = lat.max()
+		values = np.vstack([lat, lon])
+		kernel = stats.gaussian_kde(values) # this is the KDE
+		return (kernel, minlon, minlat, maxlon, maxlat)
+
+	def plotKDE(self):
+		"""
+		Plot Kernel Density Estimation of lat-lon data in track_list
+		"""
+		import matplotlib.pyplot as plt
+		kernel, minlon, minlat, maxlon, maxlat = self.computeKDE()
+		X, Y = np.mgrid[minlat:maxlat:100j, minlon:maxlon:100j]
+		positions = np.vstack([X.ravel(), Y.ravel()])
+		# kernel must be evaluated on a grid!
+		Z = np.reshape(kernel(positions).T, X.shape)
+		fig = plt.figure()
+		ax = fig.add_subplot(111)
+		ax.imshow(np.rot90(Z), cmap=plt.cm.gist_earth_r, extent=[minlat, maxlat, minlon, maxlon])
+		#ax.plot(lon, lat, 'k.', markersize=2)
+		ax.set_xlim([minlat, maxlat])
+		ax.set_ylim([minlon, maxlon])
+		plt.show()
+
+
 def debug():
 	"""
 	Just for testing purposes
 	"""
 	ha = HistoryAnalitics("query1")
 	tl = ha.track_list
-	print len(tl)
-	print tl[0][:3]
+	ha.plotKDE()
 
 
 if __name__ == '__main__':
