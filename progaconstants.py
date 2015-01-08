@@ -78,3 +78,4 @@ XYSCALE =  0.080 # meters #ADJUST
 FOOT2MT = 0.3048
 
 
+AIRFIELD_CUTOFF_DISTANCE = 10 # distance in Km
