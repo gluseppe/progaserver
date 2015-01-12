@@ -33,6 +33,7 @@ class PredictionEngine(plugins.Monitor):
 		self.bus.subscribe(progaconstants.SIMULATION_STARTED_CHANNEL_NAME,self.simulationStarted)
 
 
+		self.monitor_active = False;
 		self.sleeping_time = sleeping_time
 		self.traffic = traffic
 		self.predictor = None
@@ -78,53 +79,67 @@ class PredictionEngine(plugins.Monitor):
 	def toBool(self, s):
 		return s.lower() in ['true', '1', 't', 'y', 'yes', 'yeah', 'yup', 'certainly', 'uh-huh']
 
+	
+	'''
+	in questa funzione mettiamo il risultato del sensing di potenziali conflitti
+	il monitoraggio non verra fatto automaticamente dal server ma richiesto continuamente
+	dal client per tutta la durata di attivazione della funzione
+	in altre parole ci pensa il client a tenersi informato sullo stato dei conflitti potenziali
+	'''
+	def findPotentialConflicts(ownship_state):
+		pass
 
 	@cherrypy.tools.accept(media='text/plain')
 	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO):
-		flight_IDs = [flight_id]
-		deltaT = int(deltaT)
-		nsteps = int(nsteps)
-		rawPrediction = self.toBool(raw)
-		prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
-		#pdb.set_trace()
-		#RAW PREDICTION WAS REQUESTED, WE PROVIDE PARTICLES POSITIONS
-		if rawPrediction:
-			for flight in prediction_matrix:
-				for times in prediction_matrix[flight][0]:
-					#prediction_matrix[flight][0] e' l'elemento che contiene i valori di predizione
-					#mentre [1] contiene le leg utilizzate per predire quel volo
-					for i in range(0,len(prediction_matrix[flight][0][times])):
-						#for tris in range(0,len(prediction_matrix[flight][0][times][i])):
-							#pdb.set_trace()
-						if (coords_type == progaconstants.COORDS_TYPE_GEO):
-							p3d = Point3D()
-							#pdb.set_trace()
-							vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][0][times][i][0], prediction_matrix[flight][0][times][i][1], prediction_matrix[flight][0][times][i][2])
-							prediction_matrix[flight][0][times][i] = vect
-
-					prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
-
+		if flight_id == progaconstants.MONITOR_ME_COMMAND:
+			ownship_state = traffic.getMyState()
+			return findPotentialConflicts(ownship_state)
+		else:
+			flight_IDs = [flight_id]
+			deltaT = int(deltaT)
+			nsteps = int(nsteps)
+			rawPrediction = self.toBool(raw)
+			prediction_matrix = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps,rawPrediction)
 			#pdb.set_trace()
-			jmat = json.dumps(prediction_matrix)
-			return jmat
-
-		#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
-		else:		
-			for flight in prediction_matrix:
-				for dt in prediction_matrix[flight]:
-					prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
-					for i in range(0,len(prediction_matrix[flight][dt][1])):
-						prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
+			#RAW PREDICTION WAS REQUESTED, WE PROVIDE PARTICLES POSITIONS
+			if rawPrediction:
+				for flight in prediction_matrix:
+					for times in prediction_matrix[flight][0]:
+						#prediction_matrix[flight][0] e' l'elemento che contiene i valori di predizione
+						#mentre [1] contiene le leg utilizzate per predire quel volo
+						for i in range(0,len(prediction_matrix[flight][0][times])):
+							#for tris in range(0,len(prediction_matrix[flight][0][times][i])):
+								#pdb.set_trace()
+							if (coords_type == progaconstants.COORDS_TYPE_GEO):
+								p3d = Point3D()
+								#pdb.set_trace()
+								vect = p3d.lonLatAltFromXYZ(prediction_matrix[flight][0][times][i][0], prediction_matrix[flight][0][times][i][1], prediction_matrix[flight][0][times][i][2])
+								prediction_matrix[flight][0][times][i] = vect
 	
-			#pdb.set_trace()
-			jmat = json.dumps(prediction_matrix)
-			cherrypy.log("prediction ready", context="PREDICTION")
+						prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
 	
+				#pdb.set_trace()
+				jmat = json.dumps(prediction_matrix)
+				#pdb.set_trace()
+				return jmat
 	
-			
-			#scrivi qui codice di test
-			#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
-			return jmat
+			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
+			else:		
+				for flight in prediction_matrix:
+					for dt in prediction_matrix[flight]:
+						prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
+						for i in range(0,len(prediction_matrix[flight][dt][1])):
+							prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
+		
+				#pdb.set_trace()
+				jmat = json.dumps(prediction_matrix)
+				cherrypy.log("prediction ready", context="PREDICTION")
+		
+		
+				
+				#scrivi qui codice di test
+				#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
+				return jmat
 	
 	def POST(self,command=''):
 		if command == 'start':

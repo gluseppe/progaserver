@@ -134,6 +134,9 @@ class Traffic(plugins.Monitor):
 		#return str(self.myState['lat']) + ' ' + str(self.myState['lon'])
 
 
+	def getMyState(self):
+		return self.myState
+
 	def getJSONTraffic(self,requestFrom=None):
 		return json.dumps(self.getTraffic(requestFrom))
 
