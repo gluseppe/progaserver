@@ -42,6 +42,9 @@ class Traffic(plugins.Monitor):
 		self.finishedTracks = None
 		self.referenceTracksHandler = ReferenceTracksHandler()
 		self.simulationStarted = False
+		self.ownship_intent = None
+		self.ownship_intent_id = None
+		self.ownship_id = None
 
 
 	def getActiveFlightIDs(self):
@@ -51,8 +54,14 @@ class Traffic(plugins.Monitor):
 		#pdb.set_trace()
 		return ids
 
-		 
 
+	def getOwnshipIntentID(self):
+		return self.ownship_intent_id
+
+
+	def getOwnshipIntent(self):
+		return self.ownship_intent
+		 
 
 	def sendFinishedCommand(self):
 		s = requests.Session()
@@ -270,6 +279,10 @@ class Traffic(plugins.Monitor):
 				self.scenario = self.scenarioloader.loadScenario(scenario_name)
 				self.tracks = self.scenario.getTracks()
 				self.initialWeights = self.computeInitialWeightsForReferenceTracks()
+
+				self.ownship_intent_id = self.scenario.getOwnshipIntentID()
+				self.ownship_intent = self.referenceTracksHandler.getReferenceTrack(self.ownship_intent_id)
+				pdb.set_trace()
 				cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
 					
 				for flight_id, r_tracks in self.initialWeights.items():

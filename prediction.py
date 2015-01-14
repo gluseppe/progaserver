@@ -179,9 +179,9 @@ class PredictionEngine(plugins.Monitor):
 			p = Point3D(ownship_state['lon'], ownship_state['lat'], ownship_state['h']*FOOT2MT).getNumpyVector()
 			#pdb.set_trace()
 			fids = self.traffic.getActiveFlightIDs()
-			cherrypy.log('Own position: %s' % (p), context='TRAFFIC')
-
-			intruders = self.checkConflicts(p,v,fids,120,3)
+			ownship_intent = self.traffic.getOwnshipIntent()
+			pdb.set_trace()
+			intruders = self.checkConflicts(p,v,fids,120,3,ownship_intent)
 			#pdb.set_trace()
 			return json.dumps(intruders)
 		else:
