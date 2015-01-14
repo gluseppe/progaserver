@@ -14,8 +14,10 @@ from collections import defaultdict
 
 class Scenario(object):
 
-	def __init__(self, tracks):
+	def __init__(self, tracks, ownship_id, ownship_intent_id):
 		self.tracks = tracks
+		self.ownship_id = ownship_id
+		self.ownship_intent_id = ownship_intent_id
 		cherrypy.log("Sono dentro scenario e ho " + str(len(self.tracks)) + "tracce")
 
 	def getStartingTimes(self):
@@ -29,6 +31,11 @@ class Scenario(object):
 	def getTracks(self):
 		return self.tracks
 
+	def getOwnshipID(self):
+		return self.ownship_id
+
+	def getOwnshipIntentID(self):
+		return self.ownship_intent_id
 
 	def getTracksToStart(self):
 		toStart = defaultdict(list)

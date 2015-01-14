@@ -27,6 +27,8 @@ class ScenarioLoader(object):
 		self.scenarioLoaded = False
 		self.scenario = None
 		self.referenceTrackHandler = referenceTrackHandler
+		self.ownship_id = None
+		self.ownship_intent_id = None
 
 	#it requires a track file recorded from flight simulator
 	#see flight1.txt for example
@@ -89,6 +91,8 @@ class ScenarioLoader(object):
 		#cherrypy.log(jsonobj)
 
 		scenario_name = jsonobj['scenario_name']
+		self.ownship_id = jsonobj['ownship_id']
+		self.ownship_intent_id = jsonobj['ownship_intent_id']
 		#cherrypy.log("\nLoading scenario: " + scenario_name)
 		flights = jsonobj['flights']
 		#path1 = flights[0]['path']
@@ -141,7 +145,8 @@ class ScenarioLoader(object):
 			
 
 		self.scenarioLoaded = True
-		scenario = Scenario(self.tracks)
+		pdb.set_trace()
+		scenario = Scenario(self.tracks, self.ownship_id, self.ownship_intent_id)
 		#cherrypy.log("Sono dentro scenario loader e ho " + str(len(self.tracks)) + "tracce")
 		return scenario
 

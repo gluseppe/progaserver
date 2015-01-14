@@ -1,5 +1,7 @@
 {
   "scenario_name": "scenario_manzato",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00001",
   "flights": [
     {
       "path": "flight4.txt",
