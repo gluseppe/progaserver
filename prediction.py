@@ -26,14 +26,14 @@ from progaconstants import ALERT_DISTANCE, FOOT2MT
 def euclideanDistance(p, q):
 	return np.sqrt(np.dot(p-q, p-q))
 
-def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
+def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 	"""
 	Works with numpy 3D array.
 	Returns the future position of the ownship, considering
 	speed, intent and given timeHorizon
 	timeHorizons must be an iterable containing times in seconds
 	"""
-	if ownIntent is None:
+	if ownInt is None:
 		cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
 		return [ownPos + t*ownVel for t in timeHorizons]
 	else:
@@ -41,6 +41,8 @@ def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
 		# find next turn point
 		# generate list of times to next turning points
 		# propagate position
+		L = [p.getNumpyVector() for p in ownInt.line]
+		ownIntent = zip(L[:-1], L[1:])
 		legIndex, weight = findWeights(ownIntent, ownPos, ownVel)
 		timeToTurn = [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]
 		for i in range(legIndex+1, len(ownIntent)+1):
@@ -55,15 +57,15 @@ def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
 		while len(timeToFly) > 0 and len(timeToTurn) > 0:
 			if timeToTurn[0] < timeToFly[0]:
 				t = timeToTurn[0]
-				timeToFly -= t
-				timeToTurn -= t
+				timeToFly = [s-t for s in timeToFly]
+				timeToTurn = [s-t for s in timeToTurn]
 				timeToTurn.pop(0)
 				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
 				legIndex += 1
 			else:
 				t = timeToFly[0]
-				timeToFly -= t
-				timeToTurn -= t
+				timeToFly = [s-t for s in timeToFly]
+				timeToTurn = [s-t for s in timeToTurn]
 				timeToFly.pop(0)
 				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
 				fp.append(p)
@@ -180,7 +182,6 @@ class PredictionEngine(plugins.Monitor):
 			#pdb.set_trace()
 			fids = self.traffic.getActiveFlightIDs()
 			ownship_intent = self.traffic.getOwnshipIntent()
-			pdb.set_trace()
 			intruders = self.checkConflicts(p,v,fids,120,3,ownship_intent)
 			#pdb.set_trace()
 			return json.dumps(intruders)

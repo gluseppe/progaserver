@@ -282,7 +282,6 @@ class Traffic(plugins.Monitor):
 
 				self.ownship_intent_id = self.scenario.getOwnshipIntentID()
 				self.ownship_intent = self.referenceTracksHandler.getReferenceTrack(self.ownship_intent_id)
-				pdb.set_trace()
 				cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
 					
 				for flight_id, r_tracks in self.initialWeights.items():

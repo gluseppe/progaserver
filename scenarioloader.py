@@ -145,7 +145,6 @@ class ScenarioLoader(object):
 			
 
 		self.scenarioLoaded = True
-		pdb.set_trace()
 		scenario = Scenario(self.tracks, self.ownship_id, self.ownship_intent_id)
 		#cherrypy.log("Sono dentro scenario loader e ho " + str(len(self.tracks)) + "tracce")
 		return scenario
