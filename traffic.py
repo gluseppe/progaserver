@@ -44,6 +44,16 @@ class Traffic(plugins.Monitor):
 		self.simulationStarted = False
 
 
+	def getActiveFlightIDs(self):
+		if self.startedTracks == None:
+			return []
+		ids = [t.getTrackId() for t in self.startedTracks]
+		#pdb.set_trace()
+		return ids
+
+		 
+
+
 	def sendFinishedCommand(self):
 		s = requests.Session()
 		r = s.post('http://127.0.0.1:8080/traffic', params={'command':'stop'})

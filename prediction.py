@@ -17,6 +17,60 @@ import pdb
 import simplejson as json
 from referencetrack import Point3D
 
+import numpy as np
+from predictor import findWeights, norm
+from progaconstants import ALERT_DISTANCE
+
+
+
+def euclideanDistance(p, q):
+	return np.sqrt(sum(p*q))
+
+def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
+	"""
+	Works with numpy 3D array.
+	Returns the future position of the ownship, considering
+	speed, intent and given timeHorizon
+	timeHorizons must be an iterable containing times in seconds
+	"""
+	if ownIntent is None:
+		return [ownPos + t*ownVel for t in timeHorizons]
+	else:
+		# generate list of turn points
+		# find next turn point
+		# generate list of times to next turning points
+		# propagate position
+		legIndex, weight = findWeights(ownIntent, ownPos, ownVel)
+		timeToTurn = [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]
+		for i in range(legIndex+1, len(ownIntent)+1):
+			timeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownVel)
+			if timeToNextTP > timeHorizons[-1]:
+				break
+			else:
+				timeToTurn.append(timeToNextTP)
+		timeToFly = list(timeHorizons)
+		fp = []
+		p = np.array(ownPos)
+		while len(timeToFly) > 0 and len(timeToTurn) > 0:
+			if timeToTurn[0] < timeToFly[0]:
+				t = timeToTurn[0]
+				timeToFly -= t
+				timeToTurn -= t
+				timeToTurn.pop(0)
+				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
+				legIndex += 1
+			else:
+				t = timeToFly[0]
+				timeToFly -= t
+				timeToTurn -= t
+				timeToFly.pop(0)
+				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
+				fp.append(p)
+		return fp
+
+
+
+
 """
 Questa classe gestisce le richieste verso il ramo di predizione
 
@@ -37,6 +91,7 @@ class PredictionEngine(plugins.Monitor):
 		self.sleeping_time = sleeping_time
 		self.traffic = traffic
 		self.predictor = None
+		
 
 	"""
 	prediction engine viene richiamata ogni sleeping_time secondi (vedi file progaconstant alla voce PREDICTION_SLEEP_SECONDS)
@@ -86,14 +141,45 @@ class PredictionEngine(plugins.Monitor):
 	dal client per tutta la durata di attivazione della funzione
 	in altre parole ci pensa il client a tenersi informato sullo stato dei conflitti potenziali
 	'''
-	def findPotentialConflicts(ownship_state):
-		pass
+	def checkConflicts(self, ownPos, ownVel, flight_IDs, deltaT, nsteps, ownIntent=None):
+		"""
+		Input:
+		- ownPos, current position of monitored aircraft
+		- ownVel, current velocity of monitored aircraft
+		- ownIntent, flight intent of monitored aircraft
+		- ownID, flight ID of monitored aircraft
+		- flight_IDs, flight intent of surrounding traffic
+		- deltaT, prediction unit time interval
+		- nsteps, number of predictions
+		"""
+		cherrypy.log("MONITORING %s"%(flight_IDs),context="MONITOR")
+		potentialConflicts = {}
+		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
+		fp = futurePositions(ownPos, ownVel, ownIntent, timeHorizons)
+		prediction = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps, True)
+		ztp = zip(timeHorizons, fp)
+		for aID, foo in prediction.items():
+			predDict = foo[0]
+			for t, p in ztp:
+				for q in predDict[t]:
+					if euclideanDistance(p,q) < ALERT_DISTANCE:
+						potentialConflicts.setdefault(t, []).append(aID)
+						break
+		#pdb.set_trace()
+		return potentialConflicts
+
 
 	@cherrypy.tools.accept(media='text/plain')
 	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO):
 		if flight_id == progaconstants.MONITOR_ME_COMMAND:
-			ownship_state = traffic.getMyState()
-			return findPotentialConflicts(ownship_state)
+			ownship_state = self.traffic.getMyState()
+			v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])
+			p = Point3D(ownship_state['lon'], ownship_state['lat'], ownship_state['h']).getNumpyVector()
+			#pdb.set_trace()
+			fids = self.traffic.getActiveFlightIDs()
+			intruders = self.checkConflicts(p,v,fids,120,3)
+			#pdb.set_trace()
+			return json.dumps(intruders)
 		else:
 			flight_IDs = [flight_id]
 			deltaT = int(deltaT)
