@@ -19,12 +19,12 @@ from referencetrack import Point3D
 
 import numpy as np
 from predictor import findWeights, norm
-from progaconstants import ALERT_DISTANCE
+from progaconstants import ALERT_DISTANCE, FOOT2MT
 
 
 
 def euclideanDistance(p, q):
-	return np.sqrt(sum(p*q))
+	return np.sqrt(np.dot(p-q, p-q))
 
 def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
 	"""
@@ -34,6 +34,7 @@ def futurePositions(ownPos, ownVel, ownIntent, timeHorizons):
 	timeHorizons must be an iterable containing times in seconds
 	"""
 	if ownIntent is None:
+		cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
 		return [ownPos + t*ownVel for t in timeHorizons]
 	else:
 		# generate list of turn points
@@ -152,7 +153,6 @@ class PredictionEngine(plugins.Monitor):
 		- deltaT, prediction unit time interval
 		- nsteps, number of predictions
 		"""
-		cherrypy.log("MONITORING %s"%(flight_IDs),context="MONITOR")
 		potentialConflicts = {}
 		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
 		fp = futurePositions(ownPos, ownVel, ownIntent, timeHorizons)
@@ -161,6 +161,8 @@ class PredictionEngine(plugins.Monitor):
 		for aID, foo in prediction.items():
 			predDict = foo[0]
 			for t, p in ztp:
+				cherrypy.log("Ownship will be at %s in %d seconds" % (p, t),context="MONITOR")
+				cherrypy.log("%s will be at %s in %d seconds" % (aID, sum(predDict[t])/len(predDict[t]), t),context="MONITOR")
 				for q in predDict[t]:
 					if euclideanDistance(p,q) < ALERT_DISTANCE:
 						potentialConflicts.setdefault(t, []).append(aID)
@@ -173,10 +175,12 @@ class PredictionEngine(plugins.Monitor):
 	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO):
 		if flight_id == progaconstants.MONITOR_ME_COMMAND:
 			ownship_state = self.traffic.getMyState()
-			v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])
-			p = Point3D(ownship_state['lon'], ownship_state['lat'], ownship_state['h']).getNumpyVector()
+			v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])*FOOT2MT
+			p = Point3D(ownship_state['lon'], ownship_state['lat'], ownship_state['h']*FOOT2MT).getNumpyVector()
 			#pdb.set_trace()
 			fids = self.traffic.getActiveFlightIDs()
+			cherrypy.log('Own position: %s' % (p), context='TRAFFIC')
+
 			intruders = self.checkConflicts(p,v,fids,120,3)
 			#pdb.set_trace()
 			return json.dumps(intruders)

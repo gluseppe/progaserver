@@ -1,0 +1,33 @@
+{
+  "scenario_name": "lazio_merda",
+  "flights": [
+    {
+      "path": "flight1.txt",
+      "start": 0,
+      "flight_id": "CESSNA837",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight1.txt",
+      "start": 0,
+      "flight_id": "BLONDIE230",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight1.txt",
+      "start": 0,
+      "flight_id": "DRAGOND1R",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    }
+
+  ]
+}
