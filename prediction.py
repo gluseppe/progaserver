@@ -41,12 +41,13 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 		# find next turn point
 		# generate list of times to next turning points
 		# propagate position
+		vel = norm(ownVel)
 		L = [p.getNumpyVector() for p in ownInt.line]
 		ownIntent = zip(L[:-1], L[1:])
 		legIndex, weight = findWeights(ownIntent, ownPos, ownVel)
 		timeToTurn = [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]
 		for i in range(legIndex+1, len(ownIntent)+1):
-			timeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownVel)
+			timeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/vel
 			if timeToNextTP > timeHorizons[-1]:
 				break
 			else:
@@ -60,14 +61,14 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 				timeToFly = [s-t for s in timeToFly]
 				timeToTurn = [s-t for s in timeToTurn]
 				timeToTurn.pop(0)
-				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
+				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])*vel
 				legIndex += 1
 			else:
 				t = timeToFly[0]
 				timeToFly = [s-t for s in timeToFly]
 				timeToTurn = [s-t for s in timeToTurn]
 				timeToFly.pop(0)
-				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])
+				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])*vel
 				fp.append(p)
 		return fp
 
