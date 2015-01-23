@@ -106,8 +106,9 @@ if __name__ == '__main__':
 	automator = None
 	if len(args)==2:
 		#auto = args[1]
+		
 		scenario = args[1]
-		automator = Automator(cherrypy.engine, scenario,progaconstants.PLAYER_SLEEP_SECONDS)
+		automator = Automator(cherrypy.engine, scenario,None,progaconstants.PLAYER_SLEEP_SECONDS)
 	elif len(args)==3:
 		scenario = args[1]
 		selfTrack = args[2]

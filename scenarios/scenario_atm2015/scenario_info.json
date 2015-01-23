@@ -1,0 +1,16 @@
+{
+  "scenario_name": "scenario_atm2015",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00003",
+  "flights": [
+    {
+      "path": "flight3.txt",
+      "start": 0,
+      "flight_id": "CESSNA837",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    }
+  ]
+}

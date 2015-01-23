@@ -1,0 +1,35 @@
+{
+  "scenario_name": "scenario_manzato",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00003",
+  "flights": [
+    {
+      "path": "flight3.txt",
+      "start": 0,
+      "flight_id": "CESSNA837",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight4.txt",
+      "start": 0,
+      "flight_id": "BLONDIE230",
+      "flight_intent": {
+        "reference_track_id" : "00002",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "flight2.txt",
+      "start": 0,
+      "flight_id": "DRAG0N3",
+      "flight_intent": {
+        "reference_track_id" : "00004",
+        "turning_points": null
+      }
+    }
+
+  ]
+}
