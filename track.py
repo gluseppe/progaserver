@@ -95,16 +95,16 @@ class Track(object):
 		
 		while not found:
 
-			if len(self.path)-self.pointer <=1:
+			#if len(self.path)-self.pointer <=1:
 				#pdb.set_trace()
-				cherrypy.log("almost finished", context="DEBUG_FINISH")
+				#cherrypy.log("almost finished", context="DEBUG_FINISH")
 
 			try:
 				p = self.path[self.pointer]['float_timestamp']
 				n =  self.path[self.pointer+1]['float_timestamp']
 				
 			except IndexError:
-				cherrypy.log("Flight %s Finished"%(self.track_id), context="DEBUG_FINISH")
+				#cherrypy.log("Flight %s Finished"%(self.track_id), context="DEBUG_FINISH")
 				return False
 
 			if elapsedtime <= p:
@@ -116,12 +116,12 @@ class Track(object):
 			else:
 				#pdb.set_trace()
 				self.pointer += 1
-				cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
+				#cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
 
 
 		status = self.path[self.pointer]
-		cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
-		cherrypy.log("%s,%s,%f"%(self.track_id,status['timestamp'],elapsedtime),context="DEBUG_FINISH")
+		#cherrypy.log("pointer:%d"%(self.pointer),context="DEBUG_FINISH")
+		#cherrypy.log("%s,%s,%f"%(self.track_id,status['timestamp'],elapsedtime),context="DEBUG_FINISH")
 		return status
 
 		

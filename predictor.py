@@ -52,13 +52,13 @@ def findWeights(track, p, v):
     candidateLegs = legger(track, p)
     if norm(p - track[0][0]) < LOCRADIUS:
         # aircraft lies around the departure airfield
-        cherrypy.log('appena partito', context='FINDWEIGHTS')
+        #cherrypy.log('appena partito', context='FINDWEIGHTS')
         legDirection = track[0][1]-track[0][0]
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         return (0, 1. )
     elif norm(p - track[-1][1]) < LOCRADIUS:
         # aircraft lies around the arrival airfield
-        cherrypy('in arrivo', context='FINDWEIGHTS')
+        #cherrypy('in arrivo', context='FINDWEIGHTS')
         legDirection = track[-1][1]-track[-1][0]
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         return (len(track)-1, 1. )
@@ -79,9 +79,9 @@ def findWeights(track, p, v):
                 vcrossw = v[0]*w[1] - v[1]*w[0]
                 ucrossw = u[0]*w[1] - u[1]*w[0]
                 if ucrossw < 0:
-                    cherrypy.log('virata clockwise', context='FINDWEIGHTS')
+                    #cherrypy.log('virata clockwise', context='FINDWEIGHTS')
                     if vcrossu > 0 and vcrossw < 0:
-                        cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        #cherrypy.log( 'virata', context='FINDWEIGHTS')
                         vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                              np.dot(v,w)/(norm(w) * norm(v))])
                         if vangles[0] < vangles[1]:
@@ -89,18 +89,18 @@ def findWeights(track, p, v):
                         else:
                             return (j, np.exp(- BETA_ANGLE*vangles[1]))
                     elif vcrossu > 0 and vcrossw > 0:
-                        cherrypy.log('interno', context='FINDWEIGHTS')
+                        #cherrypy.log('interno', context='FINDWEIGHTS')
                         return ( j, PENAL_ANGLE )
                     elif vcrossu < 0 and vcrossw < 0:
-                    	cherrypy.log('esterno', context='FINDWEIGHTS')
+                    	#cherrypy.log('esterno', context='FINDWEIGHTS')
                         return ( i, PENAL_ANGLE )
                     else:
-                        cherrypy.log( 'opposto', context='FINDWEIGHTS')
+                        #cherrypy.log( 'opposto', context='FINDWEIGHTS')
                         return (i, PENAL_DIST * PENAL_ANGLE)
                 else:
-                    cherrypy.log('virata couterclockwise', context='FINDWEIGHTS')
+                    #cherrypy.log('virata couterclockwise', context='FINDWEIGHTS')
                     if vcrossu < 0 and vcrossw > 0:
-                        cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        #cherrypy.log( 'virata', context='FINDWEIGHTS')
                         vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                              np.dot(v,w)/(norm(w) * norm(v))])
                         if vangles[0] < vangles[1]:
@@ -108,25 +108,25 @@ def findWeights(track, p, v):
                         else:
                             return (j, np.exp(- BETA_ANGLE*vangles[1]))
                     elif vcrossu < 0 and vcrossw < 0:
-                        cherrypy.log('interno', context='FINDWEIGHTS')
+                        #cherrypy.log('interno', context='FINDWEIGHTS')
                         return ( j, PENAL_ANGLE) 
                     elif vcrossu > 0 and vcrossw > 0:
-                        cherrypy.log('esterno', context='FINDWEIGHTS')
+                        #cherrypy.log('esterno', context='FINDWEIGHTS')
                         return ( i, PENAL_ANGLE) 
                     else:
-                        cherrypy.log('opposto', context='FINDWEIGHTS')
+                        #cherrypy.log('opposto', context='FINDWEIGHTS')
                         return (i, PENAL_DIST * PENAL_ANGLE)
         else:
         	if len(candidateLegs) == 1:
                 # aircraft lies in only one sausage
-        		cherrypy.log('in-leg %d' % (candidateLegs[0]), context='FINDWEIGHTS')
+        		#cherrypy.log('in-leg %d' % (candidateLegs[0]), context='FINDWEIGHTS')
         		leg = track[candidateLegs[0]]
         		legDirection = leg[1]-leg[0]
         		distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
         		legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         		return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
         	else:
-        		cherrypy.log('no match found', context='FINDWEIGHTS')
+        		#cherrypy.log('no match found', context='FINDWEIGHTS')
         		distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
         		turnPointIndex = distances.index( min(distances) )
         		return (turnPointIndex, PENAL_GLOBAL)
@@ -179,7 +179,7 @@ class Predictor(object):
                         self.weights[aID] = np.array([refTrck.w for refTrck in L])
                         self.tracks[aID] = np.array([np.array(refTrck.line) for refTrck in L])
                         self.tracksID[aID] = [refTrck.refTrackID for refTrck in L]
-                        cherrypy.log('%s' % (self.tracksID[aID]), context='CARLO') 
+                        #cherrypy.log('%s' % (self.tracksID[aID]), context='CARLO') 
                         # questo messaggio di log mostra if flight_intent_IDs noti al sistema per ogni aircraft_ID
                         self.legs[aID] = None
                         
@@ -225,7 +225,7 @@ class Predictor(object):
                     #chk_str = "Check weights "+ str(self.weights["GIUS"])
                     #cherrypy.log(chk_str, context='CARLO')
                     self.legs[aID] = np.array([f[0] for f in foo])
-                    cherrypy.log("updated weights: %s"%(self.weights[aID]),context="PREDTEST")
+                    #cherrypy.log("updated weights: %s"%(self.weights[aID]),context="PREDTEST")
                 return True
                     
 
@@ -257,9 +257,9 @@ class Predictor(object):
                 pred = {}
                 for aID in flight_IDs:
                     aircraftDict = self.lastSeenTraffic[aID]
-                    cherrypy.log("lat:%.4f lon:%.4f"%(aircraftDict['lat'],aircraftDict['lon']),context="PREDTEST")
-                    cherrypy.log("x:%.4f y:%.4f"%(aircraftDict['x'],aircraftDict['y']),context="PREDTEST")
-                    cherrypy.log("vx:%.4f vy:%.4f"%(aircraftDict['vx'],aircraftDict['vy']),context="PREDTEST")
+                    #cherrypy.log("lat:%.4f lon:%.4f"%(aircraftDict['lat'],aircraftDict['lon']),context="PREDTEST")
+                    #cherrypy.log("x:%.4f y:%.4f"%(aircraftDict['x'],aircraftDict['y']),context="PREDTEST")
+                    #cherrypy.log("vx:%.4f vy:%.4f"%(aircraftDict['vx'],aircraftDict['vy']),context="PREDTEST")
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     if raw:
@@ -270,7 +270,7 @@ class Predictor(object):
                     
                     #pdb.set_trace()
 
-                    cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
+                    #cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
                 return pred
 
         def binParticles(self, particleList, dt, gridbins=GRIDBINS):
@@ -369,7 +369,7 @@ class bunchOfParticles(object):
         uu = [(leg[1] - leg[0])[:2]/norm((leg[1] - leg[0])[:2]) for leg in self.getLeg(np.arange(self.numPart)) ]
         #pdb.set_trace()
         vv = [self.velocities[i,:2]/norm(self.velocities[i,:2]) for i in range(self.numPart)]
-        cherrypy.log("uu0:%s vv0:%s"%(uu[0],vv[0]),context="PREDTEST")
+        #cherrypy.log("uu0:%s vv0:%s"%(uu[0],vv[0]),context="PREDTEST")
         alphasin = [v[0]*u[1] - v[1]*u[0] for u, v in zip(uu, vv)]
         alphacos = [np.dot(u,v) for u, v in zip(uu, vv)]
         return np.arctan2(alphasin, alphacos)

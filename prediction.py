@@ -117,10 +117,10 @@ class PredictionEngine(plugins.Monitor):
 
 
 	def trafficUpdated(self, elapsedSeconds):
-		cherrypy.log("Updating traffic", context='DEBUG')
+		#cherrypy.log("Updating traffic", context='DEBUG')
 		v = self.traffic.getTraffic()
-		for t in v.values():
-			cherrypy.log("id:"+str(t['flight_id']) + " x:" + str(t['x']) + " y:"+str(t['y']) + " z:"+str(t['z']) + " lat:"+str(t['lat'])+ " lon:"+str(t['lon']), context='TRAFFIC')
+		#for t in v.values():
+			#cherrypy.log("id:"+str(t['flight_id']) + " x:" + str(t['x']) + " y:"+str(t['y']) + " z:"+str(t['z']) + " lat:"+str(t['lat'])+ " lon:"+str(t['lon']), context='TRAFFIC')
 		self.predictor.trafficUpdated(elapsedSeconds)
 
 

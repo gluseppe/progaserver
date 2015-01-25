@@ -11,6 +11,7 @@ from cherrypy.process.plugins import Monitor
 from cherrypy import log
 
 import progaconstants
+import simplejson as json
 
 
 
@@ -27,7 +28,8 @@ class FSListener(object):
 	@cherrypy.tools.json_in()
 	def PUT(self):
 		state = cherrypy.request.json
-		cherrypy.log('received position: '+ str(state['lat']))
+		cherrypy.log("Received state %s"%(json.dumps(state)), context="FSX")
+		#cherrypy.log('received position: '+ str(state['lat']))
 		cherrypy.engine.publish(progaconstants.MYSTATE_CHANNEL_NAME,state)
 		#lat = state['lat']
 		#return lat
