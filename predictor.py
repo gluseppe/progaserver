@@ -50,6 +50,8 @@ def findWeights(track, p, v):
     based on position and velocity of the aircraft
     """
     candidateLegs = legger(track, p)
+    if norm(v) < 0.1**9:    
+        return(0, 1.)
     if norm(p - track[0][0]) < LOCRADIUS:
         # aircraft lies around the departure airfield
         #cherrypy.log('appena partito', context='FINDWEIGHTS')
