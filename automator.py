@@ -70,7 +70,7 @@ class Automator(plugins.Monitor):
 		r = self.s.post('http://127.0.0.1:8080/traffic', params={'command':'loadscenario','scenario_name':self.scenarioName})
 
 
-	def scenarioLoaded(self):
+	def scenarioLoaded(self,loadedScenario):
 		cherrypy.log("A SCENARIO WAS LOADED, I AM GOING TO SEND START-SIMULATION COMMAND", context="AUTO")
 		r = self.s.post('http://127.0.0.1:8080/traffic', params={'command':'start'})
 		

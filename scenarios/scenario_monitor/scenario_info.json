@@ -8,6 +8,7 @@
       "start": 0,
       "flight_id": "CESSNA837",
       "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
         "reference_track_id" : "00001",
         "turning_points": null
       }
@@ -17,6 +18,7 @@
       "start": 0,
       "flight_id": "BLONDIE230",
       "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
         "reference_track_id" : "00002",
         "turning_points": null
       }
@@ -26,6 +28,7 @@
       "start": 0,
       "flight_id": "DRAG0N3",
       "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
         "reference_track_id" : "00004",
         "turning_points": null
       }

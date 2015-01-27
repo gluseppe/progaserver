@@ -17,6 +17,7 @@ import pdb
 
 
 
+
 class ScenarioLoader(object):
 
 	def __init__(self, scenariosfolder, referenceTrackHandler):
@@ -115,6 +116,8 @@ class ScenarioLoader(object):
 			#se l intent e' stato specificato, allora abbiamo altri due casi
 			if raw_flight_intent != None:
 				reference_track_id = raw_flight_intent['reference_track_id']
+				departure_time = raw_flight_intent['departure_time']
+				departure_time = datetime.datetime.strptime(departure_time,"%d-%m-%Y %H:%M:%S")
 				
 				#caso in cui e' stato specificato un intent relativo ad una referencetrack che abbiamo gia' nel db
 				#allora recuper loe info della referencetrack tramite il referencetrackhandler
@@ -123,6 +126,7 @@ class ScenarioLoader(object):
 					cherrypy.log("reference_trackid: "+reference_track_id, context="DEBUG")
 					rt = self.referenceTrackHandler.getReferenceTrack(reference_track_id)
 					rt.refTrackID = reference_track_id
+					rt.departureTime = departure_time
 					rt.flight_id = flight_id
 					self.addTrack(flight_file_name,flight_id,flight_start,rt)
 
@@ -138,6 +142,7 @@ class ScenarioLoader(object):
 
 					flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
 					flight_intent.refTrackID = reference_track_id
+					flight_intent.departureTime = departure_time
 					#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
 					self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
 

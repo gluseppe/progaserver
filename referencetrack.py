@@ -77,6 +77,16 @@ class ReferenceTrack(object):
                 self._refTrackID = None
                 self.w = -1
                 self._flight_id = flight_id
+                self._departureTime = None
+
+        @property
+        def departureTime(self):
+            return self._departureTime
+
+        @departureTime.setter
+        def departureTime(self, departureTime):
+            self._departureTime = departureTime
+
 
         @property
         def line(self):
