@@ -49,8 +49,9 @@ class HotSpotter(plugins.Monitor):
 		plugins.Monitor.__init__(self, bus, self.hotSpotEngine(), sleeping_time)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
 		self.REFv = 0.06111 # reference velocity in km/s
-		self.HS_spatial_treshold = 0.5 # in km, change if needed
+		self.HS_spatial_treshold = .5 # in km, change if needed
 		self.HS_time_treshold = timedelta(0, 60) # in seconds, change if needed
+		self.howManyPointsPerIntent = 50.
 		self.scenario = None
 
 
@@ -68,7 +69,7 @@ class HotSpotter(plugins.Monitor):
 		intent = zip(reftrackobj.line[:-1], reftrackobj.line[1:])
 		listOf4DPoints = []
 		noLegs = len(intent)
-		pointsPerLeg = int(ceil(50./noLegs)) # modify here, if needed
+		pointsPerLeg = int(ceil(self.howManyPointsPerIntent/noLegs)) # modify here, if needed
 		lasttime = totime
 		for leg in intent:
 			latitudes = np.linspace(leg[0].lat, leg[1].lat, pointsPerLeg)
