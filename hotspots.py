@@ -48,10 +48,12 @@ class HotSpotter(plugins.Monitor):
 	def __init__(self, bus, sleeping_time):
 		plugins.Monitor.__init__(self, bus, self.hotSpotEngine(), sleeping_time)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
-		self.REFv = 0.06111 # reference velocity in km/s
-		self.HS_spatial_treshold = .5 # in km, change if needed
-		self.HS_time_treshold = timedelta(0, 60) # in seconds, change if needed
-		self.howManyPointsPerIntent = 50.
+		self.REFv = 0.051144# reference velocity in km/s
+		self.HS_candidate_spatial_treshold = .5 # in km, change if needed
+		self.HS_candidate_time_treshold = timedelta(0, 60) # in seconds, change if needed
+		self.HS_spatial_treshold = 1.5 # in km, change if needed
+		self.HS_time_treshold = timedelta(0, 120) # in seconds, change if needed
+		self.howManyPointsPerIntent = 100.
 		self.scenario = None
 
 
@@ -77,7 +79,7 @@ class HotSpotter(plugins.Monitor):
 			heights = np.linspace(leg[0].z, leg[1].z, pointsPerLeg)
 			secondsToFlyTheLeg = sqrt((leg[1].z-leg[0].z)**2 + distanceOnEllipsoidalEarthProjectedToAPlane(leg[0].lat, leg[0].lon, leg[1].lat, leg[1].lon)**2 )/self.REFv
 			passagetimes = [lasttime + timedelta(0, incremenT) for incremenT in np.linspace(0, secondsToFlyTheLeg, pointsPerLeg)]
-			listOf4DPoints += zip(latitudes, longitudes, heights, passagetimes)[:-1]
+			listOf4DPoints += zip(latitudes, longitudes, heights, passagetimes)
 			lasttime = lasttime + timedelta(0, secondsToFlyTheLeg)
 		return listOf4DPoints
 
@@ -93,7 +95,7 @@ class HotSpotter(plugins.Monitor):
 
 		ret = []
 		for hs in self.findHotspots(intents):
-			ret.append([list(hs[0])]+list(hs[1:3])+[hs[4].strftime("%d-%m-%Y %H:%M:%S")])
+			ret.append([list(hs[0])]+list(hs[1:4])+[hs[4].strftime("%d-%m-%Y %H:%M:%S.%f")])
 
 		return json.dumps(ret)
 
@@ -116,13 +118,15 @@ class HotSpotter(plugins.Monitor):
 					for k in jPath:
 						spatialDistance = sqrt(distanceOnEllipsoidalEarthProjectedToAPlane(h[0], h[1], k[0], k[1])**2 + (h[2]-k[2])**2)
 						timeDistance = max(h[3], k[3]) - min(h[3], k[3])
-						if spatialDistance < self.HS_spatial_treshold and timeDistance < self.HS_time_treshold:
+						if spatialDistance < self.HS_candidate_spatial_treshold and timeDistance < self.HS_candidate_time_treshold:
 							candidateHS = (set((aircraftIDs[i], aircraftIDs[j])), 
 										   .5*(k[0]+h[0]), 
 										   .5*(k[1]+h[1]), 
 										   .5*(k[2]+h[2]), 
 										   min(k[3],h[3])+timeDistance)
-							cherrypy.log('Found candidate hotspot :: %s @ (%.3f, %.3f, %.2f, %s)' % (candidateHS), context='HOTSPOT')
+							#cherrypy.log('Found candidate points (%.3f, %.3f, %.2f, %s)' % (h), context='HOTSPOT')
+							#cherrypy.log('Found candidate points (%.3f, %.3f, %.2f, %s)' % (k), context='HOTSPOT')
+							#cherrypy.log('Found candidate hotspot :: %s @ (%.3f, %.3f, %.2f, %s)' % (candidateHS), context='HOTSPOT')
 							icount = 0
 							for hs in hotspots:
 								spatialDist = sqrt(distanceOnEllipsoidalEarthProjectedToAPlane(hs[1], hs[2], candidateHS[1], candidateHS[2])**2 + (hs[3]-candidateHS[3])**2)
