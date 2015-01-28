@@ -26,7 +26,6 @@ from progaconstants import ALERT_DISTANCE, FOOT2MT
 
 from datetime import datetime, date, time, timedelta
 from math import cos, sqrt, ceil
-import pdb
 
 
 
@@ -50,8 +49,8 @@ class HotSpotter(plugins.Monitor):
 		plugins.Monitor.__init__(self, bus, self.hotSpotEngine(), sleeping_time)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
 		self.REFv = 0.06111 # reference velocity in km/s
-		self.HS_spatial_treshold = 1 # in km, change if needed
-		self.HS_time_treshold = timedelta(0, 600) # in seconds, change if needed
+		self.HS_spatial_treshold = 0.5 # in km, change if needed
+		self.HS_time_treshold = timedelta(0, 60) # in seconds, change if needed
 		self.scenario = None
 
 
@@ -67,15 +66,18 @@ class HotSpotter(plugins.Monitor):
 		totime must be a valid datetime.datetime object
 		"""
 		intent = zip(reftrackobj.line[:-1], reftrackobj.line[1:])
-		listOf4DPoints = [(reftrackobj.line[0].lat, reftrackobj.line[0].lon, reftrackobj.line[0].z, totime)]
+		listOf4DPoints = []
 		noLegs = len(intent)
 		pointsPerLeg = int(ceil(50./noLegs)) # modify here, if needed
+		lasttime = totime
 		for leg in intent:
-			deltaLat, deltaLon, deltaH = (leg[1].lat-leg[0].lat)/pointsPerLeg, (leg[1].lon-leg[0].lon)/pointsPerLeg, (leg[1].z-leg[0].z)/pointsPerLeg
-			for point in range(pointsPerLeg):
-				p = listOf4DPoints[-1]
-				deltaT = sqrt(deltaH**2 + distanceOnEllipsoidalEarthProjectedToAPlane(p[0], p[1], p[0]+deltaLat, p[1]+deltaLon)**2 )/self.REFv
-				listOf4DPoints.append((p[0]+deltaLat, p[1]+deltaLon, p[2]+deltaH, p[3]+timedelta(0, deltaT)))
+			latitudes = np.linspace(leg[0].lat, leg[1].lat, pointsPerLeg)
+			longitudes = np.linspace(leg[0].lon, leg[1].lon, pointsPerLeg)
+			heights = np.linspace(leg[0].z, leg[1].z, pointsPerLeg)
+			secondsToFlyTheLeg = sqrt((leg[1].z-leg[0].z)**2 + distanceOnEllipsoidalEarthProjectedToAPlane(leg[0].lat, leg[0].lon, leg[1].lat, leg[1].lon)**2 )/self.REFv
+			passagetimes = [lasttime + timedelta(0, incremenT) for incremenT in np.linspace(0, secondsToFlyTheLeg, pointsPerLeg)]
+			listOf4DPoints += zip(latitudes, longitudes, heights, passagetimes)[:-1]
+			lasttime = lasttime + timedelta(0, secondsToFlyTheLeg)
 		return listOf4DPoints
 
 
@@ -95,14 +97,6 @@ class HotSpotter(plugins.Monitor):
 		return json.dumps(ret)
 
 
-
-
-
-
-
-	
-
-
 	def findHotspots(self, intentData):
 		"""
 		intentData must be a list of (reftrackobj)
@@ -112,8 +106,10 @@ class HotSpotter(plugins.Monitor):
 		aircraftIDs = [t.flight_id for t in intentData]
 		plannedPoints = [self.get4DPointsFromIntent(rtObj, rtObj.departureTime) for rtObj in intentData]
 		for i in range(n):
+			cherrypy.log('Working with %s' % (aircraftIDs[i]), context='HOTSPOT')
 			iPath = plannedPoints[i]
 			for j in range(i+1, n):
+				cherrypy.log('Checking against %s' % (aircraftIDs[j]), context='HOTSPOT')
 				jPath = plannedPoints[j]
 				for h in iPath:
 					for k in jPath:
@@ -125,11 +121,12 @@ class HotSpotter(plugins.Monitor):
 										   .5*(k[1]+h[1]), 
 										   .5*(k[2]+h[2]), 
 										   min(k[3],h[3])+timeDistance)
+							cherrypy.log('Found candidate hotspot :: %s @ (%.3f, %.3f, %.2f, %s)' % (candidateHS), context='HOTSPOT')
 							icount = 0
 							for hs in hotspots:
 								spatialDist = sqrt(distanceOnEllipsoidalEarthProjectedToAPlane(hs[1], hs[2], candidateHS[1], candidateHS[2])**2 + (hs[3]-candidateHS[3])**2)
 								timeDist = max(hs[4], candidateHS[4]) - min(hs[4], candidateHS[4])
-								if spatialDistance < self.HS_spatial_treshold and timeDistance < self.HS_time_treshold:
+								if spatialDist < self.HS_spatial_treshold and timeDist < self.HS_time_treshold:
 									hotspots[icount] = (hs[0] | candidateHS[0], 
 															 .5*(hs[1]+candidateHS[1]), 
 															 .5*(hs[2]+candidateHS[2]), 
