@@ -68,7 +68,7 @@ class ScenarioLoader(object):
 						pitch = float(parts[4])
 						bank = float(parts[5])
 						onground = int(parts[7])
-						airspeed = float(parts[19])
+						airspeed = int(float(parts[19]))
 	
 						track.addStep(simulation_timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank, onground, airspeed)
 
