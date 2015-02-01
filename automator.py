@@ -111,7 +111,7 @@ class Automator(plugins.Monitor):
 					v_z = float(parts[9])
 					pitch = float(parts[4])
 					bank = float(parts[5])
-					onground = float(parts[7])
+					onground = int(parts[7])
 					airspeed = float(parts[19])
 	
 					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank, onground, airspeed)
