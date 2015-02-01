@@ -30,7 +30,7 @@ class Track(object):
 
 		p3d = Point3D(lon, lat, altitude)
 		xy = p3d.xyFromLonLat(lon, lat)
-		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading, 'pitch':pitch, 'bank':bank, 'ongroung':onground, 'airspeed':airspeed})
+		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading, 'pitch':pitch, 'bank':bank, 'onground':onground, 'airspeed':airspeed})
 
 	def getPath(self):
 		return self.path
