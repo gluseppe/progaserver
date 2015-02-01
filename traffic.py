@@ -14,6 +14,7 @@ from referencetrackshandler import ReferenceTracksHandler
 from scenario import Scenario
 import simplejson as json
 from predictor import Predictor
+from copy import deepcopy
 
 import progaconstants
 import requests
@@ -157,7 +158,7 @@ class Traffic(plugins.Monitor):
 		return self.myState
 
 	def getJSONTraffic(self,requestFrom=None):
-		return json.dumps(self.getTraffic(requestFrom))
+		return json.dumps(deepcopy(self.getTraffic(requestFrom)))
 
 	def getTraffic(self, requestFrom=None):
 		
@@ -168,7 +169,8 @@ class Traffic(plugins.Monitor):
 				traffic[track.track_id] = track.getCurrentState()
 			else:
 				#pdb.set_trace()
-				traffic[track.track_id] = track.getFutureState(4)
+				traffic[track.track_id] = track.getCurrentState()
+				#traffic[track.track_id] = track.getFutureState(4)
 			
 		return traffic
 
