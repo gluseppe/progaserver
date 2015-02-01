@@ -24,13 +24,13 @@ class Track(object):
 		self.firstTime = True;
 
 
-	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading, pitch, bank):
+	def addStep(self, timestamp, lat, lon, altitude, vx, vy, vz, heading, pitch, bank, onground, airspeed):
 		if len(self.path) == 0:
 			self.pointer = 0
 
 		p3d = Point3D(lon, lat, altitude)
 		xy = p3d.xyFromLonLat(lon, lat)
-		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading, 'pitch':pitch, 'bank':bank})
+		self.path.append({'timestamp':timestamp, 'float_timestamp':float(timestamp), 'x':xy[0], 'y':xy[1], 'z':altitude, 'lat':lat, 'lon':lon, 'h':altitude, 'vx':vx, 'vy':vy, 'vz':vz, 'heading':heading, 'pitch':pitch, 'bank':bank, 'ongroung':onground, 'airspeed':airspeed})
 
 	def getPath(self):
 		return self.path

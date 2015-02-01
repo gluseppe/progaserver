@@ -111,7 +111,11 @@ class Automator(plugins.Monitor):
 					v_z = float(parts[9])
 					pitch = float(parts[4])
 					bank = float(parts[5])
-					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank)
+					onground = float(parts[7])
+					airspeed = float(parts[19])
+	
+					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank, onground, airspeed)
+					#track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank)
 					#cherrypy.log("%s,%s,%s,%s,%s,%s,%s,%s"%(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading),context="EXPORT,")
 
 				cont += 1
