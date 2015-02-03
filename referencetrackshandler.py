@@ -15,7 +15,7 @@ class ReferenceTracksHandler(object):
 
 	def __init__(self):
 		allfile = ""
-		complete_path = "./db/referencetrackrepository_manzato.json"
+		complete_path = "./db/repository_total.json"
 		with open(complete_path) as referencetracksfile:
 			for line in referencetracksfile:
 				allfile += line
