@@ -5,7 +5,7 @@
   "flights": [
     {
       "path": "Scenery5-Intruder1.txt",
-      "start": 188,
+      "start": 218,
       "flight_id": "CESSNA837",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
@@ -15,7 +15,7 @@
     },
     {
       "path": "Scenery5-Intruder2.txt",
-      "start": 567,
+      "start": 500,
       "flight_id": "BLONDIE230",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
