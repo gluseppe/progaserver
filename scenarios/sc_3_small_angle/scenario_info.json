@@ -5,7 +5,7 @@
   "flights": [
     {
       "path": "Scenery5-Intruder1.txt",
-      "start": 0,
+      "start": 120,
       "flight_id": "CESSNA837",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
@@ -15,24 +15,15 @@
     },
     {
       "path": "Scenery5-Intruder2.txt",
-      "start": 60,
+      "start": 280,
       "flight_id": "BLONDIE230",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
         "reference_track_id" : "01006",
         "turning_points": null
       }
-    },
-    {
-      "path": "Scenery5-Traffic1.txt",
-      "start": 0,
-      "flight_id": "DRAGON3",
-      "flight_intent": {
-        "departure_time": "27-01-2015 15:10:00",
-        "reference_track_id" : "01012",
-        "turning_points": null
-      }
     }
+    
 
   ]
 }
