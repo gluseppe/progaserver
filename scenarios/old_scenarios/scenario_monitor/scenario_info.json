@@ -5,7 +5,7 @@
   "flights": [
     {
       "path": "flight3.txt",
-      "start": 0,
+      "start": 30,
       "flight_id": "CESSNA837",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
@@ -15,7 +15,7 @@
     },
     {
       "path": "flight4.txt",
-      "start": 0,
+      "start": 40,
       "flight_id": "BLONDIE230",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
@@ -25,7 +25,7 @@
     },
     {
       "path": "flight2.txt",
-      "start": 0,
+      "start": 30,
       "flight_id": "DRAG0N3",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
