@@ -16,7 +16,7 @@ class ReferenceTracksHandler(object):
 
 	def __init__(self, scenario_name):
 		allfile = ""
-		complete_path = ""
+		complete_path = "./db/repository_uncertainty_l1.json"
 		#cherrypy.log("scenario name: %s"%(scenario_name))
 		if scenario_name == "sc_4_uncertainty_l1":
 			#cherrypy.log("loading repository for uncertainty l1", context="UNCERTAINTY")
