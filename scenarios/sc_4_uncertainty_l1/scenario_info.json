@@ -5,7 +5,7 @@
   "flights": [
     {
       "path": "Scenery4-Intruder1.txt",
-      "start": -350,
+      "start": -130,
       "flight_id": "C-3PO",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
@@ -15,7 +15,7 @@
     },
     {
       "path": "Scenery5-Intruder2.txt",
-      "start": 70,
+      "start": 50,
       "flight_id": "R2-D2",
       "flight_intent": {
         "departure_time": "27-01-2015 15:08:46",
