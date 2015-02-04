@@ -41,7 +41,7 @@ class Traffic(plugins.Monitor):
 		self.justStarted = True
 		self.startedTracks = None
 		self.finishedTracks = None
-		self.referenceTracksHandler = ReferenceTracksHandler()
+		self.referenceTracksHandler = None
 		self.simulationStarted = False
 		self.ownship_intent = None
 		self.ownship_intent_id = None
@@ -276,7 +276,7 @@ class Traffic(plugins.Monitor):
 				cherrypy.log("Can't load scenario while simulation is running. Stop simulation first and then load new scenario")
 
 			else:
-
+				self.referenceTracksHandler = ReferenceTracksHandler(scenario_name)
 				self.scenarioloader = ScenarioLoader(progaconstants.SCENARIOS_FOLDER, self.referenceTracksHandler)
 				self.scenario = self.scenarioloader.loadScenario(scenario_name)
 				self.tracks = self.scenario.getTracks()

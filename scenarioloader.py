@@ -47,7 +47,7 @@ class ScenarioLoader(object):
 
 					timestamp = float(parts[0])
 
-					cherrypy.log("timestamp:%s"%(timestamp),context="ANTICIPATE")
+					#cherrypy.log("timestamp:%s"%(timestamp),context="ANTICIPATE")
 					#pdb.set_trace()
 					simulation_timestamp = -1;
 					if (flight_start < 0):
@@ -57,7 +57,7 @@ class ScenarioLoader(object):
 						
 					
 					if (flight_start >= 0 or timestamp >= abs(flight_start)):
-						cherrypy.log("importing line with timestamp:%s and simulation_timestamp %f"%(timestamp,simulation_timestamp),context="ANTICIPATE");
+						#cherrypy.log("importing line with timestamp:%s and simulation_timestamp %f"%(timestamp,simulation_timestamp),context="ANTICIPATE");
 						lat = float(parts[1])
 						lon = float(parts[2])
 						altitude = float(parts[3])*progaconstants.FOOT2MT

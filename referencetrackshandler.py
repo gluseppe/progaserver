@@ -2,6 +2,7 @@ import progaconstants
 import simplejson as json
 from referencetrack import Point3D, ReferenceTrack
 import pdb
+import cherrypy
 
 
 
@@ -13,9 +14,28 @@ a json file. they should be in a geographic database, ideally we would use neo4j
 class ReferenceTracksHandler(object):
 
 
-	def __init__(self):
+	def __init__(self, scenario_name):
 		allfile = ""
-		complete_path = "./db/repository_total.json"
+		complete_path = ""
+		#cherrypy.log("scenario name: %s"%(scenario_name))
+		if scenario_name == "sc_4_uncertainty_l1":
+			#cherrypy.log("loading repository for uncertainty l1", context="UNCERTAINTY")
+			complete_path = "./db/repository_uncertainty_l1.json"
+
+
+		if scenario_name == "sc_4_uncertainty_l2":
+			#cherrypy.log("loading repository for uncertainty l2", context="UNCERTAINTY")
+			complete_path = "./db/repository_uncertainty_l2.json"
+
+
+		if scenario_name == "sc_4_uncertainty_l3":
+			#cherrypy.log("loading repository for uncertainty l3", context="UNCERTAINTY")
+			complete_path = "./db/repository_uncertainty_l3.json"
+
+
+		#cherrypy.log("loading complete path %s"%(complete_path), context="UNCERTAINTY")
+
+
 		with open(complete_path) as referencetracksfile:
 			for line in referencetracksfile:
 				allfile += line

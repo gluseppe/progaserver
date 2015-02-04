@@ -1,0 +1,38 @@
+{
+  "scenario_name": "scenario_4_uncertainty",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "01012",
+  "flights": [
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -50,
+      "flight_id": "CESSNA837",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": 190,
+      "flight_id": "BLONDIE230",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:04:00",
+        "reference_track_id" : "00006",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery4-Traffic1.txt",
+      "start": 600,
+      "flight_id": "DRAGON3",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:10:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    }
+
+  ]
+}
