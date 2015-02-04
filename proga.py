@@ -24,7 +24,7 @@ import sys
 class ProGA(object):
 
 	def __init__(self):
-		cherrypy.log("Starting ProGA server", context='DEBUG')
+		cherrypy.log("Starting ProGA server", context='AUTO')
 
 	@cherrypy.expose
 	def index(self):

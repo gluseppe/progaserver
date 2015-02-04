@@ -31,14 +31,14 @@ class Automator(plugins.Monitor):
 		self.scenariosfolder = progaconstants.SCENARIOS_FOLDER
 		self.t0 = -1
 		if self.selfTrackName != None:
-			cherrypy.log("I have a selftrack",context="AUTO")
+			#cherrypy.log("I have a selftrack",context="AUTO")
 			self.selfTrack = self.loadTrack(self.selfTrackName,progaconstants.SELF_FLIGHT_ID,0)
 
 
 	def automate(self):
 		elapsed_time = time.time() - self.t0
 		int_elapsed_seconds = int(elapsed_time)
-		cherrypy.log("selftrack updating", context="AUTO")
+		#cherrypy.log("selftrack updating", context="AUTO")
 		#pdb.set_trace()
 		arrived = not self.selfTrack.next(elapsed_time,progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
@@ -58,7 +58,7 @@ class Automator(plugins.Monitor):
 			#payload = {'json_payload': jsonstate}
 			url = "http://127.0.0.1:8080/listener"
 			headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-			cherrypy.log("about to send state to listener", context="AUTO")
+			#cherrypy.log("about to send state to listener", context="AUTO")
 			r = self.s.put(url, data=jsonstate, headers=headers)
 
 
@@ -76,7 +76,7 @@ class Automator(plugins.Monitor):
 		
 
 	def simulationStarted(self,t0):
-		cherrypy.log("i know simulation has started", context="AUTO")
+		#cherrypy.log("i know simulation has started", context="AUTO")
 		self.t0 = t0
 		if self.selfTrackName != None:
 			cherrypy.log("subscribing", context="AUTO")

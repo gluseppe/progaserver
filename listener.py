@@ -28,7 +28,7 @@ class FSListener(object):
 	@cherrypy.tools.json_in()
 	def PUT(self):
 		state = cherrypy.request.json
-		cherrypy.log("Received state %s"%(json.dumps(state)), context="FSX")
+		#cherrypy.log("Received state %s"%(json.dumps(state)), context="FSX")
 		#cherrypy.log('received position: '+ str(state['lat']))
 		cherrypy.engine.publish(progaconstants.MYSTATE_CHANNEL_NAME,state)
 		#lat = state['lat']

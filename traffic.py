@@ -75,7 +75,7 @@ class Traffic(plugins.Monitor):
 	def startSimulation(self):
 		elapsed_seconds = time.time() - self.t0
 		int_elapsed_seconds = int(elapsed_seconds)
-		cherrypy.log("elapsed seconds:"+str(int_elapsed_seconds))
+		#cherrypy.log("elapsed seconds:"+str(int_elapsed_seconds))
 
 		
 		if len(self.finishedTracks) == len(self.tracks):
@@ -131,19 +131,19 @@ class Traffic(plugins.Monitor):
 
 	@cherrypy.tools.accept(media='text/plain')
 	def GET(self, item=None):
-		cherrypy.log("position requested")
+		#cherrypy.log("position requested")
 		#ci va una condizione per ogni item che vogliamo esporre
 		#in questo caso my-state
 		if item == None or item == progaconstants.ITEM_MY_STATE:
-			cherrypy.log("returning position")
+			#cherrypy.log("returning position")
 			return self.getStrMyState()
 
 		if item == None or item == progaconstants.ITEM_TRAFFIC:
-			cherrypy.log("returning traffic")
+			#cherrypy.log("returning traffic")
 			return self.getJSONTraffic()
 
 		if item == progaconstants.ITEM_TRAFFIC4MFS:
-			cherrypy.log("returning traffic for microsoft fsx", context="MFS")
+			#cherrypy.log("returning traffic for microsoft fsx", context="MFS")
 			return self.getJSONTraffic(progaconstants.ITEM_TRAFFIC4MFS)
 
 	
@@ -220,7 +220,7 @@ class Traffic(plugins.Monitor):
 				 	weights[track.track_id] = wt
 
 				else:
-					cherrypy.log("computing weights for track:" + track.track_id)
+					#cherrypy.log("computing weights for track:" + track.track_id)
 					all_intents = self.referenceTracksHandler.getAllIntents(track.track_id)
 					wt = []
 					wt.append(declared_intent)
@@ -245,7 +245,7 @@ class Traffic(plugins.Monitor):
 	def POST(self,command=None,scenario_name=None):
 		if command == 'start':
 			if self.scenarioloader is not None:
-				cherrypy.log("\nStarting simulation")
+				cherrypy.log("Starting simulation", context='AUTO')
 				#si iscrive 
 				self.subscribe()
 				#si iscrive anche agli aggiornamenti di posizione pubblicati nel canale MYPOSITION_CHANNEL_NAME
@@ -260,11 +260,11 @@ class Traffic(plugins.Monitor):
 				cherrypy.engine.publish(progaconstants.SIMULATION_STARTED_CHANNEL_NAME, self.t0)
 				self.simulationStarted = True
 			else:
-				cherrypy.log("\nNo scenario loaded. Can't start simulation")
+				cherrypy.log("No scenario loaded. Can't start simulation", context='AUTO')
 				raise cherrypy.HTTPError(400,"Can't start simulation: no scenario was loaded. Use loadscenario as command and provide a scenario folder")
 
 		if command == 'stop':
-			cherrypy.log("simulation is finished")
+			cherrypy.log("Simulation is finished", context='AUTO')
 			#pdb.set_trace();
 			cherrypy.engine.publish(progaconstants.SIMULATION_STOPPED_CHANNEL_NAME)
 			self.unsubscribe()
@@ -273,7 +273,7 @@ class Traffic(plugins.Monitor):
 
 		if command == 'loadscenario':
 			if self.simulationStarted:
-				cherrypy.log("Can't load scenario while simulation is running. Stop simulation first and then load new scenario")
+				cherrypy.log("Can't load scenario while simulation is running. Stop simulation first and then load new scenario", context='AUTO')
 
 			else:
 				self.referenceTracksHandler = ReferenceTracksHandler(scenario_name)
@@ -287,9 +287,9 @@ class Traffic(plugins.Monitor):
 				cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
 					
 				for flight_id, r_tracks in self.initialWeights.items():
-					cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
+					#cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
 					for t in r_tracks:
-						cherrypy.log("ref_track:"+t.refTrackID+" w:"+str(t.w))
+						#cherrypy.log("ref_track:"+t.refTrackID+" w:"+str(t.w))
 	
 	
 				self.startedTracks = []
@@ -303,7 +303,7 @@ class Traffic(plugins.Monitor):
 		return "hello world"
 
 	def setMyState(self, myState):
-		cherrypy.log("state set")
+		#cherrypy.log("state set")
 		self.myState = myState
 		#pdb.set_trace()
 

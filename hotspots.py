@@ -84,7 +84,7 @@ class HotSpotter(plugins.Monitor):
 			lasttime = lasttime + timedelta(0, secondsToFlyTheLeg)
 			#pdb.set_trace()
 
-		cherrypy.log("4D POINTS: %s"%(listOf4DPoints),context="HOTSPOT")
+		#cherrypy.log("4D POINTS: %s"%(listOf4DPoints),context="HOTSPOT")
 		return listOf4DPoints
 
 
@@ -113,10 +113,10 @@ class HotSpotter(plugins.Monitor):
 		aircraftIDs = [t.flight_id for t in intentData]
 		plannedPoints = [self.get4DPointsFromIntent(rtObj, rtObj.departureTime) for rtObj in intentData]
 		for i in range(n):
-			cherrypy.log('Working with %s' % (aircraftIDs[i]), context='HOTSPOT')
+			#cherrypy.log('Working with %s' % (aircraftIDs[i]), context='HOTSPOT')
 			iPath = plannedPoints[i]
 			for j in range(i+1, n):
-				cherrypy.log('Checking against %s' % (aircraftIDs[j]), context='HOTSPOT')
+				#cherrypy.log('Checking against %s' % (aircraftIDs[j]), context='HOTSPOT')
 				jPath = plannedPoints[j]
 				for h in iPath:
 					for k in jPath:

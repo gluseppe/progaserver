@@ -34,7 +34,7 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 	timeHorizons must be an iterable containing times in seconds
 	"""
 	if ownInt is None:
-		cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
+		#cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
 		return [ownPos + t*ownVel for t in timeHorizons]
 	else:
 		# generate list of turn points
@@ -112,7 +112,7 @@ class PredictionEngine(plugins.Monitor):
 
 	def initialWeightsComputed(self, initialWeights):
 		#create Predictor Object
-		cherrypy.log("initial weights computed", context='DEBUG')
+		#cherrypy.log("initial weights computed", context='DEBUG')
 		self.predictor = Predictor(self.traffic,initialWeights)
 
 
@@ -125,14 +125,14 @@ class PredictionEngine(plugins.Monitor):
 
 
 	def simulationFinished(self):
-		cherrypy.log("I AM PREDICTION ENGINE AND I KNOW SIMULATION IT'S FINISHED", context='DEBUG')
+		#cherrypy.log("I AM PREDICTION ENGINE AND I KNOW SIMULATION IT'S FINISHED", context='DEBUG')
 		self.unsubscribe()
 		self.stop()
 
 	def simulationStarted(self, t0):
 		self.subscribe()
 		self.start()
-		cherrypy.log("SIMULATION ENGINE STARTING", context='DEBUG')
+		cherrypy.log("SIMULATION ENGINE STARTING", context='AUTO')
 		self.predictor.simulationStarted(t0)
 
 	def toBool(self, s):
@@ -164,8 +164,8 @@ class PredictionEngine(plugins.Monitor):
 		for aID, foo in prediction.items():
 			predDict = foo[0]
 			for t, p in ztp:
-				cherrypy.log("Ownship will be at %s in %d seconds" % (p, t),context="MONITOR")
-				cherrypy.log("%s will be at %s in %d seconds" % (aID, sum(predDict[t])/len(predDict[t]), t),context="MONITOR")
+				#cherrypy.log("Ownship will be at %s in %d seconds" % (p, t),context="MONITOR")
+				#cherrypy.log("%s will be at %s in %d seconds" % (aID, sum(predDict[t])/len(predDict[t]), t),context="MONITOR")
 				for q in predDict[t]:
 					if euclideanDistance(p,q) < ALERT_DISTANCE:
 						potentialConflicts.setdefault(t, []).append(aID)
@@ -209,10 +209,8 @@ class PredictionEngine(plugins.Monitor):
 								prediction_matrix[flight][0][times][i] = vect
 	
 						prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
-	
-				#pdb.set_trace()
 				jmat = json.dumps(prediction_matrix)
-				#pdb.set_trace()
+                cherrypy.log("%s" % (jmat), context="PREDICTION")
 				return jmat
 	
 			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
@@ -222,10 +220,8 @@ class PredictionEngine(plugins.Monitor):
 						prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
 						for i in range(0,len(prediction_matrix[flight][dt][1])):
 							prediction_matrix[flight][dt][1][i] = prediction_matrix[flight][dt][1][i].tolist()
-		
-				#pdb.set_trace()
 				jmat = json.dumps(prediction_matrix)
-				cherrypy.log("prediction ready", context="PREDICTION")
+				cherrypy.log("%s" % (jmat), context="PREDICTION")
 		
 		
 				
@@ -235,7 +231,7 @@ class PredictionEngine(plugins.Monitor):
 	
 	def POST(self,command=''):
 		if command == 'start':
-			cherrypy.log("starting prediction engine", context='DEBUG')
+			cherrypy.log("starting prediction engine", context='AUTO')
 			self.subscribe()
 			self.start()
 

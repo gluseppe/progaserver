@@ -125,7 +125,7 @@ class ScenarioLoader(object):
 				#allora recuper loe info della referencetrack tramite il referencetrackhandler
 				#e aggiungo la traccia
 				if reference_track_id != None:
-					cherrypy.log("reference_trackid: "+reference_track_id, context="DEBUG")
+					#cherrypy.log("reference_trackid: "+reference_track_id, context="DEBUG")
 					rt = self.referenceTrackHandler.getReferenceTrack(reference_track_id)
 					rt.refTrackID = reference_track_id
 					rt.departureTime = departure_time

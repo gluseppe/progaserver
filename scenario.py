@@ -18,7 +18,7 @@ class Scenario(object):
 		self.tracks = tracks
 		self.ownship_id = ownship_id
 		self.ownship_intent_id = ownship_intent_id
-		cherrypy.log("Sono dentro scenario e ho " + str(len(self.tracks)) + "tracce")
+		#cherrypy.log("Sono dentro scenario e ho " + str(len(self.tracks)) + "tracce")
 
 	def getStartingTimes(self):
 		times = {}
@@ -42,7 +42,7 @@ class Scenario(object):
 		for track in self.tracks:
 			toStart[track.getStartTime].append(track)
 
-		cherrypy.log()
+		#cherrypy.log()
 
 
 		return toStart
