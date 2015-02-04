@@ -210,7 +210,7 @@ class PredictionEngine(plugins.Monitor):
 	
 						prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
 				jmat = json.dumps(prediction_matrix)
-                cherrypy.log("%s" % (jmat), context="PREDICTION")
+				cherrypy.log("%s" % (jmat), context="PREDICTION")
 				return jmat
 	
 			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY

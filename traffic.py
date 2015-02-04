@@ -114,6 +114,7 @@ class Traffic(plugins.Monitor):
 					self.startedTracks.remove(startedTrack)
 
 			#pdb.set_trace()
+			cherrypy.log('%s' % (self.getStrMyState()), context='OWNSHIP')
 	
 			cherrypy.engine.publish(progaconstants.UPDATED_TRAFFIC_CHANNEL_NAME,elapsed_seconds)
 
@@ -121,6 +122,8 @@ class Traffic(plugins.Monitor):
 	def makeStep(self, track, elapsed_seconds):
 		#cherrypy.log("making step of track: " + track.getTrackId())
 		arrived = not track.next(elapsed_seconds, progaconstants.PLAYER_POINTER_INCREMENT)
+		stringToLog = json.dumps(track.getCurrentState())
+		cherrypy.log('%s' % (stringToLog), context='TRAFFIC')
 		if arrived:
 			#pdb.set_trace()
 			self.finishedTracks.append(track)
@@ -286,9 +289,9 @@ class Traffic(plugins.Monitor):
 				self.ownship_intent = self.referenceTracksHandler.getReferenceTrack(self.ownship_intent_id)
 				cherrypy.engine.publish(progaconstants.INITIAL_WEIGHTS_COMPUTED_CHANNEL_NAME,self.initialWeights)
 					
-				for flight_id, r_tracks in self.initialWeights.items():
+				#for flight_id, r_tracks in self.initialWeights.items():
 					#cherrypy.log(flight_id + " n references: " + str(len(r_tracks)))
-					for t in r_tracks:
+					#for t in r_tracks:
 						#cherrypy.log("ref_track:"+t.refTrackID+" w:"+str(t.w))
 	
 	
