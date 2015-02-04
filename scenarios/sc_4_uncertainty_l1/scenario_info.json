@@ -5,8 +5,8 @@
   "flights": [
     {
       "path": "Scenery4-Intruder1.txt",
-      "start": -50,
-      "flight_id": "CESSNA837",
+      "start": -350,
+      "flight_id": "C-3PO",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
         "reference_track_id" : "00005",
@@ -15,8 +15,8 @@
     },
     {
       "path": "Scenery5-Intruder2.txt",
-      "start": 190,
-      "flight_id": "BLONDIE230",
+      "start": 70,
+      "flight_id": "R2-D2",
       "flight_intent": {
         "departure_time": "27-01-2015 15:08:46",
         "reference_track_id" : "01006",
@@ -26,7 +26,7 @@
     {
       "path": "Scenery4-Traffic1.txt",
       "start": 600,
-      "flight_id": "DRAGON3",
+      "flight_id": "BOBA66",
       "flight_intent": {
         "departure_time": "27-01-2015 15:10:00",
         "reference_track_id" : "00005",

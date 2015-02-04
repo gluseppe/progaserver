@@ -138,15 +138,22 @@ class ScenarioLoader(object):
 					flight_intent_point_list = []
 					#cherrypy.log("ref track id:"+reference_track_id)
 					turning_points = raw_flight_intent['turning_points']
-					for item in turning_points:
-						flight_intent_point_list.append(Point3D(item['lon'],item['lat'],item['h']))
+					if turning_points != None:
+						for item in turning_points:
+							flight_intent_point_list.append(Point3D(item['lon'],item['lat'],item['h']))
 				
 
-					flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
-					flight_intent.refTrackID = reference_track_id
-					flight_intent.departureTime = departure_time
-					#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
-					self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
+						flight_intent = ReferenceTrack(flight_intent_point_list,flight_id)
+						flight_intent.refTrackID = reference_track_id
+					
+						flight_intent.departureTime = departure_time
+
+
+						#cherrypy.log("\nLoading track file: "+flight_file_name + " as " + flight_id + " starting: " + str(flight_start) + "secs after simulation start" )
+						self.addTrack(flight_file_name,flight_id,flight_start,flight_intent)
+					else:
+						self.addTrack(flight_file_name,flight_id,flight_start,None)
+
 
 			
 			

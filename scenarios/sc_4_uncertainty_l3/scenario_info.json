@@ -6,27 +6,27 @@
     {
       "path": "Scenery4-Intruder1.txt",
       "start": -50,
-      "flight_id": "CESSNA837",
+      "flight_id": "CHEWBA02",
       "flight_intent": {
         "departure_time": "27-01-2015 15:00:00",
-        "reference_track_id" : "00005",
+        "reference_track_id" : null,
         "turning_points": null
       }
     },
     {
       "path": "Scenery5-Intruder2.txt",
       "start": 190,
-      "flight_id": "BLONDIE230",
+      "flight_id": "LUKE43",
       "flight_intent": {
         "departure_time": "27-01-2015 15:04:00",
-        "reference_track_id" : "01006",
+        "reference_track_id" : null,
         "turning_points": null
       }
     },
     {
       "path": "Scenery4-Traffic1.txt",
       "start": 600,
-      "flight_id": "DRAGON3",
+      "flight_id": "GOLD45",
       "flight_intent": {
         "departure_time": "27-01-2015 15:10:00",
         "reference_track_id" : "00005",

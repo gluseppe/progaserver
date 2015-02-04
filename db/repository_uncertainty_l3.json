@@ -144,6 +144,7 @@
     {
         "reference_track_id" : "01002",
         "_track_path" : "LFPZ - LFON - LFOE - LFPD",
+        "_comment": "PARTIAL INTENT FOR UNCERTAINTY LEVELS 2",
         "turning_points": [
           {
             "_icao": "LFPZ",
@@ -560,7 +561,7 @@
     {
         "reference_track_id" : "01006",
         "_track_path" : "LFON - LFOE - LFOP",
-        "_comment": "Intruder 2 in Scenario 5",
+        "_comment": "Intruder 2 in Scenario 5 - ",
         "turning_points": [
           {
             "_icao": "LFON",
@@ -1276,6 +1277,7 @@
     {
         "reference_track_id" : "01014",
         "_track_path" : "LFPZ - LFON - LFOE - LFXU - LFPZ",
+        "_comment": "PARTIAL INTENT FOR UNCERTAINTY LEVELS",
         "turning_points": [
           {
             "_icao": "LFPZ",
@@ -1341,6 +1343,154 @@
             "_icao": "LFPZ",
             "lat": 48.813681, 
             "lon": 2.066481, 
+            "h": 0
+          }
+        ]
+    },
+    {
+        "reference_track_id" : "00015",
+        "_track_path" : "LFPZ - LFOE - LFOP",
+        "_comment": "INTENT FOR UNCERTAINTY LEVELS 1",
+        "turning_points": [
+          {
+            "_icao": "LFPZ",
+            "lat": 48.813681, 
+            "lon": 2.066481, 
+            "h": 0
+          },
+          {
+            "_icao": "climb 1200 ft under Paris TMA",
+            "lat": 48.81785161056559, 
+            "lon": 2.048958819162075,
+            "h": 1200
+          },
+          {
+            "_icao": "start climb 2000 ft",
+            "lat": 48.8832944402246, 
+            "lon": 1.774010804285934,
+            "h": 1200
+          },
+          {
+            "_icao": "end climb 2000 ft",
+            "lat": 48.88606304052952, 
+            "lon": 1.7623789545968327,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFOP",
+            "lat": 49.385211, 
+            "lon": 1.176192, 
+            "h": 0
+          }
+        ]
+    },
+        {
+        "reference_track_id" : "00016",
+        "_track_path" : "LFPZ - LFOE - LFOL",
+        "_comment": "INTENT FOR UNCERTAINTY LEVELS 2",
+        "turning_points": [
+          {
+            "_icao": "LFPZ",
+            "lat": 48.813681, 
+            "lon": 2.066481, 
+            "h": 0
+          },
+          {
+            "_icao": "climb 1200 ft under Paris TMA",
+            "lat": 48.81785161056559, 
+            "lon": 2.048958819162075,
+            "h": 1200
+          },
+          {
+            "_icao": "start climb 2000 ft",
+            "lat": 48.8832944402246, 
+            "lon": 1.774010804285934,
+            "h": 1200
+          },
+          {
+            "_icao": "end climb 2000 ft",
+            "lat": 48.88606304052952, 
+            "lon": 1.7623789545968327,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFOL",
+            "lat": 48.758333, 
+            "lon": 0.656667, 
+            "h": 0
+          }
+        ]
+    },
+    {
+        "reference_track_id" : "00017",
+        "_track_path" : "LFON - LFOE - LFXU",
+        "_comment": "UNCERTAINTY LEVEL 3 ",
+        "turning_points": [
+          {
+            "_icao": "LFON",
+            "lat": 48.705956, 
+            "lon": 1.361618, 
+            "h": 0
+          },
+          {
+            "_icao": "climb to 2000 ft",
+            "lat": 48.71537920051235, 
+            "lon": 1.3569437303111649,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFXU",
+            "lat": 48.998333, 
+            "lon": 1.945000, 
+            "h": 0
+          }
+        ]
+    },
+    {
+        "reference_track_id" : "00018",
+        "_track_path" : "LFON - LFOE - LFPD",
+        "_comment": "UNCERTAINTY LEVEL 3 ",
+        "turning_points": [
+          {
+            "_icao": "LFON",
+            "lat": 48.705956, 
+            "lon": 1.361618, 
+            "h": 0
+          },
+          {
+            "_icao": "climb to 2000 ft",
+            "lat": 48.71537920051235, 
+            "lon": 1.3569437303111649,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+                    {
+            "_icao": "LFPD",
+            "lat": 49.102778, 
+            "lon": 0.566667, 
             "h": 0
           }
         ]

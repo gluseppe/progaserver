@@ -316,6 +316,8 @@ class bunchOfParticles(object):
         self.dt = dt
         self.numPart = size
         self.positions = np.tile(p, size).reshape( (size,3) )
+        if abs(v[2]) < 0.2:
+            v[2] = 0
         self.velocities = np.tile(v, size).reshape( (size,3) )
         bar = [[a.getNumpyVector()[:2] for a in tt] for tt in referenceTracks]
         # foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
