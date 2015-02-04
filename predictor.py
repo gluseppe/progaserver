@@ -1,6 +1,6 @@
 from progaconstants import WUPDATE_SECONDS, BETA_POS, BETA_TRK, NUMPARTICLES, GRIDBINS
 from progaconstants import ECC, LOCRADIUS, PENAL_GLOBAL, PENAL_ANGLE, PENAL_DIST, BETA_DIST, BETA_ANGLE
-from progaconstants import ROTSCALE, ALTSCALE, XYSCALE
+from progaconstants import ROTSCALE, ALTSCALE, XYSCALE, FOOT2MT
 import cherrypy
 import numpy as np
 import numpy.random as npr
@@ -297,7 +297,10 @@ class Predictor(object):
 
             for j in range(1,nsteps+1):
                 pparticles.takeAmove()
-                L[j*dt] = pparticles.positions
+                copyPositions = np.array(pparticles.positions)
+                for q in copyPositions:
+                    q[2] /= FOOT2MT
+                L[j*dt] = copyPositions
             return [L, usedIDs]
             # ritorna una tupla:
             # L e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
