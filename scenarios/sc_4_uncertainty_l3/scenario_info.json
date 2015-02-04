@@ -19,7 +19,7 @@
       "flight_id": "BLONDIE230",
       "flight_intent": {
         "departure_time": "27-01-2015 15:04:00",
-        "reference_track_id" : "00006",
+        "reference_track_id" : "01006",
         "turning_points": null
       }
     },

@@ -25,7 +25,8 @@ from progaconstants import ALERT_DISTANCE, FOOT2MT
 
 
 from datetime import datetime, date, time, timedelta
-from math import cos, sqrt, ceil
+from math import cos, sqrt, ceil, radians
+
 
 
 
@@ -37,8 +38,8 @@ def distanceOnEllipsoidalEarthProjectedToAPlane(plat, plon, qlat, qlon):
 	meanlat = .5 * (plat + qlat)
 	difflat = plat - qlat
 	difflon = plon - qlon
-	K1 = 111.13209 - .56605 * cos(2*meanlat) + .0012 * cos(4*meanlat)
-	K2 = 111.41513 * cos(meanlat) - .09455 * cos(3*meanlat) + .00012 * cos(5*meanlat)
+	K1 = 111.13209 - .56605 * cos(radians(2*meanlat)) + .0012 * cos(radians(4*meanlat))
+	K2 = 111.41513 * cos(radians(meanlat)) - .09455 * cos(radians(3*meanlat)) + .00012 * cos(radians(5*meanlat))
 	return sqrt((K1*difflat)**2 + (K2*difflon)**2)
 
 
@@ -49,11 +50,11 @@ class HotSpotter(plugins.Monitor):
 		plugins.Monitor.__init__(self, bus, self.hotSpotEngine(), sleeping_time)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
 		self.REFv = 0.051144# reference velocity in km/s
-		self.HS_candidate_spatial_treshold = .5 # in km, change if needed
-		self.HS_candidate_time_treshold = timedelta(0, 60) # in seconds, change if needed
+		self.HS_candidate_spatial_treshold = 1.5 # in km, change if needed
+		self.HS_candidate_time_treshold = timedelta(0, 120) # in seconds, change if needed
 		self.HS_spatial_treshold = 1.5 # in km, change if needed
 		self.HS_time_treshold = timedelta(0, 120) # in seconds, change if needed
-		self.howManyPointsPerIntent = 100.
+		self.howManyPointsPerIntent = 10.
 		self.scenario = None
 
 
@@ -77,10 +78,13 @@ class HotSpotter(plugins.Monitor):
 			latitudes = np.linspace(leg[0].lat, leg[1].lat, pointsPerLeg)
 			longitudes = np.linspace(leg[0].lon, leg[1].lon, pointsPerLeg)
 			heights = np.linspace(leg[0].z, leg[1].z, pointsPerLeg)
-			secondsToFlyTheLeg = sqrt((leg[1].z-leg[0].z)**2 + distanceOnEllipsoidalEarthProjectedToAPlane(leg[0].lat, leg[0].lon, leg[1].lat, leg[1].lon)**2 )/self.REFv
+			secondsToFlyTheLeg = sqrt(((leg[1].z-leg[0].z)*0.0003048)**2 + distanceOnEllipsoidalEarthProjectedToAPlane(leg[0].lat, leg[0].lon, leg[1].lat, leg[1].lon)**2 )/self.REFv
 			passagetimes = [lasttime + timedelta(0, incremenT) for incremenT in np.linspace(0, secondsToFlyTheLeg, pointsPerLeg)]
 			listOf4DPoints += zip(latitudes, longitudes, heights, passagetimes)
 			lasttime = lasttime + timedelta(0, secondsToFlyTheLeg)
+			#pdb.set_trace()
+
+		cherrypy.log("4D POINTS: %s"%(listOf4DPoints),context="HOTSPOT")
 		return listOf4DPoints
 
 

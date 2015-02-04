@@ -5,7 +5,7 @@ import glob
 import progaconstants
 import numpy as np
 from scipy import stats
-from math import cos, sqrt
+from math import cos, sqrt, radians
 from progaconstants import AIRFIELD_CUTOFF_DISTANCE
 
 def distanceOnEllipsoidalEarthProjectedToAPlane(plat, plon, qlat, qlon):
@@ -16,8 +16,8 @@ def distanceOnEllipsoidalEarthProjectedToAPlane(plat, plon, qlat, qlon):
 	meanlat = .5 * (plat + qlat)
 	difflat = plat - qlat
 	difflon = plon - qlon
-	K1 = 111.13209 - .56605 * cos(2*meanlat) + .0012 * cos(4*meanlat)
-	K2 = 111.41513 * cos(meanlat) - .09455 * cos(3*meanlat) + .00012 * cos(5*meanlat)
+	K1 = 111.13209 - .56605 * cos(radians(2*meanlat)) + .0012 * cos(radians(4*meanlat))
+	K2 = 111.41513 * cos(radians(meanlat)) - .09455 * cos(radians(3*meanlat)) + .00012 * cos(radians(5*meanlat))
 	return sqrt((K1*difflat)**2 + (K2*difflon)**2)
 
 def bubblePop(t, clat, clon, r):

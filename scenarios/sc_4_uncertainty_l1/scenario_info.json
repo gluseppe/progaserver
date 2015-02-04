@@ -1,5 +1,5 @@
 {
-  "scenario_name": "scenario_4_uncertainty",
+  "scenario_name": "scenario_4_uncertainty_l1",
   "ownship_id": "YOU",
   "ownship_intent_id" : "01012",
   "flights": [
@@ -18,8 +18,8 @@
       "start": 190,
       "flight_id": "BLONDIE230",
       "flight_intent": {
-        "departure_time": "27-01-2015 15:04:00",
-        "reference_track_id" : "00006",
+        "departure_time": "27-01-2015 15:08:46",
+        "reference_track_id" : "01006",
         "turning_points": null
       }
     },
