@@ -126,7 +126,7 @@ class Traffic(plugins.Monitor):
 		stringToLog = json.dumps(track.getCurrentState())
 		cherrypy.log('%s' % (stringToLog), context='TRAFFIC')
 		if arrived:
-			pdb.set_trace()
+			#pdb.set_trace()
 			self.finishedTracks.append(track)
 		return arrived
 
