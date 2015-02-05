@@ -88,7 +88,10 @@ class Track(object):
 	def next(self, elapsedtime, increment=1):
 
 		#pdb.set_trace()
-		elapsedtime = elapsedtime - self.startAt
+		if (self.startAt >= 0):
+			elapsedtime = elapsedtime - self.startAt
+
+		
 		found = False
 		if self.pointer == None:
 			self.pointer = 0

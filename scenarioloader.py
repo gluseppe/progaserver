@@ -48,7 +48,10 @@ class ScenarioLoader(object):
 					timestamp = float(parts[0])
 
 					#cherrypy.log("timestamp:%s"%(timestamp),context="ANTICIPATE")
-					#pdb.set_trace()
+					#if flight_start < -100:
+						#pdb.set_trace()
+
+
 					simulation_timestamp = -1;
 					if (flight_start < 0):
 						simulation_timestamp = timestamp-abs(flight_start)
@@ -57,7 +60,7 @@ class ScenarioLoader(object):
 						
 					
 					if (flight_start >= 0 or timestamp >= abs(flight_start)):
-						#cherrypy.log("importing line with timestamp:%s and simulation_timestamp %f"%(timestamp,simulation_timestamp),context="ANTICIPATE");
+						cherrypy.log("%s importing line with timestamp:%s and simulation_timestamp %f"%(track_id,timestamp,simulation_timestamp),context="ANTICIPATE");
 						lat = float(parts[1])
 						lon = float(parts[2])
 						altitude = float(parts[3])*progaconstants.FOOT2MT
@@ -104,9 +107,9 @@ class ScenarioLoader(object):
 		for flights in jsonobj['flights']:
 			flight_file_name = flights['path']
 			flight_id = flights['flight_id']
-			#cherrypy.log("loading flight id:"+flight_id)
+			cherrypy.log("loading flight id:"+flight_id,context="LOAD")
 			flight_start = flights['start']
-
+			cherrypy.log("starting at: %d"%(flight_start),context="LOAD")
 			raw_flight_intent = flights['flight_intent']
 			flight_intent_point_list = None
 			flight_intent = None
