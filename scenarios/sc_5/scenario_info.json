@@ -1,0 +1,108 @@
+{
+  "scenario_name": "scenario_5",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "01012",
+  "flights": [
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -310,
+      "flight_id": "C-3PO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": 170,
+      "flight_id": "R2-D2",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:08:46",
+        "reference_track_id" : "01006",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -280,
+      "flight_id": "MEMMO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": 140,
+      "flight_id": "TONY",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:08:46",
+        "reference_track_id" : "01006",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -340,
+      "flight_id": "MARIA",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": 200,
+      "flight_id": "GIANNI",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:08:46",
+        "reference_track_id" : "01006",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 0,
+      "flight_id": "BLONDIE23",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 120,
+      "flight_id": "STING",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 200,
+      "flight_id": "BILBO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 400,
+      "flight_id": "ENZO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    }
+
+  ]
+}
