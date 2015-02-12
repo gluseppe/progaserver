@@ -1,5 +1,4 @@
 {
-
   "reference_tracks": [
     {
         "reference_track_id" : "00001",
@@ -1240,7 +1239,7 @@
             "_icao": "LFOE",
             "lat": 49.018333, 
             "lon": 1.206667, 
-            "h": 0
+            "h": 2000
           },
           {
             "_icao": "LFON",
@@ -1313,7 +1312,7 @@
             "_icao": "LFOE",
             "lat": 49.018333, 
             "lon": 1.206667, 
-            "h": 0
+            "h": 2000
           },
           {
             "_icao": "LFXU",

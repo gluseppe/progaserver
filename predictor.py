@@ -44,23 +44,24 @@ def legger(track, p):
             L.append(i)
     return L
 
-def findWeights(track, p, v):
+def findWeights(track, p, v, id):
     """
     Return index of leg that is most-likely flown and track weight
     based on position and velocity of the aircraft
     """
     candidateLegs = legger(track, p)
+    #cherrypy.log('Candidate legs for track %s are as follows: %s' % (id, candidateLegs), context='UPDATE')
     if norm(v) < 0.1**9:    
         return(0, 1.)
     if norm(p - track[0][0]) < LOCRADIUS:
         # aircraft lies around the departure airfield
-        #cherrypy.log('appena partito', context='FINDWEIGHTS')
+        #cherrypy.log('appena partito', context='UPDATE')
         legDirection = track[0][1]-track[0][0]
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         return (0, 1. )
     elif norm(p - track[-1][1]) < LOCRADIUS:
         # aircraft lies around the arrival airfield
-        #cherrypy('in arrivo', context='FINDWEIGHTS')
+        #cherrypy.log('in arrivo', context='UPDATE')
         legDirection = track[-1][1]-track[-1][0]
         legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         return (len(track)-1, 1. )
@@ -81,9 +82,9 @@ def findWeights(track, p, v):
                 vcrossw = v[0]*w[1] - v[1]*w[0]
                 ucrossw = u[0]*w[1] - u[1]*w[0]
                 if ucrossw < 0:
-                    #cherrypy.log('virata clockwise', context='FINDWEIGHTS')
+                    #cherrypy.log('virata clockwise', context='UPDATE')
                     if vcrossu > 0 and vcrossw < 0:
-                        #cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        #cherrypy.log( 'virata', context='UPDATE')
                         vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                              np.dot(v,w)/(norm(w) * norm(v))])
                         if vangles[0] < vangles[1]:
@@ -91,18 +92,18 @@ def findWeights(track, p, v):
                         else:
                             return (j, np.exp(- BETA_ANGLE*vangles[1]))
                     elif vcrossu > 0 and vcrossw > 0:
-                        #cherrypy.log('interno', context='FINDWEIGHTS')
+                        #cherrypy.log('interno', context='UPDATE')
                         return ( j, PENAL_ANGLE )
                     elif vcrossu < 0 and vcrossw < 0:
-                    	#cherrypy.log('esterno', context='FINDWEIGHTS')
+                    	#cherrypy.log('esterno', context='UPDATE')
                         return ( i, PENAL_ANGLE )
                     else:
-                        #cherrypy.log( 'opposto', context='FINDWEIGHTS')
+                        #cherrypy.log( 'opposto', context='UPDATE')
                         return (i, PENAL_DIST * PENAL_ANGLE)
                 else:
-                    #cherrypy.log('virata couterclockwise', context='FINDWEIGHTS')
+                    #cherrypy.log('virata couterclockwise', context='UPDATE')
                     if vcrossu < 0 and vcrossw > 0:
-                        #cherrypy.log( 'virata', context='FINDWEIGHTS')
+                        #cherrypy.log( 'virata', context='UPDATE')
                         vangles = np.arccos([np.dot(v,u)/(norm(u) * norm(v)),
                                              np.dot(v,w)/(norm(w) * norm(v))])
                         if vangles[0] < vangles[1]:
@@ -110,25 +111,25 @@ def findWeights(track, p, v):
                         else:
                             return (j, np.exp(- BETA_ANGLE*vangles[1]))
                     elif vcrossu < 0 and vcrossw < 0:
-                        #cherrypy.log('interno', context='FINDWEIGHTS')
+                        #cherrypy.log('interno', context='UPDATE')
                         return ( j, PENAL_ANGLE) 
                     elif vcrossu > 0 and vcrossw > 0:
-                        #cherrypy.log('esterno', context='FINDWEIGHTS')
+                        #cherrypy.log('esterno', context='UPDATE')
                         return ( i, PENAL_ANGLE) 
                     else:
-                        #cherrypy.log('opposto', context='FINDWEIGHTS')
+                        #cherrypy.log('opposto', context='UPDATE')
                         return (i, PENAL_DIST * PENAL_ANGLE)
         else:
         	if len(candidateLegs) == 1:
                 # aircraft lies in only one sausage
-        		#cherrypy.log('in-leg %d' % (candidateLegs[0]), context='FINDWEIGHTS')
+        		#cherrypy.log('in-leg %d' % (candidateLegs[0]), context='UPDATE')
         		leg = track[candidateLegs[0]]
         		legDirection = leg[1]-leg[0]
         		distanceFromLeg = norm(p - leg[0] - projection(p-leg[0], legDirection))
         		legTrackAngle = np.arccos( np.dot(v, legDirection)/(norm(v) * norm(legDirection)) )
         		return (candidateLegs[0], np.exp( - BETA_DIST*distanceFromLeg - BETA_ANGLE*legTrackAngle ))
         	else:
-        		#cherrypy.log('no match found', context='FINDWEIGHTS')
+        		#cherrypy.log('no match found', context='UPDATE')
         		distances = [norm(p - turnPoint) for turnPoint in [leg[0] for leg in track] ]
         		turnPointIndex = distances.index( min(distances) )
         		return (turnPointIndex, PENAL_GLOBAL)
@@ -213,21 +214,22 @@ class Predictor(object):
         def updateWeights(self):
                 #cherrypy.log('update', context='CARLO')
                 for aID, aircraftDict in self.lastSeenTraffic.items():
+                    #cherrypy.log('Updating %s' % (aID), context='UPDATE')
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     bar = [[a.getNumpyVector()[:2] for a in tt] for tt in self.tracks[aID]]
-                    foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
+                    foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2], ttid) for tt, ttid in zip(bar, self.tracksID[aID])]
                     nw = np.array([f[1] for f in foo])                    
                     try:
                         self.weights[aID] *= nw # Bayes' rule
                     except KeyError:
-                        cherrypy.log("KeyError in accessing weights disctionary.", context='ERROR')
+                        cherrypy.log("KeyError in accessing weights dictionary.", context='ERROR')
                         return False
                     self.weights[aID] = self.weights[aID]/sum(self.weights[aID]) # Normalization
                     #chk_str = "Check weights "+ str(self.weights["GIUS"])
                     #cherrypy.log(chk_str, context='CARLO')
                     self.legs[aID] = np.array([f[0] for f in foo])
-                    #cherrypy.log("updated weights: %s"%(self.weights[aID]),context="PREDTEST")
+                    #cherrypy.log("updated weights for %s :: %s"%(aID, dict(zip(self.tracksID[aID], self.weights[aID]))),context="UPDATE")
                 return True
                     
 

@@ -120,7 +120,7 @@ class Traffic(plugins.Monitor):
 
 
 	def makeStep(self, track, elapsed_seconds):
-		cherrypy.log("making step of track: " + track.getTrackId())
+		cherrypy.log("making step of track: " + track.getTrackId(), context='TRAFFIC')
 		#pdb.set_trace()
 		arrived = not track.next(elapsed_seconds, progaconstants.PLAYER_POINTER_INCREMENT)
 		stringToLog = json.dumps(track.getCurrentState())

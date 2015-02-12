@@ -214,7 +214,8 @@ class PredictionEngine(plugins.Monitor):
 				return jmat
 	
 			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
-			else:		
+			else:
+				#pdb.set_trace()
 				for flight in prediction_matrix:
 					for dt in prediction_matrix[flight]:
 						prediction_matrix[flight][dt][0] = prediction_matrix[flight][dt][0].tolist()
