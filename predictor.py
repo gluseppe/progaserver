@@ -44,7 +44,7 @@ def legger(track, p):
             L.append(i)
     return L
 
-def findWeights(track, p, v, id):
+def findWeights(track, p, v):
     """
     Return index of leg that is most-likely flown and track weight
     based on position and velocity of the aircraft
@@ -218,7 +218,7 @@ class Predictor(object):
                     p = np.array([aircraftDict['x'], aircraftDict['y'], aircraftDict['z']])
                     v = np.array([aircraftDict['vx'], aircraftDict['vy'], aircraftDict['vz']])
                     bar = [[a.getNumpyVector()[:2] for a in tt] for tt in self.tracks[aID]]
-                    foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2], ttid) for tt, ttid in zip(bar, self.tracksID[aID])]
+                    foo = [findWeights(zip(tt[:-1], tt[1:]), p[:2], v[:2]) for tt in bar]
                     nw = np.array([f[1] for f in foo])                    
                     try:
                         self.weights[aID] *= nw # Bayes' rule

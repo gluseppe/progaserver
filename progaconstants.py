@@ -83,4 +83,4 @@ FOOT2MT = 0.3048
 
 AIRFIELD_CUTOFF_DISTANCE = 10 # distance in Km
 
-ALERT_DISTANCE = 500 #distance in meters
+ALERT_DISTANCE = 5000 #distance in meters

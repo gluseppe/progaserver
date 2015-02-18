@@ -55,7 +55,7 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 		timeToFly = list(timeHorizons)
 		fp = []
 		p = np.array(ownPos)
-		while len(timeToFly) > 0 and len(timeToTurn) > 0:
+		while len(timeToFly) > 0 and len(timeToTurn) > 0 and legIndex < len(ownIntent):
 			if timeToTurn[0] < timeToFly[0]:
 				t = timeToTurn[0]
 				timeToFly = [s-t for s in timeToFly]
@@ -183,7 +183,7 @@ class PredictionEngine(plugins.Monitor):
 			#pdb.set_trace()
 			fids = self.traffic.getActiveFlightIDs()
 			ownship_intent = self.traffic.getOwnshipIntent()
-			intruders = self.checkConflicts(p,v,fids,120,3,ownship_intent)
+			intruders = self.checkConflicts(p,v,fids,60,10,ownship_intent)
 			#pdb.set_trace()
 			return json.dumps(intruders)
 		else:
