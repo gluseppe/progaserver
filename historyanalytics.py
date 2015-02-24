@@ -31,7 +31,7 @@ def bubblePop(t, clat, clon, r):
 			break
 	return t
 
-class HistoryAnalitics(object):
+class HistoryAnalytics(object):
 	"""
 	I will help Timothy, Dumbo's helper
 	"""
@@ -131,10 +131,10 @@ def debug():
 	"""
 	Just for testing purposes
 	"""
-	ha = HistoryAnalitics("query1")
+	ha = HistoryAnalytics("query1")
 	ha.loadAll(expunge=True)
 	tl = ha.track_list
-	print ha.evaluateKDE(100, 100).shape
+	print ha.evaluateKDE(50, 50)
 
 
 if __name__ == '__main__':

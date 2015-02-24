@@ -17,6 +17,7 @@ from traffic import Traffic
 from prediction import PredictionEngine
 from listener import FSListener
 from hotspots import HotSpotter
+from planner import Planner
 
 from cherrypy import log
 import sys
@@ -79,6 +80,14 @@ if __name__ == '__main__':
 		}
 	}
 
+	planner_conf = {
+		'/': {
+			'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+			'tools.response_headers.on': True,
+			'tools.response_headers.headers' : [('Content-Type','text/plain')]
+		}
+	}
+
 
 	traffic_conf = {
 		'/': {
@@ -106,6 +115,7 @@ if __name__ == '__main__':
 	traffic = Traffic(cherrypy.engine,progaconstants.PLAYER_SLEEP_SECONDS)
 	predictionEngine = PredictionEngine(cherrypy.engine,progaconstants.PREDICTION_SLEEP_SECONDS, traffic)
 	hotspots = HotSpotter(cherrypy.engine,progaconstants.HOTSPOTS_SLEEP_SECONDS)
+	planner = Planner(cherrypy.engine,progaconstants.PLANNER_SLEEP_SECONDS)
 
 
 	cherrypy.tree.mount(ProGA(), '/', proga_conf)
@@ -113,6 +123,7 @@ if __name__ == '__main__':
 	cherrypy.tree.mount(traffic, '/traffic', traffic_conf)
 	cherrypy.tree.mount(predictionEngine, '/prediction', traffic_conf)
 	cherrypy.tree.mount(hotspots, '/hotspots', hotspots_conf)
+	cherrypy.tree.mount(planner, '/planner', planner_conf)
 
 
 	automator = None
