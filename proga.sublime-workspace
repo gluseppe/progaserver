@@ -1,0 +1,372 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"player",
+				"player2"
+			],
+			[
+				"bou",
+				"bounce_ball"
+			],
+			[
+				"pla",
+				"player1"
+			],
+			[
+				"velo",
+				"velocity_x"
+			],
+			[
+				"vel",
+				"velocity_y"
+			],
+			[
+				"ve",
+				"Vector"
+			],
+			[
+				"fo",
+				"from"
+			],
+			[
+				"v",
+				"velocity_x"
+			],
+			[
+				"Pong",
+				"PongApp"
+			],
+			[
+				"Po",
+				"PongGame"
+			],
+			[
+				"if",
+				"ifmain	if __name__ == '__main__'"
+			],
+			[
+				"que",
+				"question_number"
+			],
+			[
+				"inser",
+				"insert_query"
+			],
+			[
+				"ana",
+				"anagraphic_array"
+			],
+			[
+				"ans",
+				"answers_array"
+			],
+			[
+				"answe",
+				"answers_data"
+			],
+			[
+				"anagr",
+				"anagraphic_info"
+			],
+			[
+				"answers",
+				"answers_form"
+			],
+			[
+				"exp",
+				"expiration"
+			],
+			[
+				"sto",
+				"stored_token"
+			],
+			[
+				"json_",
+				"json_encode"
+			],
+			[
+				"expir",
+				"expiration_mysql"
+			],
+			[
+				"expiration",
+				"expiration_date"
+			],
+			[
+				"auth",
+				"auth_info"
+			],
+			[
+				"sale",
+				"salted_and_hashed_from_db"
+			],
+			[
+				"surve",
+				"surveys_history"
+			],
+			[
+				"next",
+				"nextSurvey"
+			],
+			[
+				"implo",
+				"implodeValues"
+			],
+			[
+				"for",
+				"for	for …"
+			],
+			[
+				"value",
+				"value_list"
+			],
+			[
+				"fie",
+				"fields"
+			],
+			[
+				"field",
+				"field_list"
+			],
+			[
+				"ins",
+				"inserted_password"
+			],
+			[
+				"salt",
+				"salted_and_hashed"
+			],
+			[
+				"is",
+				"isStr"
+			],
+			[
+				"ta",
+				"target"
+			],
+			[
+				"m",
+				"mysqli"
+			],
+			[
+				"NM",
+				"NM-CADF"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "proga.py",
+			"settings":
+			{
+				"buffer_size": 3820,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/gluse/Desktop/libraries",
+		"/Users/gluse/dev/progaserver/prediction.py",
+		"/Users/gluse/dev/mapbox/mapbox_test.py",
+		"/Users/gluse/dev/kivy/main.py",
+		"/Users/gluse/Desktop/Tutorial for creating custom frontend registration",
+		"/Users/gluse/Desktop/adr interviews september 2015/change management transcript",
+		"/Users/gluse/dev/PHP/htdocs/vp718_demo/js/app.js",
+		"/Users/gluse/dev/PHP/htdocs/vp718_demo/questions.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/login.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/questions.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/constants.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/generator.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/playground.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/js/app.js",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/save.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/questions copia.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/index.html",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/functions.php",
+		"/Users/gluse/dev/PHP/htdocs/innovate-livetrial/is_logged.php",
+		"/Users/gluse/dev/PHP/htdocs/emfase-experiment/index.php",
+		"/Users/gluse/dev/PHP/htdocs/emfase-experiment/surveys_history.txt",
+		"/Users/gluse/Google Drive/IT-SUPPORT/impact svn users"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"sectors",
+			"renderQ",
+			"log_me",
+			"reveal",
+			"login_modal",
+			"slide",
+			"cookie",
+			"log_me",
+			"log",
+			"log_me",
+			"useful",
+			"alert",
+			"answer",
+			"save_question",
+			"save",
+			"post",
+			"eh",
+			"echo",
+			"stored",
+			"get_questions",
+			"getField",
+			"close",
+			"cookie",
+			"start expe",
+			"flight_date",
+			"answers_saved_modal",
+			"renderQue",
+			"flight_date",
+			"goodby",
+			"bower"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "proga.py",
+					"settings":
+					{
+						"buffer_size": 3820,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3377,
+								3377
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 304.0,
+	"status_bar_visible": true
+}

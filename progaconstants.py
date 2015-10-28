@@ -34,7 +34,10 @@ COORDS_TYPE_PLANE = 'plane'
 ITEM_MY_STATE = 'myState'
 ITEM_TRAFFIC = 'traffic'
 ITEM_TRAFFIC4MFS = "traffic4mfs"
+ITEM_HISTORY = 'history'
+ITEM_KNOWN_POINTS = 'knownpoints'
 
+KNOWN_POINTS_FILENAME = 'known_points.json'
 SCENARIO_INFO_FILENAME = 'scenario_info.json'
 SCENARIOS_FOLDER = "./scenarios"
 SELF_FLIGHT_ID = "SELF000"
