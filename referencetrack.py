@@ -3,7 +3,6 @@
 import numpy as np
 import progaconstants as pgc
 import math
-import progaconstants
 import pdb
 
 class Point3D(object):
@@ -17,6 +16,48 @@ class Point3D(object):
 
         def __repr__(self):
                 return "3Dpoint %s" % (self.getNumpyVector())
+
+        def distance(self, lon2, lat2):
+            lat2 = math.radians(lat2)
+            lon2 = math.radians(lon2)
+            lat_rad = math.radians(self.lat)
+            lon_rad = math.radians(self.lon)
+            d_lat = lat2 - lat_rad
+            d_lon = lon2 - lon_rad
+
+            a = math.sin(d_lat/2)**2 + math.cos(lat_rad)*math.cos(lat2)*math.sin(d_lon/2)**2
+            c = 2 * math.atan2(math.sqrt(a),math.sqrt(1-a))
+            return pgc.EARTHRADIUS*c
+
+        """
+        def distance(self, lon1, lat1, lon2, lat2):
+            lat2 = math.radians(lat2)
+            lon2 = math.radians(lon2)
+            lat_rad = math.radians(lat1)
+            lon_rad = math.radians(lon1)
+            d_lat = lat2 - lat_rad
+            d_lon = lon2 - lon_rad
+
+            a = math.sin(d_lat/2)**2 + math.cos(lat_rad)*math.cos(lat2)*math.sin(d_lon/2)**2
+            c = 2 * math.atan2(math.sqrt(a),math.sqrt(1-a))
+            return pgc.EARTHRADIUS*c
+
+
+
+
+        def distanceCosines(self, lon2, lat2):
+            lat2 = math.radians(lat2)
+            lon2 = math.radians(lon2)
+            lat_rad = math.radians(self.lat)
+            lon_rad = math.radians(self.lon)
+            d_lat = lat2 - lat_rad
+            d_lon = lon2 - lon_rad
+
+            d = math.acos(math.sin(lat_rad)*math.sin(lat2)+math.cos(lat_rad)*math.cos(lat2)*math.cos(d_lon))*pgc.EARTHRADIUS
+            return d
+        """
+
+
 
         def xyFromLonLat(self, lon, lat):
                 lat = math.radians(lat)
@@ -62,6 +103,8 @@ class Point3D(object):
 
         def __eq__(self,other):
             return self.lat == other.lat and self.lon == other.lon and self.z == other.z
+
+
 
 
 

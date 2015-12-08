@@ -275,6 +275,7 @@ class Predictor(object):
                     #pdb.set_trace()
 
                     #cherrypy.log("%s" %(pred[aID][0]), context="PREDTEST")
+                #pdb.set_trace()
                 return pred
 
         def binParticles(self, particleList, dt, gridbins=GRIDBINS):
@@ -296,6 +297,7 @@ class Predictor(object):
             #usedIDs = [self.tracksID[i] for i in pparticles.tracksUsed]
             usedIDs = [self.tracksID[aircraft_ID][i] for i in pparticles.tracksUsed]
             #pdb.set_trace()
+            particleReferences = pparticles.particleReferences()
 
             for j in range(1,nsteps+1):
                 pparticles.takeAmove()
@@ -303,7 +305,7 @@ class Predictor(object):
                 for q in copyPositions:
                     q[2] /= FOOT2MT
                 L[j*dt] = copyPositions
-            return [L, usedIDs]
+            return [L, usedIDs, particleReferences]
             # ritorna una tupla:
             # L e' un dizionario le cui chiavi sono i tempi di preidizione e i valori sono liste di posizioni 3D 
             # il secondo elemento, ovvero usedIDs, e' una lista dei reference track IDs usati nella predizione
@@ -331,7 +333,11 @@ class bunchOfParticles(object):
         self.partReference = np.vstack( (sampledTracks, [legs[i] for i in sampledTracks]) )
         # self.partReference[0,j] = indice della traccia di riferimento della particella j-esima
         # self.partReference[1,j] = indice del leg di riferimento della particella j-esima
+        #pdb.set_trace()
         self.tracksUsed = np.unique(sampledTracks)
+
+    def particleReferences(self):
+        return self.partReference[0].tolist()
         
     def takeAmove(self):
         simulTimes = self.simulationTime(self.dt)

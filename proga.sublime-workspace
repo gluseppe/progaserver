@@ -159,14 +159,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "proga.py",
-			"settings":
-			{
-				"buffer_size": 3820,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -192,8 +184,13 @@
 	},
 	"file_history":
 	[
-		"/Users/gluse/Desktop/libraries",
+		"/Users/gluse/dev/processing/unfolding/unfolding/README.md",
+		"/Users/gluse/dev/tilemill/tilemill/run.sh",
+		"/Users/gluse/dev/progaserver/predictor.py",
 		"/Users/gluse/dev/progaserver/prediction.py",
+		"/Users/gluse/dev/progaserver/proga.py",
+		"/Users/gluse/dev/progaserver/progaconstants.py",
+		"/Users/gluse/Desktop/libraries",
 		"/Users/gluse/dev/mapbox/mapbox_test.py",
 		"/Users/gluse/dev/kivy/main.py",
 		"/Users/gluse/Desktop/Tutorial for creating custom frontend registration",
@@ -278,36 +275,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "proga.py",
-					"settings":
-					{
-						"buffer_size": 3820,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3377,
-								3377
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -364,7 +333,7 @@
 		"width": 0.0
 	},
 	"show_minimap": true,
-	"show_open_files": false,
+	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
 	"side_bar_width": 304.0,

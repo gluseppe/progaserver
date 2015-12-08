@@ -19,7 +19,9 @@ from referencetrack import Point3D
 
 import numpy as np
 from predictor import findWeights, norm
-from progaconstants import ALERT_DISTANCE, FOOT2MT
+from cluster import Cluster
+from progaconstants import ALERT_DISTANCE, FOOT2MT, NUMPARTICLES
+
 
 
 
@@ -81,6 +83,7 @@ Questa classe gestisce le richieste verso il ramo di predizione
 """
 class PredictionEngine(plugins.Monitor):
 	exposed = True
+	clusters = None
 
 	def __init__(self, bus, sleeping_time, traffic):
 		plugins.Monitor.__init__(self, bus, self.predictionEngine, sleeping_time)
@@ -95,6 +98,7 @@ class PredictionEngine(plugins.Monitor):
 		self.sleeping_time = sleeping_time
 		self.traffic = traffic
 		self.predictor = None
+		self.clusters = dict()
 		
 
 	"""
@@ -175,7 +179,7 @@ class PredictionEngine(plugins.Monitor):
 
 
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO):
+	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO, cluster=False):
 		if flight_id == progaconstants.MONITOR_ME_COMMAND:
 			ownship_state = self.traffic.getMyState()
 			v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])*FOOT2MT
@@ -209,9 +213,13 @@ class PredictionEngine(plugins.Monitor):
 								prediction_matrix[flight][0][times][i] = vect
 	
 						prediction_matrix[flight][0][times] = prediction_matrix[flight][0][times].tolist()
-				jmat = json.dumps(prediction_matrix)
-				cherrypy.log("%s" % (jmat), context="PREDICTION")
-				return jmat
+				if cluster==False:
+					jmat = json.dumps(prediction_matrix)
+					cherrypy.log("%s" % (jmat), context="PREDICTION")
+					return jmat
+				else:
+					jmat = json.dumps(prediction_matrix)
+					return self.makeClusters(prediction_matrix, flight_id, deltaT, nsteps, jmat)
 	
 			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
 			else:
@@ -229,6 +237,48 @@ class PredictionEngine(plugins.Monitor):
 				#scrivi qui codice di test
 				#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
 				return jmat
+
+	def makeClusters(self,prediction_matrix, flight_id, deltaT,nsteps,jmat):
+		#pdb.set_trace()
+		self.clusters.clear()
+
+		#you need to iterate particles according to deltaT and nsteps
+		particles = prediction_matrix[flight_id][0]
+		reference_groups = prediction_matrix[flight_id][2]
+		reference_set = set(reference_groups)
+#		times = particles.keys()
+		for ref in reference_set:
+			self.clusters[ref] = dict()
+
+		#pdb.set_trace()
+
+		for x in range(1,nsteps+1):
+		#x = 1
+		#while x<=nsteps:
+			time = x*deltaT
+			print time
+			
+			particles_in_time = particles[time]
+			#pdb.set_trace()
+			for i,part in enumerate(particles_in_time):
+				lat = part[1]
+				lon = part[0]
+				h = part[2]
+				p_group = reference_groups[i]
+				if self.clusters[p_group].has_key(time):
+					self.clusters[p_group][time].addParticle(lat, lon, h)
+				else:
+					self.clusters[p_group][time] = Cluster(p_group, lat, lon, h, time)
+				
+		
+		#pdb.set_trace()
+
+		for pg, timedict in self.clusters.items():
+			for t, clus in timedict.items():
+				self.clusters[pg][t] = self.clusters[pg][t].toSerializableObject()
+
+		return json.dumps(self.clusters)
+
 	
 	def POST(self,command=''):
 		if command == 'start':
