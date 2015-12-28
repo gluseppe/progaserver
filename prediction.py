@@ -37,6 +37,7 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 	"""
 	if ownInt is None:
 		#cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
+		pdb.set_trace()
 		return [ownPos + t*ownVel for t in timeHorizons]
 	else:
 		# generate list of turn points
@@ -162,9 +163,11 @@ class PredictionEngine(plugins.Monitor):
 		"""
 		potentialConflicts = {}
 		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
+		#pdb.set_trace()
 		fp = futurePositions(ownPos, ownVel, ownIntent, timeHorizons)
 		prediction = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps, True)
 		ztp = zip(timeHorizons, fp)
+		#pdb.set_trace()
 		for aID, foo in prediction.items():
 			predDict = foo[0]
 			for t, p in ztp:
@@ -179,7 +182,7 @@ class PredictionEngine(plugins.Monitor):
 
 
 	@cherrypy.tools.accept(media='text/plain')
-	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO, cluster=False):
+	def GET(self, flight_id, deltaT, nsteps, raw, coords_type=progaconstants.COORDS_TYPE_GEO, cluster=False, ownshipPrediction=False):
 		if flight_id == progaconstants.MONITOR_ME_COMMAND:
 			ownship_state = self.traffic.getMyState()
 			v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])*FOOT2MT
@@ -187,7 +190,7 @@ class PredictionEngine(plugins.Monitor):
 			#pdb.set_trace()
 			fids = self.traffic.getActiveFlightIDs()
 			ownship_intent = self.traffic.getOwnshipIntent()
-			intruders = self.checkConflicts(p,v,fids,60,10,ownship_intent)
+			intruders = self.checkConflicts(p,v,fids,int(deltaT),int(nsteps),ownship_intent)
 			#pdb.set_trace()
 			return json.dumps(intruders)
 		else:
@@ -218,8 +221,16 @@ class PredictionEngine(plugins.Monitor):
 					cherrypy.log("%s" % (jmat), context="PREDICTION")
 					return jmat
 				else:
+					#if clusters are true, automatically produce the ownship prediction
+					ownship_prediction = self.predictOwnship(deltaT,nsteps)
+					clusters = self.makeClusters(prediction_matrix, flight_id, deltaT, nsteps)
+					prediction_matrix['ownship'] = ownship_prediction
+					prediction_matrix['clusters'] = clusters
 					jmat = json.dumps(prediction_matrix)
-					return self.makeClusters(prediction_matrix, flight_id, deltaT, nsteps, jmat)
+					
+					#pdb.set_trace()
+					
+					return jmat
 	
 			#NORMAL PREDICTION WAS REQUESTED, WE PROVIDE BINS OF PROBABILITY
 			else:
@@ -238,7 +249,24 @@ class PredictionEngine(plugins.Monitor):
 				#cherrypy.log("%s" % prediction_matrix[flight_IDs[0]][deltaT][0], context="TEST")
 				return jmat
 
-	def makeClusters(self,prediction_matrix, flight_id, deltaT,nsteps,jmat):
+
+	def predictOwnship(self,deltaT,nsteps):
+		ownship_state = self.traffic.getMyState()
+		ownship_v = np.array([ownship_state['vx'],ownship_state['vy'],ownship_state['vz']])*FOOT2MT
+		ownship_p = Point3D(ownship_state['lon'], ownship_state['lat'], ownship_state['h']*FOOT2MT).getNumpyVector()
+		ownship_intent = self.traffic.getOwnshipIntent()
+		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
+		fp = futurePositions(ownship_p, ownship_v, ownship_intent, timeHorizons)
+		ztp = zip(timeHorizons, fp)
+		#pdb.set_trace()
+		for i, item in enumerate(ztp):
+			ztp[i] = list(ztp[i])
+			ztp[i][1] = ztp[i][1].tolist()
+		#pdb.set_trace()
+		return ztp
+
+
+	def makeClusters(self,prediction_matrix, flight_id, deltaT,nsteps):
 		#pdb.set_trace()
 		self.clusters.clear()
 
@@ -277,7 +305,12 @@ class PredictionEngine(plugins.Monitor):
 			for t, clus in timedict.items():
 				self.clusters[pg][t] = self.clusters[pg][t].toSerializableObject()
 
-		return json.dumps(self.clusters)
+		##temporary for test purposes particles vs clusters
+		return self.clusters
+		#return prediction_matrix
+
+		#ripristina questo dopo che hai fatto test
+		#return json.dumps(self.clusters)
 
 	
 	def POST(self,command=''):

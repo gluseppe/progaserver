@@ -7,7 +7,7 @@ import simplejson as json
 
 """
 This is the Cluster class.
-Each cluster aggregates particles of the same reference track. 
+Each cluster aggregates particles of the same reference track, and time horizon. 
 the reference track here is just an id. It doesn't really matter internally for the computation
 we retain the id just to make it available later if needed
 """
@@ -24,7 +24,7 @@ class Cluster(object):
 	"""
 	We use standard deviation measure from the current center of the cluster
 	therefore the measure is computed as followinf
-	uncertainty =  sqrt () (sum(distance(particle-i, center)**2)) / n_particles )
+	uncertainty =  sqrt ( (sum(distance(particle-i, center)**2)) / n_particles )  )
 	"""
 	uncertainty = -1.0 #meters
 	time = -1
@@ -61,6 +61,10 @@ class Cluster(object):
 	"""
 	based on the formulas here
 	http://www.movable-type.co.uk/scripts/latlong.html intermediate point
+	The f factor tends to the current center of the cluster as the cluster aggregates more particles
+	f starts from 0.5, which is neutral and gives exactly the intermediate point. But every time a particle
+	is added to the cluster, it is reduced by 1/tot_particles where tot_particles is the total number of particles
+	used for the prediction
 	"""
 	def updateCenter(self,lat,lon,h):
 		#print "updating center"
@@ -83,12 +87,28 @@ class Cluster(object):
 		self.center.z = (self.center.z + h) / 2
 
 
-		
+
 
 	"""
 	We use standard deviation measure from the current center of the cluster
 	therefore the measure is computed as followinf
 	uncertainty =  sqrt () (sum(distance(particle-i, center)**2)) / n_particles )
+	praticamente e' la deviazione standard dell'insieme di particelle in cui
+	- la media e' rappresentata dal centro del cluster
+	- la differenza tra media e valore e' rappresentata dalla distanza
+
+	we can draw circles of a given measure (uncertainty?) using the formula here
+	http://wiki.openstreetmap.org/wiki/Zoom_levels
+
+	The distance represented by one pixel (S) is given by
+	S=C*cos(y)/2^(z+8)
+	
+	where...
+
+	C is the (equatorial) circumference of the Earth
+	z is the zoom level
+	y is the latitude of where you're interested in the scale.
+
 	"""
 	def updateUncertaintyMeasure(self,lat,lon,h):
 		#pdb.set_trace()
