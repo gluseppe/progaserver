@@ -258,10 +258,12 @@ class PredictionEngine(plugins.Monitor):
 		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
 		fp = futurePositions(ownship_p, ownship_v, ownship_intent, timeHorizons)
 		ztp = zip(timeHorizons, fp)
-		#pdb.set_trace()
+		pdb.set_trace()
+		p3d = Point3D()
 		for i, item in enumerate(ztp):
 			ztp[i] = list(ztp[i])
 			ztp[i][1] = ztp[i][1].tolist()
+			ztp[i][1] = p3d.lonLatAltFromXYZ(ztp[i][1][0],ztp[i][1][1],ztp[i][1][2])
 		#pdb.set_trace()
 		return ztp
 
