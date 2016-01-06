@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"timeTo",
+				"timeToNextTP"
+			],
+			[
+				"set",
+				"set_trace"
+			],
+			[
+				"ela",
+				"int_elapsed_seconds"
+			],
+			[
+				"selfTr",
+				"selfTrackStart"
+			],
+			[
 				"referen",
 				"reference_groups"
 			],
@@ -164,70 +180,43 @@
 	"buffers":
 	[
 		{
-			"file": "cluster.py",
-			"settings":
-			{
-				"buffer_size": 4396,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/gluse/Google Drive/SEAHORSE/seahorse virtual platform tools and users",
-			"settings":
-			{
-				"buffer_size": 1092,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "S=C*cos(y)/2^(z+8)",
-			"settings":
-			{
-				"buffer_size": 18,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "prediction.py",
 			"settings":
 			{
-				"buffer_size": 10675,
+				"buffer_size": 12940,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/gluse/dev/processing/prediction/data/ownship_cluster.json",
+			"contents": "timeToTurn =  [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]\ntimeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/vel",
 			"settings":
 			{
-				"buffer_size": 107,
-				"line_ending": "Unix",
-				"name": "{\"h\": 2007.881, \"lon\": 0.7676402662, \"lat\": 48.813"
-			}
-		},
-		{
-			"contents": "\"clusters\": {\n	\"22\": {\n		\"60\": {\n			\"h\": 2288.0090364557573, \n			\"group_id\": 22, \n			\"f\": 0.009999999999999691, \n			\"lat\": 48.97423780725521, \n			\"n_particles\": 50, \n			\"uncertainty\": 2098.064075429314, \n			\"lon\": 1.0968799338299964, \n			\"time\": 60\n		}, \n\n		\"30\": {\n			\"h\": 2143.349267224232, \n			\"group_id\": 22, \n			\"f\": 0.009999999999999691, \n			\"lat\": 48.98337568702685, \n			\"n_particles\": 50, \n			\"uncertainty\": 968.5060765782974, \n			\"lon\": 1.1165071667958633, \n			\"time\": 30}\n		}\n	}",
-			"settings":
-			{
-				"buffer_size": 488,
+				"buffer_size": 139,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/gluse/dev/processing/prediction/data/traffic_cluster.json",
+			"file": "predictor.py",
 			"settings":
 			{
-				"buffer_size": 2653,
-				"line_ending": "Unix",
-				"name": "{\"R2-D2\": {\"float_timestamp\": 25.0349, \"x\": -51891"
+				"buffer_size": 20993,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/gluse/dev/processing/prediction/data/blondie23_30_2_cluster.json",
+			"file": "automator.py",
 			"settings":
 			{
-				"buffer_size": 6692,
-				"line_ending": "Unix",
-				"name": "{\"clusters\": {\"22\": {\"60\": {\"h\": 2288.009036455757"
+				"buffer_size": 4847,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "scenarioloader.py",
+			"settings":
+			{
+				"buffer_size": 6567,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -255,15 +244,25 @@
 	},
 	"file_history":
 	[
+		"/Users/gluse/dev/progaserver/scenarioloader.py",
+		"/Users/gluse/dev/progaserver/track.py",
+		"/Users/gluse/dev/progaserver/proga.py",
+		"/Users/gluse/dev/progaserver/referencetrackshandler.py",
+		"/Users/gluse/dev/progaserver/traffic.py",
+		"/Users/gluse/dev/progaserver/automator.py",
+		"/Users/gluse/dev/progaserver/cluster.py",
+		"/Users/gluse/dev/progaserver/prediction.py",
+		"/Users/gluse/dev/progaserver/progaconstants.py",
+		"/Users/gluse/Google Drive/SEAHORSE/seahorse virtual platform tools and users",
+		"/Users/gluse/dev/processing/prediction/data/ownship_cluster.json",
+		"/Users/gluse/dev/processing/prediction/data/blondie23_30_2_cluster.json",
+		"/Users/gluse/dev/processing/prediction/data/traffic_cluster.json",
+		"/Users/gluse/Desktop/emfase/js/app.js",
 		"/Users/gluse/Google Drive/SEAHORSE/tables",
 		"/Users/gluse/dev/progaserver/referencetrack.py",
 		"/Users/gluse/dev/progaserver/predictor.py",
-		"/Users/gluse/dev/progaserver/cluster.py",
-		"/Users/gluse/dev/progaserver/prediction.py",
 		"/Users/gluse/dev/processing/unfolding/unfolding/README.md",
 		"/Users/gluse/dev/tilemill/tilemill/run.sh",
-		"/Users/gluse/dev/progaserver/proga.py",
-		"/Users/gluse/dev/progaserver/progaconstants.py",
 		"/Users/gluse/Desktop/libraries",
 		"/Users/gluse/dev/mapbox/mapbox_test.py",
 		"/Users/gluse/dev/kivy/main.py",
@@ -351,23 +350,23 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "cluster.py",
+					"file": "prediction.py",
 					"settings":
 					{
-						"buffer_size": 4396,
+						"buffer_size": 12940,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3637,
-								3637
+								2659,
+								2659
 							]
 						],
 						"settings":
@@ -376,50 +375,24 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1250.0,
+						"translation.y": 660.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/Users/gluse/Google Drive/SEAHORSE/seahorse virtual platform tools and users",
 					"settings":
 					{
-						"buffer_size": 1092,
+						"buffer_size": 139,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								235,
-								235
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"settings":
-					{
-						"buffer_size": 18,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								18,
-								0
+								82,
+								82
 							]
 						],
 						"settings":
@@ -433,19 +406,47 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "prediction.py",
+					"buffer": 2,
+					"file": "predictor.py",
 					"settings":
 					{
-						"buffer_size": 10675,
+						"buffer_size": 20993,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10309,
-								10309
+								601,
+								601
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "automator.py",
+					"settings":
+					{
+						"buffer_size": 4847,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4511,
+								4511
 							]
 						],
 						"settings":
@@ -454,114 +455,34 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3829.0,
+						"translation.y": 1359.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "/Users/gluse/dev/processing/prediction/data/ownship_cluster.json",
+					"file": "scenarioloader.py",
 					"settings":
 					{
-						"buffer_size": 107,
+						"buffer_size": 6567,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								107,
-								107
+								1830,
+								2065
 							]
 						],
 						"settings":
 						{
-							"auto_name": "{\"h\": 2007.881, \"lon\": 0.7676402662, \"lat\": 48.813",
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"settings":
-					{
-						"buffer_size": 488,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								487,
-								487
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"syntax": "Packages/Python/Python.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/Users/gluse/dev/processing/prediction/data/traffic_cluster.json",
-					"settings":
-					{
-						"buffer_size": 2653,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2222,
-								2233
-							]
-						],
-						"settings":
-						{
-							"auto_name": "{\"R2-D2\": {\"float_timestamp\": 25.0349, \"x\": -51891",
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 14999.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/Users/gluse/dev/processing/prediction/data/blondie23_30_2_cluster.json",
-					"settings":
-					{
-						"buffer_size": 6692,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6692,
-								6692
-							]
-						],
-						"settings":
-						{
-							"auto_name": "{\"clusters\": {\"22\": {\"60\": {\"h\": 2288.009036455757",
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 878.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

@@ -17,7 +17,7 @@ class Automator(plugins.Monitor):
 	#simulateself contiene False se non vogliamo simulare la nostra track
 	#oppure contiene il nome del file della traccia se vogliamo simularla
 	#la libreria delle tracks e' contenuta nella cartella selftracks
-	def __init__(self, bus, scenarioName, selfTrackName=None, sleeping_time=0.5):
+	def __init__(self, bus, scenarioName, selfTrackName=None, selfTrackStart=0,sleeping_time=0.5):
 		plugins.Monitor.__init__(self, bus, self.automate, sleeping_time)
 		self.bus.subscribe(progaconstants.PROGA_IS_READY_CHANNEL_NAME,self.progaReady)
 		self.bus.subscribe(progaconstants.SCENARIO_LOADED_CHANNEL_NAME,self.scenarioLoaded)
@@ -32,13 +32,14 @@ class Automator(plugins.Monitor):
 		self.t0 = -1
 		if self.selfTrackName != None:
 			#cherrypy.log("I have a selftrack",context="AUTO")
-			self.selfTrack = self.loadTrack(self.selfTrackName,progaconstants.SELF_FLIGHT_ID,0)
+			#pdb.set_trace()
+			self.selfTrack = self.loadTrack(self.selfTrackName,progaconstants.SELF_FLIGHT_ID,selfTrackStart)
 
 
 	def automate(self):
 		elapsed_time = time.time() - self.t0
 		int_elapsed_seconds = int(elapsed_time)
-		#cherrypy.log("selftrack updating", context="AUTO")
+		cherrypy.log("selftrack updating -  elapsed time:" + str(int_elapsed_seconds), context="AUTO")
 		#pdb.set_trace()
 		arrived = not self.selfTrack.next(elapsed_time,progaconstants.PLAYER_POINTER_INCREMENT)
 		if arrived:
@@ -99,26 +100,40 @@ class Automator(plugins.Monitor):
 			for line in trackfile:
 				
 				if (not (line.startswith('#') or line.startswith('/'))) and len(line)>30:
-				#if cont >= 4 and len(line)>30:
 					parts = line.split()
-					timestamp = parts[0]
-					lat = float(parts[1])
-					lon = float(parts[2])
-					altitude = float(parts[3])
-					heading = float(parts[6])
-					v_x = float(parts[8])
-					v_y = float(parts[10])
-					v_z = float(parts[9])
-					pitch = float(parts[4])
-					bank = float(parts[5])
-					onground = int(parts[7])
-					airspeed = float(parts[19])
+
+					timestamp = float(parts[0])
+
+					#cherrypy.log("timestamp:%s"%(timestamp),context="ANTICIPATE")
+					#if flight_start < -100:
+						#pdb.set_trace()
+
+
+					simulation_timestamp = -1;
+					if (flight_start < 0):
+						simulation_timestamp = timestamp-abs(flight_start)
+					else:
+						simulation_timestamp = timestamp
+						
+					
+					if (flight_start >= 0 or timestamp >= abs(flight_start)):
+						cherrypy.log("%s importing line with timestamp:%s and simulation_timestamp %f"%(track_id,timestamp,simulation_timestamp),context="ANTICIPATE");
+						lat = float(parts[1])
+						lon = float(parts[2])
+						altitude = float(parts[3])
+						heading = float(parts[6])
+						v_x = float(parts[8])
+						v_y = float(parts[10])
+						v_z = float(parts[9])
+						pitch = float(parts[4])
+						bank = float(parts[5])
+						onground = int(parts[7])
+						airspeed = int(float(parts[19]))
 	
-					track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank, onground, airspeed)
-					#track.addStep(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank)
-					#cherrypy.log("%s,%s,%s,%s,%s,%s,%s,%s"%(timestamp, lat, lon, altitude, v_x, v_y, v_z, heading),context="EXPORT,")
+						track.addStep(simulation_timestamp, lat, lon, altitude, v_x, v_y, v_z, heading, pitch, bank, onground, airspeed)
 
 				cont += 1
 				
 		track.setStart(flight_start)
+		#pdb.set_trace()
 		return track

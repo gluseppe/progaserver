@@ -37,7 +37,7 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 	"""
 	if ownInt is None:
 		#cherrypy.log('ownVel is %.3f' % (np.sqrt(np.dot(ownVel, ownVel))), context='MONITOR')
-		pdb.set_trace()
+		#pdb.set_trace()
 		return [ownPos + t*ownVel for t in timeHorizons]
 	else:
 		# generate list of turn points
@@ -49,17 +49,28 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 		ownIntent = zip(L[:-1], L[1:])
 		legIndex, weight = findWeights(ownIntent, ownPos, ownVel)
 		timeToTurn = [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]
+		#pdb.set_trace()
+		#print "time to turn",timeToTurn,"seconds maybe"
+		#for i in range(legIndex+1, len(ownIntent)+1):
 		for i in range(legIndex+1, len(ownIntent)+1):
-			timeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/vel
+			print "i:",i
+			#timeToNextTP = norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)
+			#timeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/vel
+			timeToNextTP = norm(ownIntent[i][1] - ownPos)/vel
+			print "ownIntent[i][1]",ownIntent[i][1]
+			print "timeToNextTP:",timeToNextTP
 			if timeToNextTP > timeHorizons[-1]:
+				#pdb.set_trace()
 				break
 			else:
 				timeToTurn.append(timeToNextTP)
 		timeToFly = list(timeHorizons)
+		print "timeToFly (horizons):",timeToFly
+		print "timeToTurn (intent points):",timeToTurn
 		fp = []
 		p = np.array(ownPos)
-		while len(timeToFly) > 0 and len(timeToTurn) > 0 and legIndex < len(ownIntent):
-			if timeToTurn[0] < timeToFly[0]:
+		while len(timeToFly) > 0  and legIndex < len(ownIntent):
+			if len(timeToTurn) > 0 and timeToTurn[0] < timeToFly[0]:
 				t = timeToTurn[0]
 				timeToFly = [s-t for s in timeToFly]
 				timeToTurn = [s-t for s in timeToTurn]
@@ -69,10 +80,25 @@ def futurePositions(ownPos, ownVel, ownInt, timeHorizons):
 			else:
 				t = timeToFly[0]
 				timeToFly = [s-t for s in timeToFly]
-				timeToTurn = [s-t for s in timeToTurn]
+				timeToTurn = [s-t for s in timeToTurn] #forse da errore 
 				timeToFly.pop(0)
 				p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])*vel
 				fp.append(p)
+		# while len(timeToFly) > 0 and len(timeToTurn) > 0 and legIndex < len(ownIntent):
+		# 	if timeToTurn[0] < timeToFly[0]:
+		# 		t = timeToTurn[0]
+		# 		timeToFly = [s-t for s in timeToFly]
+		# 		timeToTurn = [s-t for s in timeToTurn]
+		# 		timeToTurn.pop(0)
+		# 		p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])*vel
+		# 		legIndex += 1
+		# 	else:
+		# 		t = timeToFly[0]
+		# 		timeToFly = [s-t for s in timeToFly]
+		# 		timeToTurn = [s-t for s in timeToTurn]
+		# 		timeToFly.pop(0)
+		# 		p = p + t*(ownIntent[legIndex][1] - ownIntent[legIndex][0])/norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])*vel
+		# 		fp.append(p)
 		return fp
 
 
@@ -167,6 +193,7 @@ class PredictionEngine(plugins.Monitor):
 		fp = futurePositions(ownPos, ownVel, ownIntent, timeHorizons)
 		prediction = self.predictor.predictionRequested(flight_IDs, deltaT, nsteps, True)
 		ztp = zip(timeHorizons, fp)
+		#ztp.sort()
 		#pdb.set_trace()
 		for aID, foo in prediction.items():
 			predDict = foo[0]
@@ -257,8 +284,9 @@ class PredictionEngine(plugins.Monitor):
 		ownship_intent = self.traffic.getOwnshipIntent()
 		timeHorizons = [i*deltaT for i in range(1, nsteps+1)]
 		fp = futurePositions(ownship_p, ownship_v, ownship_intent, timeHorizons)
+		#pdb.set_trace()
 		ztp = zip(timeHorizons, fp)
-		pdb.set_trace()
+		#pdb.set_trace()
 		p3d = Point3D()
 		for i, item in enumerate(ztp):
 			ztp[i] = list(ztp[i])

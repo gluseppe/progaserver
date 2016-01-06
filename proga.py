@@ -131,11 +131,12 @@ if __name__ == '__main__':
 		#auto = args[1]
 		
 		scenario = args[1]
-		automator = Automator(cherrypy.engine, scenario,None,progaconstants.PLAYER_SLEEP_SECONDS)
-	elif len(args)==3:
+		automator = Automator(cherrypy.engine, scenario, None, 0, progaconstants.PLAYER_SLEEP_SECONDS)
+	elif len(args)==4:
 		scenario = args[1]
 		selfTrack = args[2]
-		automator = Automator(cherrypy.engine, scenario, selfTrack,progaconstants.PLAYER_SLEEP_SECONDS)
+		selfTrackStart = int(args[3])
+		automator = Automator(cherrypy.engine, scenario, selfTrack, selfTrackStart, progaconstants.PLAYER_SLEEP_SECONDS)
 
 
 	cherrypy.tree.mount(automator,'/automator',auto_conf)
