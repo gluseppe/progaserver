@@ -18,7 +18,7 @@ class Cluster(object):
 	c_h = 0.0
 
 	center = None
-	particles = list()
+	
 	#number of particles already inside the cluster
 	n_particles = 0
 	"""
@@ -29,6 +29,8 @@ class Cluster(object):
 	uncertainty = -1.0 #meters
 	time = -1
 	group_id = -1
+	particles = None
+	
 
 	#the f factor brings the new center closer to the old one 
 	#as the number of particles inside increases
@@ -40,17 +42,20 @@ class Cluster(object):
 		self.group_id = group_id
 		self.time = time
 		self.n_particles = 1
+		self.particles = list()
 		self.particles.append(Point3D(lon,lat,h))
 		self.uncertainty = 0
+		
 
 	def addParticle(self,lat,lon,h):
+		self.n_particles += 1
 		if self.n_particles > 0:
 			self.updateCenter(lat,lon,h)
 			self.f = self.f - (0.5/pgc.NUMPARTICLES)
 		else:
 			self.center = Point3D(lon,lat,h)
 
-		self.n_particles += 1
+		
 		self.particles.append(Point3D(lon,lat,h))
 		self.updateUncertaintyMeasure(lat,lon,h)
 		##print "n_particle is " + str(self.n_particles)
@@ -117,6 +122,7 @@ class Cluster(object):
 			d2 = p.distance(self.center.lon, self.center.lat)**2
 			#print "distance^2 between particle and center is " + str(d2)
 			summ = summ + d2
+			#print "sum:",summ
 
 		#pdb.set_trace()
 		self.uncertainty = math.sqrt(summ / (len(self.particles)))
@@ -135,6 +141,7 @@ class Cluster(object):
 		j['lon'] = self.center.lon
 		j['h'] = self.center.z
 		del(j['center'])
+		del(j['particles'])
 		return j
 
 

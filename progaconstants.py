@@ -56,7 +56,7 @@ DECLARED_INTENT_PROBABILITY = 0.85
 BETA_POS = 0.1
 BETA_TRK = 0.1
 
-NUMPARTICLES = 50
+NUMPARTICLES = 100
 GRIDBINS_X = 3
 GRIDBINS_Y = 4
 GRIDBINS_Z = 2
@@ -69,18 +69,22 @@ PENAL_ANGLE = 0.01
 PENAL_DIST = 0.01
 PI = 3.141592653589793
 # ANGLE_GAP = PI/12 # 15. degrees
-BETA_DIST = 0.1**3 # meters^{-1}
+#BETA_DIST = 0.1**3 # meters^{-1}
+BETA_DIST = 0.01**3 # meters^{-1}
 BETA_ANGLE = 5 
+
 
 #ROTSCALE = 0.0175 # around 1 degrees
 #ALTSCALE = .005 # 5 centimeters
 #XYSCALE = .001 # meters #ADJUST
 
-#ROTSCALE = 0.015 # around 1 degrees
-ROTSCALE = 0.030 # around 1 degrees
+ROTSCALE = 0.02 # around 1 degrees
+
+#ROTSCALE = 0.030 # around 1 degrees
 ALTSCALE = 0.1**4 # 5 centimeters
-#XYSCALE =  0.075 # meters #ADJUST
-XYSCALE =  0.080 # meters #ADJUST
+XYSCALE =  0.085 # meters #ADJUST
+#XYSCALE =  0.080 # meters #ADJUST
+
 
 FOOT2MT = 0.3048
 

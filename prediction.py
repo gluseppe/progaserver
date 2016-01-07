@@ -253,9 +253,10 @@ class PredictionEngine(plugins.Monitor):
 					clusters = self.makeClusters(prediction_matrix, flight_id, deltaT, nsteps)
 					prediction_matrix['ownship'] = ownship_prediction
 					prediction_matrix['clusters'] = clusters
+					
 					jmat = json.dumps(prediction_matrix)
 					
-					#pdb.set_trace()
+					
 					
 					return jmat
 	
@@ -327,6 +328,8 @@ class PredictionEngine(plugins.Monitor):
 					self.clusters[p_group][time].addParticle(lat, lon, h)
 				else:
 					self.clusters[p_group][time] = Cluster(p_group, lat, lon, h, time)
+
+				#pdb.set_trace()
 				
 		
 		#pdb.set_trace()
