@@ -13,10 +13,6 @@ we retain the id just to make it available later if needed
 """
 class Cluster(object):
 
-	c_lat = 0.0
-	c_lon = 0.0
-	c_h = 0.0
-
 	center = None
 	
 	#number of particles already inside the cluster
@@ -30,6 +26,8 @@ class Cluster(object):
 	time = -1
 	group_id = -1
 	particles = None
+	proximity = -1.0
+	dangerous = False
 	
 
 	#the f factor brings the new center closer to the old one 
@@ -45,6 +43,8 @@ class Cluster(object):
 		self.particles = list()
 		self.particles.append(Point3D(lon,lat,h))
 		self.uncertainty = 0
+		self.dangerous = False
+		self.proximity = -1.0
 		
 
 	def addParticle(self,lat,lon,h):

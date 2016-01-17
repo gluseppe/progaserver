@@ -1,0 +1,17 @@
+{
+  "scenario_name": "sc_2_lfoe",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "01012",
+  "flights": [
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -810,
+      "flight_id": "C-3PO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    }
+  ]
+}

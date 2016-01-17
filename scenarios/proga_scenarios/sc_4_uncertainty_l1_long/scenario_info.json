@@ -1,0 +1,38 @@
+{
+  "scenario_name": "scenario_4_uncertainty_l1",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "01012",
+  "flights": [
+    {
+      "path": "Scenery4-Intruder1.txt",
+      "start": -210,
+      "flight_id": "C-3PO",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": 110,
+      "flight_id": "R2-D2",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:08:46",
+        "reference_track_id" : "01006",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery4-Traffic1.txt",
+      "start": 400,
+      "flight_id": "BOBA66",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:10:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    }
+
+  ]
+}

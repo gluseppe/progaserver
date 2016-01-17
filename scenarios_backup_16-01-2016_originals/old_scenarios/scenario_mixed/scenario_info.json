@@ -1,0 +1,35 @@
+{
+  "scenario_name": "scenario_minimal",
+  "flights": [
+    {
+      "path": "lfpd_lfoe_lfon_lfpz.txt",
+      "start": 0,
+      "flight_id": "CESSNA178",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "lfpd_direct_lfpz.txt",
+      "start": 0,
+      "flight_id": "CESSNA D1R",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "lfpz_lfxu_lfoe_lfpd.txt",
+      "start": 0,
+      "flight_id": "DRAGON PAR",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    }
+
+
+
+  ]
+}

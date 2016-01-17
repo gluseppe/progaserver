@@ -1,0 +1,90 @@
+{
+  "reference_tracks": [
+    {
+        "reference_track_id" : "00005",
+        "_track_path" : "LFPZ - LFOE - LFPD",
+        "_comment": "Traffic 1 Scenario 3; Ownship in Scenario 5; Intruder 1 in Scenario 6; Traffic 1 in Scenario 6",
+        "turning_points": [
+          {
+            "_icao": "LFPZ",
+            "lat": 48.813681, 
+            "lon": 2.066481, 
+            "h": 0
+          },
+          {
+            "_icao": "climb 1200 ft under Paris TMA",
+            "lat": 48.81785161056559, 
+            "lon": 2.048958819162075,
+            "h": 1200
+          },
+          {
+            "_icao": "start climb 2000 ft",
+            "lat": 48.8832944402246, 
+            "lon": 1.774010804285934,
+            "h": 1200
+          },
+          {
+            "_icao": "end climb 2000 ft",
+            "lat": 48.88606304052952, 
+            "lon": 1.7623789545968327,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+          {
+            "_icao": "dive to 0 ft",
+            "lat": 49.099505367670496, 
+            "lon": 0.591469945004263, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFPD",
+            "lat": 49.102778, 
+            "lon": 0.566667, 
+            "h": 0
+          }
+        ]
+    },
+    {
+        "reference_track_id" : "01012",
+        "_track_path" : "LFOL - LFOE - LFXU",
+        "_comment": "Traffic 1 in Scenario 5; Ownship in Scenario 6",
+        "turning_points": [
+          {
+            "_icao": "LFOL",
+            "lat": 48.758333, 
+            "lon": 0.656667, 
+            "h": 0
+          },
+          {
+            "_icao": "climb to 2000 ft",
+            "lat": 48.76709104912402, 
+            "lon": 0.6751936423777396,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 2000
+          },
+          {
+            "_icao": "dive to 0 ft",
+            "lat": 48.99916001082498, 
+            "lon": 1.9144695308280035,
+            "h": 2000
+          },
+          {
+            "_icao": "LFXU",
+            "lat": 48.998333, 
+            "lon": 1.945000, 
+            "h": 0
+          }
+        ]
+    }
+  ]
+}

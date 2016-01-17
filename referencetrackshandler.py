@@ -32,6 +32,14 @@ class ReferenceTracksHandler(object):
 			#cherrypy.log("loading repository for uncertainty l3", context="UNCERTAINTY")
 			complete_path = "./db/repository_uncertainty_l3.json"
 
+		if (scenario_name == "sc_1_turns") or (scenario_name == "sc_1_turns_bln"):
+			#cherrypy.log("loading repository for sc_1_turns", context="phd")
+			complete_path = "./db/repository_sc_1_turns.json"
+
+		if (scenario_name == "sc_2_lfoe") or (scenario_name == "sc_2_lfoe_bln"):
+			#cherrypy.log("loading repository for sc_1_turns", context="phd")
+			complete_path = "./db/repository_sc_2_lfoe.json"	
+
 
 		#cherrypy.log("loading complete path %s"%(complete_path), context="UNCERTAINTY")
 

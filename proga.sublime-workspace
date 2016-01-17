@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"ownship",
+				"ownship_clusters"
+			],
+			[
+				"owns",
+				"ownship_clusters"
+			],
+			[
+				"if",
+				"if	If Condition"
+			],
+			[
+				"own",
+				"ownship_prediction"
+			],
+			[
+				"lat",
+				"lat2"
+			],
+			[
 				"timeTo",
 				"timeToNextTP"
 			],
@@ -62,10 +82,6 @@
 			[
 				"Po",
 				"PongGame"
-			],
-			[
-				"if",
-				"ifmain	if __name__ == '__main__'"
 			],
 			[
 				"que",
@@ -183,15 +199,7 @@
 			"file": "prediction.py",
 			"settings":
 			{
-				"buffer_size": 12940,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "timeToTurn =  [norm(ownIntent[legIndex][1] - ownPos)/norm(ownVel)]\ntimeToNextTP = norm(ownIntent[legIndex][1] - ownIntent[legIndex][0])/vel",
-			"settings":
-			{
-				"buffer_size": 139,
+				"buffer_size": 13699,
 				"line_ending": "Unix"
 			}
 		},
@@ -204,18 +212,26 @@
 			}
 		},
 		{
-			"file": "automator.py",
+			"file": "cluster.py",
 			"settings":
 			{
-				"buffer_size": 4847,
+				"buffer_size": 4522,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "scenarioloader.py",
+			"file": "referencetrack.py",
 			"settings":
 			{
-				"buffer_size": 6567,
+				"buffer_size": 9972,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "progaconstants.py",
+			"settings":
+			{
+				"buffer_size": 2164,
 				"line_ending": "Unix"
 			}
 		}
@@ -223,11 +239,27 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 147.0,
 		"selected_items":
 		[
+			[
+				"json",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"jason",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"j",
+				"Pretty JSON: JSON query with ./jq"
+			]
 		],
-		"width": 0.0
+		"width": 449.0
 	},
 	"console":
 	{
@@ -244,15 +276,15 @@
 	},
 	"file_history":
 	[
+		"/Users/gluse/dev/progaserver/progaconstants.py",
 		"/Users/gluse/dev/progaserver/scenarioloader.py",
+		"/Users/gluse/dev/progaserver/automator.py",
 		"/Users/gluse/dev/progaserver/track.py",
 		"/Users/gluse/dev/progaserver/proga.py",
 		"/Users/gluse/dev/progaserver/referencetrackshandler.py",
 		"/Users/gluse/dev/progaserver/traffic.py",
-		"/Users/gluse/dev/progaserver/automator.py",
 		"/Users/gluse/dev/progaserver/cluster.py",
 		"/Users/gluse/dev/progaserver/prediction.py",
-		"/Users/gluse/dev/progaserver/progaconstants.py",
 		"/Users/gluse/Google Drive/SEAHORSE/seahorse virtual platform tools and users",
 		"/Users/gluse/dev/processing/prediction/data/ownship_cluster.json",
 		"/Users/gluse/dev/processing/prediction/data/blondie23_30_2_cluster.json",
@@ -301,6 +333,18 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"c_lat",
+			"c_g",
+			"c_lat",
+			"dangerou",
+			"pdb",
+			"center",
+			"distance",
+			"toSeri",
+			"updateUncertaintyMeasure",
+			"takeAMove",
+			"bunch",
+			"updateUn",
 			"print",
 			"futurePositions",
 			"sectors",
@@ -350,7 +394,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -358,15 +402,15 @@
 					"file": "prediction.py",
 					"settings":
 					{
-						"buffer_size": 12940,
+						"buffer_size": 13699,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2659,
-								2659
+								13005,
+								13005
 							]
 						],
 						"settings":
@@ -375,38 +419,13 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 660.0,
+						"translation.y": 4766.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"settings":
-					{
-						"buffer_size": 139,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								82,
-								82
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "predictor.py",
 					"settings":
 					{
@@ -417,8 +436,8 @@
 						"selection":
 						[
 							[
-								601,
-								601
+								18142,
+								18150
 							]
 						],
 						"settings":
@@ -427,26 +446,26 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
+						"translation.x": 5.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "automator.py",
+					"buffer": 2,
+					"file": "cluster.py",
 					"settings":
 					{
-						"buffer_size": 4847,
+						"buffer_size": 4522,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4511,
-								4511
+								1237,
+								1237
 							]
 						],
 						"settings":
@@ -455,34 +474,61 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1359.0,
+						"translation.y": 2.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "referencetrack.py",
+					"settings":
+					{
+						"buffer_size": 9972,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								489,
+								489
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 5.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "scenarioloader.py",
+					"file": "progaconstants.py",
 					"settings":
 					{
-						"buffer_size": 6567,
+						"buffer_size": 2164,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1830,
-								2065
+								1441,
+								1441
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 878.0,
+						"translation.y": 699.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

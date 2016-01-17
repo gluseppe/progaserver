@@ -1,0 +1,17 @@
+{
+  "scenario_name": "sc_1_turns_bln",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00009",
+  "flights": [
+    {
+      "path": "Scenery3-Intruder1.txt",
+      "start": -740,
+      "flight_id": "DENT42",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "01013",
+        "turning_points": null
+      }
+    }
+  ]
+}

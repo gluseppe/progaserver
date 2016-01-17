@@ -1,0 +1,48 @@
+{
+  "scenario_name": "scenario_1_multi",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00009",
+  "flights": [
+    {
+      "path": "Scenery3-Intruder1.txt",
+      "start": -1000,
+      "flight_id": "NINJA34",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "01013",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 320,
+      "flight_id": "BLONDIE23",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Intruder2.txt",
+      "start": 420,
+      "flight_id": "PASCAL61",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00011",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery3-Traffic1.txt",
+      "start": 1000,
+      "flight_id": "NELLO12",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:10:00",
+        "reference_track_id" : "00005",
+        "turning_points": null
+      }
+    }
+
+  ]
+}

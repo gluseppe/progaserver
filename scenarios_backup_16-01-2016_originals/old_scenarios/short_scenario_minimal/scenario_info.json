@@ -1,0 +1,15 @@
+{
+  "scenario_name": "scenario_minimal",
+  "flights": [
+      {
+      "path": "flight3.txt",
+      "start": -10,
+      "flight_id": "FLIGHT3",
+      "flight_intent": {
+        "reference_track_id" : "00001",
+        "turning_points": null
+      }
+    }
+
+  ]
+}

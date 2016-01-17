@@ -1,0 +1,97 @@
+{
+
+  "reference_tracks": [
+    {
+        "reference_track_id" : "00009",
+        "_track_path" : "LFPD - LFOL - LFOE",
+        "_comment": "Ownship scenario 3",
+        "turning_points": [
+          {
+            "_icao": "LFPD",
+            "lat": 49.102778, 
+            "lon": 0.566667, 
+            "h": 0
+          },
+          {
+            "_icao": "climb to 2000 ft",
+            "lat": 49.09333763798671, 
+            "lon": 0.5691336712572305,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOL",
+            "lat": 48.758333, 
+            "lon": 0.656667, 
+            "h": 2000
+          },
+          {
+            "_icao": "dive to 0 ft",
+            "lat": 49.00957495087598, 
+            "lon": 1.1881403576222604,
+            "h": 2000
+          },
+          {
+            "_icao": "LFOE",
+            "lat": 49.018333, 
+            "lon": 1.206667, 
+            "h": 0
+          }
+        ]
+    },
+    {
+        "reference_track_id" : "01013",
+        "_track_path" : "LFPZ - LFON - LFOL - LFPD",
+        "_comment": "INTRUDER IN SC_1_TURNS; Intruder 2 in Scenario 4; Intruder 2 in Scenario 6",
+        "turning_points": [
+          {
+            "_icao": "LFPZ",
+            "lat": 48.813681, 
+            "lon": 2.066481, 
+            "h": 0
+          },
+          {
+            "_icao": "climb to 1200 ft",
+            "lat": 48.808832761348974, 
+            "lon": 2.034758149776922, 
+            "h": 1200
+          },
+          {
+            "_icao": "start climb to 2000 ft",
+            "lat": 48.761557940547775, 
+            "lon": 1.725430955398682,
+            "h": 1200
+          },
+          {
+            "_icao": "end climb to 2000 ft",
+            "lat": 48.75807905945223, 
+            "lon": 1.702668044601318, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFON",
+            "lat": 48.705956, 
+            "lon": 1.361618, 
+            "h": 2000
+          },
+          {
+            "_icao": "LFOL",
+            "lat": 48.758333, 
+            "lon": 0.656667, 
+            "h": 2000
+          },
+          {
+            "_icao": "dive to 2000 ft",
+            "lat": 49.09333763798671, 
+            "lon": 0.5691336712572305,
+            "h": 2000
+          },
+          {
+            "_icao": "LFPD",
+            "lat": 49.102778, 
+            "lon": 0.566667, 
+            "h": 0
+          }
+        ]
+    }
+  ]
+}

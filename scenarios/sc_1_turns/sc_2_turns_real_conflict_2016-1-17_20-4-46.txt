@@ -1,0 +1,4 @@
+
+initial_prediction;aFlight;48.80309;0.63038427;742;106
+middle_prediction;48.80302;0.64448196;722;274
+actual_conflict_position;aFlight;48.810955;0.64493257;687;460

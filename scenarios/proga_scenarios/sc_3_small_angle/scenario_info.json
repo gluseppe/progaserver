@@ -1,0 +1,29 @@
+{
+  "scenario_name": "scenario_3_small_angle",
+  "ownship_id": "YOU",
+  "ownship_intent_id" : "00005",
+  "flights": [
+    {
+      "path": "Scenery5-Intruder1.txt",
+      "start": -658,
+      "flight_id": "CESSNA837",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "00012",
+        "turning_points": null
+      }
+    },
+    {
+      "path": "Scenery5-Intruder2.txt",
+      "start": -355,
+      "flight_id": "BLONDIE230",
+      "flight_intent": {
+        "departure_time": "27-01-2015 15:00:00",
+        "reference_track_id" : "01006",
+        "turning_points": null
+      }
+    }
+    
+
+  ]
+}

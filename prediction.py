@@ -20,7 +20,7 @@ from referencetrack import Point3D
 import numpy as np
 from predictor import findWeights, norm
 from cluster import Cluster
-from progaconstants import ALERT_DISTANCE, FOOT2MT, NUMPARTICLES
+from progaconstants import ALERT_DISTANCE, FOOT2MT, NUMPARTICLES, WARNING_RADIUS
 
 
 
@@ -250,7 +250,10 @@ class PredictionEngine(plugins.Monitor):
 				else:
 					#if clusters are true, automatically produce the ownship prediction
 					ownship_prediction = self.predictOwnship(deltaT,nsteps)
-					clusters = self.makeClusters(prediction_matrix, flight_id, deltaT, nsteps)
+					clusters = self.makeClusters(ownship_prediction, prediction_matrix, flight_id, deltaT, nsteps)
+					#pdb.set_trace()
+
+
 					prediction_matrix['ownship'] = ownship_prediction
 					prediction_matrix['clusters'] = clusters
 					
@@ -296,8 +299,22 @@ class PredictionEngine(plugins.Monitor):
 		#pdb.set_trace()
 		return ztp
 
+	def isItDangerous(self, cluster, ownship_prediction, time):
+		for ownship_clusters in ownship_prediction:
+			if ownship_clusters[0] == time:
+				lon = ownship_clusters[1][0]	
+				lat = ownship_clusters[1][1]
+				h = ownship_clusters[1][2]
+				#p3d = Point3D(lon,lat,h)
+				dist = cluster.center.distance(lon,lat)
+				#pdb.set_trace()
+				if (dist <= WARNING_RADIUS):
+					return [True, dist]
 
-	def makeClusters(self,prediction_matrix, flight_id, deltaT,nsteps):
+		return [False, dist]
+
+
+	def makeClusters(self,ownship_prediction, prediction_matrix, flight_id, deltaT, nsteps):
 		#pdb.set_trace()
 		self.clusters.clear()
 
@@ -330,12 +347,19 @@ class PredictionEngine(plugins.Monitor):
 					self.clusters[p_group][time] = Cluster(p_group, lat, lon, h, time)
 
 				#pdb.set_trace()
+
 				
 		
 		#pdb.set_trace()
 
 		for pg, timedict in self.clusters.items():
 			for t, clus in timedict.items():
+				dangerousness = self.isItDangerous(self.clusters[pg][t],ownship_prediction,t)
+				dangerous = dangerousness[0]
+				dist = dangerousness[1]
+				self.clusters[pg][t].dangerous = dangerous
+				self.clusters[pg][t].proximity = dist
+
 				self.clusters[pg][t] = self.clusters[pg][t].toSerializableObject()
 
 		##temporary for test purposes particles vs clusters
